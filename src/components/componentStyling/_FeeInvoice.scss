@@ -1,0 +1,453 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.invoiceDisplayContainer{
+  overflow-y: auto;
+}
+
+.invoice-container {
+  @include display-flex($direction: column, $align: center, $justify: center);
+  width: 210mm;
+  height: 297mm;
+  //margin-top: 100px;
+  background-color: white;
+
+  .invoice-inner-container {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    width: 200mm;
+    height: 287mm;
+    font-family: 'Times New Roman', Times, serif;
+    border: 1px solid $border-color;
+
+    p {
+      font-size: $small;
+      margin: 0;
+      padding: 0.2rem;
+    }
+    
+    .invoicePBold{
+      font-weight: bold;
+    }
+
+    .invoiceHeading{
+      @include display-flex($direction: row, $align: center, $justify: center);
+      width: 100%;
+      height: 70px;
+      margin-top: 20px;
+      font-weight: bold;
+      h2{
+        font-size: $extralarge;
+        margin: 0;
+        padding: 0;
+      }
+    }
+
+    .invoice-header {
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+      width: 200mm;
+      height: 200px;
+
+      div{
+        width: 100mm;
+        height: 100%;
+      }
+
+      .invoiceAPSDetailsContianer{
+        @include display-flex($direction: column, $align: left, $justify: center);
+        width: 60mm;
+        p {
+          margin-left: 30px;
+        }
+      }
+
+      .invoiceLogoContainer {
+        @include display-flex($direction: row, $align: center, $justify: flex-end);
+
+        img {
+          width: auto;
+          height: 200px;
+          margin-right: 40px;
+        }
+      }
+    }
+    .invoiceFileDetailsContainer{
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+      width: 100%;
+      height: 200px;
+
+      .invoiceToDetailsContianer{
+        @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+        width: 100mm;
+        height: 200px;
+        margin-top: 50px;
+        p{
+          margin-left: 30px;
+        }
+      }
+
+      .invoiceDateDetailsContianer{
+        @include display-flex($direction: column, $align: flex-end, $justify: flex-start);
+        height: 200px;
+        width: 100mm;
+        margin-top: 50px;
+        
+        .invoiceDateDetailsRow{
+          @include display-flex($direction: row, $align: flex-start, $justify: space-between);
+          margin-right: 20px;
+          width: 90mm;
+          height: fit-content;
+
+          .invoiceDateDetailLabel{
+            width: 35mm;
+          }
+          .invoiceDateDetailData {
+            text-align: right;
+            max-width: 55mm;
+          }
+        }
+      }
+    }
+
+    .invoiceFeeChargesDetailsContainer{
+      @include display-flex($direction: column, $align: center, $justify: center);
+      border-top: 1px solid $border-color;
+      border-bottom: 1px solid $border-color;
+
+      .invoiceFeeChargesDetailsRow{
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+        width: 200mm;
+        height: 50px;
+
+        .invoiceFeeChargesDetailsDiscCell{
+          @include display-flex($direction: column, $align: flex-start, $justify: center);
+          width: 100mm;
+          height: 50px;
+
+          p{
+            margin-left: 10px;
+            
+            padding: 0;
+          }
+        }
+
+        .invoiceFeeChargesDetailsCell{
+          @include display-flex($direction: column, $align: center, $justify: center);
+          width: 30mm;
+          height: 50px;
+          p{
+            margin: 0;
+            padding: 0;
+          }
+        }
+
+        .invoiceFeeChargesDetailsAmountCell{
+          @include display-flex($direction: column, $align: flex-end, $justify: center);
+          width: 40mm;
+          height: 50px;
+          p{
+            margin-right: 10px;
+            padding: 0;
+          }
+        }
+      }
+    }
+
+    .invoiceFooter{
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+      width: 200mm;
+      height: 241px;
+      margin-top: 50px;
+
+      .invoiceFooterLeft{
+        @include display-flex($direction: column, $align: center, $justify: center);
+        width: 75mm;
+        height: 200px;
+        margin-left: 15px;
+        margin-top: 30px;
+
+        p{
+          margin: 0;
+          padding: 0;
+          font-size: $smaller;
+        }
+
+        .invoiceBankingDetailsContainer{
+          @include display-flex($direction: column, $align: center, $justify: center);
+          width: 100%;
+          height: 200px;
+
+          .invoiceBankingDetails{
+            @include display-flex($direction: column, $align: center, $justify: center);
+            width: 100%;
+            height: 200px;
+
+            .invoiceBankingDetailsRow{
+              @include display-flex($direction: row, $align: center, $justify: space-between);
+              width: 100%;
+              height: 20px;
+            }
+          }
+        }
+      }
+
+      .invoiceFooterRight{
+        @include display-flex($direction: column, $align: flex-end, $justify: flex-start);
+        width: 75mm;
+        height: 200px;
+
+        p{
+          margin-right: 20px;
+          padding: 0;
+          font-weight: bold;
+          font-size: $medium;
+        }
+      }
+    }
+  }
+}
+
+
+.invoice-actions{
+  @include display-flex($direction: column, $align: center, $justify: center);
+  position: sticky;
+  top: 20vh;
+  width: 39vw;
+  height: 69vh;
+  margin-right: 10px;
+  border: 1px solid $border-color;
+  border-radius: 40px;
+  background-color: $lightest-blue;
+
+  .invoiceEditingHeader{
+    @include display-flex($direction: row, $align: center, $justify: center);
+    width: 38vw;
+    height: 7vh;
+    margin-top: 5px;
+    background-color: $light-green;
+    border-radius: 30px 30px 0 0;
+
+    h2{
+      font-size: $medium;
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+    }
+
+    span{
+      position: absolute;
+      right: 30px;
+    }
+  }
+
+  .invoiceEditingContainer{
+    @include display-flex($direction: column, $align: center, $justify: space-evenly);
+    width: 38vw;
+    height: 50vh;
+    background-color: $lighter-green;
+    
+    
+      
+    
+    
+
+    .invoiceActionCurrencyContainer{
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+      width: 12vw;
+      height: 5vh;
+      margin: 0.5rem;
+      color: $link-color;
+      font-size: $medium;
+      font-weight: bold;
+      background-color: $button-bg;
+      border: 2px solid $main-color;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
+
+      label {
+        margin-left: 10px;
+      }
+      select {
+        width: 5vw;
+        height: 4vh;
+        margin-right: 5px;
+        color: $rich-black;
+        font-size: $small;
+        font-weight: bold;
+        background-color: $lightest-green;
+        border: 2px solid $main-color;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s;
+
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .invoiceActionEditingFields{
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+
+    .invoiceQuantityContainer{
+      @include display-flex($direction: column, $align: center, $justify: space-between);
+      width: 19vw;
+      height: 30vh;
+      background-color: $lightest-green;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+
+      .invoiceActionQuantityRow{
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+        width: 13vw;
+        height: 6vh;
+
+        label{
+          margin-right: 10px;
+          font-weight: bold;
+          font-size: $small;
+        }
+
+        input{
+          width: 6vw;
+          height: 3vh;
+          color: $rich-black;
+          font-size: $small;
+          text-align: right;
+          background-color: $input-light-bg;
+          border: 2px solid $main-color;
+          border-radius: 4px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+          transition: background-color 0.3s;
+
+          &:hover {
+            background-color: $button-hover-bg;
+            color: $link-hover-color;
+          }
+        }
+      }
+    }
+  }
+    .invoiceActionTotalFeeContainer{
+      @include display-flex($direction: column, $align: center, $justify: flex-start);
+      width: 12vw;
+      height: 8vh;
+      margin: 0.5rem;
+      color: $link-color;
+      font-size: $medium;
+      font-weight: bold;
+      background-color: $button-bg;
+      border: 2px solid $main-color;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
+
+      .invoiceActionTotalFeeRow{
+        @include display-flex($direction: row, $align: center, $justify: center);
+        margin-top: 5px;
+        width: 10vw;
+
+        .manualTotalFeeCheckbox {
+          height: 2vh;
+          width: 1.2vw;
+          border-radius: 4px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .manualTotalFeeInput{
+        width: 8vw;
+        height: 2.5vh;
+        margin-top: 5px;
+        color: $rich-black;
+        font-size: $medium;
+        font-weight: bold;
+        text-align: right;
+        background-color: $lightest-green;
+        border: 2px solid $main-color;
+        border-radius: 4px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        transition: background-color 0.3s;
+
+        &:hover {
+          background-color: $button-hover-bg;
+          color: $link-hover-color;
+        }
+
+        &:disabled {
+          background-color: $lightest-green;
+          color: gray;
+        }
+      }
+    }
+  
+  }
+  
+  .invoiceEditingFooter{
+    @include display-flex($direction: row, $align: center, $justify: center);
+    width: 38vw;
+    height: 10vh;
+    background-color: $light-green;
+    border-radius: 0 0 30px 30px;
+
+    button {
+      width: 10vw;
+      height: 5vh;
+      margin: 0.5rem;
+      color: $link-color;
+      font-size: $medium;
+      font-weight: bold;
+      background-color: $button-bg;
+      border: 2px solid $main-color;
+      border-radius: 4px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s;
+
+      &:hover {
+        background-color: $button-hover-bg;
+        color: $link-hover-color;
+        cursor: pointer;
+      }
+    }
+  }
+}
+
+@media print {
+  // Override Font Sizes for Print
+  p {
+    font-size: 12pt !important;
+  }
+  
+  .invoiceHeading h2 {
+    font-size: 24pt !important;
+  }
+  .invoiceFooterLeft{
+    p{
+      font-size: 10pt !important;
+    }
+  }
+  .invoiceFooterRight{
+    p{
+      font-size: 14pt !important;
+    }
+  }
+  // Adjust Logo Size
+  .invoiceLogoContainer img {
+    height: 100px;
+    width: auto;
+  }
+
+  // Ensure Containers Fit Properly
+  .invoice-inner-container {
+    width: 210mm;
+    height: 297mm;
+  }
+
+  // Optional: Remove Unnecessary Elements
+  .no-print {
+    display: none;
+  }
+}

@@ -1,0 +1,235 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+/* The Modal (background) */
+.modal {
+  display: flex; 
+  position: fixed; 
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background-color: $lighter-green;
+  padding: 20px;
+  border: 1px solid $border-color;
+  height: 80%;
+  width: 60%;
+  position: relative;
+  overflow: auto;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  @include display-flex($direction: row, $align: center, $justify: space-between);
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-header p {
+  margin: 0;
+  font-size: $extralarge;
+  font-weight: bold;
+}
+
+.file-number-container {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  position:absolute;
+  left: 34vw;
+  width: 15vw;
+}
+
+.close-modal-button {
+  font-size: $superlarge;
+  font-weight: bold;
+  color: #999;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.close-modal-button:hover,
+.close-modal-button:focus {
+  color: #000;
+  text-decoration: none;
+}
+
+.modal-body {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    padding: 1rem;
+
+    form {
+        width: 100%;
+    }
+}
+
+.modal-row {
+    @include display-flex($direction: row, $align: center, $justify: space-between);
+}
+
+.modal-form-group {
+    @include display-flex($direction: row, $align: center, $justify: space-between);
+    width: 100%;
+    min-height: 4vh;
+    margin: 0.4rem 0.1vi;
+    background-color: $lightest-green;
+    border: 1px solid $border-color;
+    border-radius: 6px;
+    padding: 0.4rem;
+
+    label {
+        font-size: $small;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        
+    }
+
+    .inputLarge, .inputMedium, .inputSmall {
+        padding: 0.5rem;
+        font-size: $small;
+        text-align: right;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+    }
+
+    .inputLarge {
+        width: 80%;
+    }
+
+    .inputMedium {
+        width: 60%;
+    }
+
+    .inputSmall {
+        width: 20%;
+    }
+
+    select {
+        width: 62%;
+        padding: 0.5rem;
+        font-size: 1vi;
+        text-align: right;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+    }
+
+    textarea {
+        width: 80%;
+        padding: 0.5rem;
+        font-size: 1vi;
+        border: 1px solid $border-color;
+        border-radius: 4px;
+    }
+    p {
+        font-size: 1.2vi;
+        margin: 0;
+    }
+}
+
+.react-select-container {
+  width: 60%;
+}
+
+.reactSelect {
+    width: 60%;
+    font-size: $small;
+    text-align: right;
+}
+
+
+.reactSelectWide {
+  width: 100%;
+  font-size: $small;
+  text-align: right;
+}
+
+.select-company-container {
+  @include display-flex($direction: row, $align: center, $justify: flex-end);
+  width: 70%;
+}
+
+.modal-footer {
+  @include display-flex($direction: row, $align: center, $justify: flex-end);
+  width: 100%;
+  margin-top: 20px;
+}
+
+.modal-footer-button-container {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 17vw;
+  height: 8vh;
+  background-color: $lightest-green;
+  border: 1px solid $border-color;
+  border-radius: 6px;
+}
+
+.editFeeGenerateInvoice {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 1vi 1.2vi;
+  font-size: $medium;
+  margin-right: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-submit {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  border: none;
+  padding: 1vi 1.2vi;
+  font-size: $medium;
+  margin-right: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-submit:hover {
+  background-color: #45a049;
+}
+
+.modal-cancel {
+  background-color: #f44336; /* Red */
+  color: white;
+  border: none;
+  padding: 1vi 1.2vi;
+  font-size: $medium;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.modal-cancel:hover {
+  background-color: #da190b;
+}
+
+.react-select-container {
+  display: flex;
+  align-items: center;
+}
+
+.add-company-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  margin-left: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-company-button:hover {
+  background-color: #0056b3;
+}

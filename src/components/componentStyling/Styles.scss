@@ -1,0 +1,20 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'ContextMenu';
+@use 'Layout';
+@use 'MainContent';
+@use 'Tables';
+@use 'Sidebar';
+@use 'Modal';
+@use 'Home';
+@use 'Register';
+@use 'Contacts';
+@use 'FeeManagement';
+@use 'FeeInvoice';
+@use 'CustomDialog';
+@use 'Companies';
+
+
+* {
+font-family: var(--font-family);
+}

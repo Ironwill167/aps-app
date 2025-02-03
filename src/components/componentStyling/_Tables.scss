@@ -1,0 +1,48 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+
+
+.rdt_Table
+{
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    border: 2px solid $main-color;
+    margin: 0;
+    padding: 0;
+    
+}
+
+.rdt_TableHeadRow
+{
+    color: $dark-blue;
+    font-size: $medium;
+    font-weight: bold;  
+}
+
+.rdt_TableCol
+{
+    border: 1px solid $main-color;
+    padding: 0;
+    text-align: center;
+
+}
+
+.rdt_TableRow
+{
+    padding: 0;
+}
+
+.rdt_TableCell
+{
+    border: 1px solid $main-color;
+    padding: 0;
+}
+
+
+
+.column-file-number
+{
+    color: $main-color;
+}

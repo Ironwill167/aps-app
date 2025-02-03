@@ -1,0 +1,275 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.actionCenterContainer {
+  @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
+  width: 100%;
+}
+
+.actionFilesContainer {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 65vw;
+}
+.actionHeadingsContainer {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  position: sticky;
+  top: 12vh;
+  z-index: 10;
+  box-shadow: 0 0 0.5vi 0 $rich-black;
+}
+
+.actionHeadingsContainer > .actionHeading {
+  @include display-flex($direction: row, $align: center, $justify: flex-start);
+  font-weight: bold;
+  font-size: $small;
+  height: 4vh;
+  background-color: $main-color-hover;
+  border: 1px solid $main-color;
+  border-radius: 5px;
+}
+
+.filesGroupContainer {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  font-weight: bold;
+}
+.actionGroupHeading {
+  font-weight: bold;
+  font-size: $large;
+  margin-block: 0.5rem;
+}
+
+.filesGroup {
+  @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+  width: 100%;
+}
+.fileItem {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 100%;
+  margin: 0;
+  font-size: $small;
+  border-top: 1px solid $main-color;
+  border-bottom: 1px solid $main-color;
+  background-color: $main-color-hover;
+  cursor: pointer;
+
+  &:hover {
+    background-color: $lighter-green;
+  }
+  &.action-status-red {
+    background-color: rgb(255, 50, 50);
+  }
+  &.action-status-orange {
+    background-color: rgb(255, 165, 0);
+  }
+  &.action-status-yellow {
+    background-color: rgb(255, 255, 0);
+  }
+}
+.vertSeperator {
+  min-height: 4vh;
+  width: 0.1vw;
+}
+.FileNumberColumn,
+.StatusColumn,
+.InsuredColumn,
+.PrincipalColumn,
+.PrincipalContactColumn,
+.PrincipalRefColumn,
+.DateUpdatedColumn,
+.FileNoteColumn,
+.TotalFeeColumn {
+  padding-left: 0.2em;
+  min-height: 4vh;
+  height: 4vh;
+  overflow: hidden;
+  background-color: rgb(240, 240, 240, 0.9);
+}
+
+.FileNumberColumn {
+  width: 3.5vw;
+  font-weight: bold;
+}
+
+.StatusColumn {
+  width: 4.5vw;
+  font-weight: bold;
+  overflow: visible;
+}
+
+.actionStatusSelect {
+  position: relative;
+  font-size: $medium;
+  background-color: $lightest-blue;
+  z-index: 100;
+  height: 4vh;
+}
+
+.InsuredColumn,
+.PrincipalColumn,
+.BrokerColumn {
+  width: 11vw;
+  font-weight: normal;
+}
+
+.PrincipalContactColumn,
+.InsuredContactColumn,
+.BrokerContactColumn,
+.PrincipalRefColumn {
+  width: 6vw;
+  font-weight: normal;
+}
+
+.DateUpdatedColumn {
+  width: 5vw;
+  font-weight: normal;
+}
+
+.FileNoteColumn {
+  width: 10vw;
+  font-weight: normal;
+}
+
+.TotalFeeColumn {
+  width: 5vw;
+  font-weight: normal;
+}
+.AddNoteContainer {
+  @include display-flex($direction: row, $align: center, $justify: flex-start);
+  width: 100%;
+  textarea {
+    width: 10vw;
+    height: 3vh;
+    resize: none;
+    font-size: $small;
+    border-radius: 4px;
+  }
+
+  .AddNoteButtons {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    button {
+      width: 1.5vw;
+      height: 2vh;
+      border-radius: 4px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .ConfirmButton {
+      background-color: $main-color-hover;
+    }
+    .CancelButton {
+      background-color: lightcoral;
+    }
+  }
+}
+
+.actionFileDetailsContainer {
+  @include display-flex($direction: column, $justify: flex-start);
+  width: 22.7vw;
+  position: sticky;
+  top: 12vh;
+  z-index: 10;
+  box-shadow: 0 0 5px 0 $border-inset-shadow;
+  background-color: $lighter-green;
+  border: 1px solid $main-color;
+  border-radius: 5px;
+}
+
+.actionFileDetails {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 100%;
+  border: 1px solid $main-color;
+  border-radius: 5px;
+  box-shadow: 0 0 3px 0 $rich-black;
+}
+
+.actionFileDetailsHeader {
+  @include display-flex($direction: column, $align: center, $justify: space-between);
+  width: 22vw;
+  height: 10vh;
+  padding: 0.5rem;
+  font-size: $medium;
+  font-weight: bold;
+  background-color: $light-green;
+  border-bottom: 2px solid $rich-black;
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.actionFileDetailsHeaderActions {
+  @include display-flex($direction: row, $align: center, $justify: flex-end);
+  width: 100%;
+  button {
+    background-color: $button-bg;
+    color: $button-text-color;
+    font-size: $small;
+    padding: 5px;
+    border: 1px solid $main-color;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .actionFileDetailsEditButton {
+    &:hover {
+      background-color: $main-color-hover;
+      color: $rich-black;
+    }
+  }
+  .actionFileDetailsFeeButton {
+    &:hover {
+      background-color: $main-color-hover;
+      color: $rich-black;
+    }
+  }
+}
+
+.fileDetailsRow {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 100%;
+  padding-top: 0.5rem;
+  font-size: $small;
+}
+/*.fileDetailsLeftItem{
+      
+    }*/
+.fileDetailsRightItem {
+  margin-left: 0.2rem;
+}
+
+.fileDetailsItem {
+  @include display-flex($direction: row, $align: center, $justify: flex-start);
+  width: 100%;
+  min-height: 3vh;
+  padding: 0.2rem;
+  border: 1px solid $main-color;
+  border-radius: 4px;
+  box-shadow: 0 0 3px 0 $rich-black;
+  background-color: $lightest-green;
+
+  p {
+    margin: 0 0.5rem 0 0;
+  }
+}
+
+.fileDetailsDataCompany,
+.fileDetailsDataContact {
+  @include display-flex($direction: row, $align: center, $justify: flex-start);
+  width: fit-content;
+  height: fit-content;
+  padding: 0.4rem;
+  border: 1px solid $main-color;
+  border-radius: 8px;
+  background-color: $light-cream;
+
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+.fileDetailsLabel {
+  font-weight: bold;
+}
+
+.fileDetailsData {
+  font-weight: normal;
+}

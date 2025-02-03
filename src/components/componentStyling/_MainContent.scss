@@ -1,0 +1,72 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// MainContent styles
+
+.main-content-contents {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    width: 100%;
+
+    .mainContentHeader {
+        @include display-flex($direction: row, $justify: space-between);
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        width: 100%;
+        height: 10vh;
+        background-color: $secondary-color;
+        padding: 0.5rem;
+        z-index: 100;
+        
+        
+        .mainContentHeading {
+            margin-block: 0;
+            text-align: center;
+            font-size: $superlarge;
+            text-shadow: 0 0 1vi rgba(0, 0, 0, 0.1);
+            margin-left: 1rem;
+            padding: 0.3rem 0.5rem;
+        }
+
+        .mainControlsContainer {
+            @include display-flex($direction: row, $justify: space-evenly);
+            width: 80%;
+            
+            .mainControlSearchBar {
+            width: 30vw;
+            height: 5vh;
+            font-size: 1.5vi;
+            padding-left: 1vi;
+            border-radius: 5px;
+            border: 1px solid $main-color;
+            }
+
+            .mainControlButton {
+                width: 7vw;
+                height: 5vh;
+                font-size: 1vi;
+                background-color: $button-bg;
+                color: $button-text-color;
+                border: 1px solid $main-color;
+                border-radius: 5px;
+                padding: 0.5rem;
+                cursor: pointer;
+
+                &:hover {
+                    background-color: $button-hover-bg;
+                    color: $link-hover-color;
+                }
+            }
+        }
+    }
+
+    .mainContentSubject {
+        position: relative;
+        flex: 1;
+        width: 100%;
+        height: 90vh;
+        text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        color: $text-color;
+        
+    }
+}

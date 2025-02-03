@@ -1,0 +1,57 @@
+// Font
+$font-family: 'Times New Roman', Times, serif;
+
+// Main Colors
+$main-color: #7aad0d;
+$main-color-hover: #84d11f;
+$secondary-color: #718f94;
+$tertiary-color: #03254e;
+$rich-black: #011c27;
+
+$light-cream: #f8fdf1;
+
+$light-green: #a3dd57;
+$lighter-green: #c2e88f;
+$lightest-green: #f0fae3;
+
+$light-blue: #425c7b;
+$lighter-blue: #a1aebd;
+$lightest-blue: #c2cad3;
+
+$dark-green: #3d5707;
+$darker-green: #2d3f05;
+$darkest-green: #101602;
+
+$dark-blue: #031c3b;
+$darker-blue: #021327;
+$darkest-blue: #010a14;
+
+// Backgrounds
+$app-bg: #c0c9d3;
+$sidebar-bg: $secondary-color;
+$modal-bg: $dark-green;
+$content-bg: $lightest-green;
+$input-light-bg: #f8fdf1;
+
+// Text Colors
+$text-color: $rich-black;
+$dark-text-color: #333;
+$link-color: $light-green;
+$link-hover-color: $darker-blue;
+
+// Font Sizes
+$superlarge: 3vi;
+$extralarge: 2vi;
+$large: 1.5vi;
+$medium: 1.25vi;
+$small: 0.9vi;
+$smaller: 0.8vi;
+
+// Button Colors
+$button-bg: $dark-blue;
+$button-hover-bg: $main-color-hover;
+$button-text-color: $main-color-hover;
+
+// Border Colors
+$border-color: $rich-black;
+$border-inset-shadow: rgba(0, 95, 5, 0.3);

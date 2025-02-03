@@ -1,0 +1,42 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.sidebar-content {
+    @include display-flex($direction: column, $align: center, $justify: space-between);
+    height: 80vh;
+    background-color: $lightest-green;
+    border-radius: 0.2vi;
+    margin-top: 5vh;
+
+    .sidebar-link-container {
+        @include display-flex($direction: column, $align: center, $justify: flex-start);
+        width: 100%;
+        margin-top: 1vh;
+
+        .SidebarLink {
+            color: $button-text-color;
+            font-size: 1.5vi;
+            font-weight: bold;
+            width: 90%;
+            height: 6vh;
+            text-align: center;
+            background-color: $button-bg;
+            border: 2px solid $main-color;
+            border-radius: 4px;
+            margin: 2px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s;
+        }
+
+        .SidebarLink:hover {
+            background-color: $button-hover-bg;
+            color: $link-hover-color;
+            cursor: pointer;
+        }
+    }
+
+    .logo {
+        width: 10vw;
+        height: auto;
+    }
+}

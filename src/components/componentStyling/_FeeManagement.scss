@@ -1,0 +1,164 @@
+@use "variables" as *;
+@use "mixins" as *;
+
+.feeManagementContainer {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    width: 100%;
+    background-color: $app-bg;
+    height: 85vh;
+    overflow-y: auto;
+}
+
+.feeManagementTotalsContainer {
+  position: sticky;
+    top: 0;
+  z-index: 10;
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  background-color: $light-green;
+  padding: 0.4rem;
+  width: 88vw;
+
+  .feeManagementRaisedTotals,
+  .feeManagementActiveTotals {
+      @include display-flex($direction: row, $align: center, $justify: flex-start);
+      background-color: $light-green;
+      width: 100%;
+
+      div {
+          width: 12vw;
+          height: 2.5vh;
+          padding-left: 0.5rem;
+          border: 1px solid $rich-black;
+          background-color: $lightest-green;
+          align-content: center;
+          font-weight: bold;
+      }
+  }
+}
+
+.feeManagementTableContainer{
+    @include display-flex($direction: column, $align: center, $justify: center);
+    width: 88vw;
+    background-color: $lightest-green;
+    //overflow-y: scroll;
+    flex-grow: 1;
+}
+
+
+
+.feeManagementTable {
+  border-collapse: collapse;
+  background-color: $light-green;
+  border-spacing: 0;
+
+  thead {
+      
+      th {
+          background-color: $main-color-hover;
+          font-weight: bold;
+          color: $text-color;
+          font-size: $medium;
+          text-align: center;
+          border: 1px solid $rich-black;
+      }
+  }
+
+  tbody {
+        tr:nth-child(even) {
+            background-color: $lightest-green;
+        }
+        tr:nth-child(odd) {
+            background-color: $lightest-blue;
+        }
+        tr:hover {
+            background-color: $lighter-green;
+        }
+    
+      td {
+          
+          border: 1px solid $rich-black;
+          color: $text-color;
+          font-size: $small;
+      }
+  }
+}
+
+.feeManageFileRow{
+    max-height: 4vh;
+}
+
+.seperatorDiv {
+width: 88vw;
+height: 0.3vh;
+background-color: black;
+}
+
+.FeeManageFileIdColumn,
+.FeeManageFileStatus,
+.FeeManageFilePrincipal,
+.FeeManageFeeRaised,
+.FeeManageInvDate,
+.FeeManageFeePaid,
+.FeeManageTotFee,
+.FeeManageApsCut,
+.FeeManageManCut,
+.FeeManageEliCut,
+.FeeManageWilCut,
+.FeeManageOtherCut {
+    font-size: $medium;
+}
+.FeeManageFileIdColumn {
+    width: 4vw; 
+    text-align: center;
+}
+.FeeManageFileStatus {
+    width: 5vw;
+    text-align: center;
+}
+.FeeManageFilePrincipal {
+    width: 19vw;
+    text-align: left;
+}
+.FeeManageInvDate {
+    width: 7vw;
+    text-align: right;
+}
+.FeeManageFeeRaised,
+.FeeManageFeePaid,
+.FeeManageTotFee,
+.FeeManageApsCut,
+.FeeManageManCut,
+.FeeManageEliCut,
+.FeeManageWilCut,
+.FeeManageOtherCut {
+    width: 6.4vw;
+    text-align: right;
+}
+
+.feeManagementEditableCellDate{
+    text-align: right;
+    font-size: $small;
+    height: 100%;
+    width: 100%;
+}
+.feeManagementEditableCellNumber{
+    text-align: right;
+    font-size: $small;
+    height: 100%;
+    width: 90%;
+
+    
+}
+.feeManagementEditableCell{
+    text-align: right;
+    font-size: $small;
+    height: 2vh;
+    width: 6.4vw;
+    &:focus {
+        outline: none;
+    }
+
+    &:hover {
+        cursor: pointer;
+    }
+}

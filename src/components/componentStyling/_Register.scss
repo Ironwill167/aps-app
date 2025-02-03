@@ -1,0 +1,52 @@
+@use 'variables' as *;
+.status-new {
+    color: blue;
+    
+  }
+  
+  .status-survey {
+    color: orange;
+    
+  }
+  
+  .status-prelim {
+    color: purple;    
+  }
+  
+  .status-doc-ri,
+  .status-doc-rr,
+  .status-doc-rf {
+    color: teal;
+    
+  }
+  
+  .status-rpt-bs,
+  .status-rpt-c,
+  .status-rpt-d,
+  .status-rpt-s {
+    color: green;
+    
+  }
+  
+  .status-fee-r,
+  .status-fee-p {
+    color: brown;
+    
+  }
+  
+  .status-closed {
+    color: red;
+    
+  }
+  
+  .rdt_TableRow:nth-child(even) {
+    background-color: $lighter-green; /* Light gray background for even rows */
+  }
+  
+  .rdt_TableRow:nth-child(odd) {
+    background-color: $lighter-blue; /* White background for odd rows */
+  }
+  
+  .rdt_TableRow:hover {
+    background-color: #e6f7ff; /* Light blue on hover */
+  }
