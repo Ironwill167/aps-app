@@ -253,40 +253,40 @@ const FeeManagement: React.FC = () => {
           <div className="feeManagementRaisedTotalsHeading">Fee Raised</div>
 
           <div className="feeManagementRaisedTotalAmount">
-            Total Fee: R {getFeeTotals.totalRaisedFee}
+            Total Fee: R {getFeeTotals.totalRaisedFee.toFixed(2)}
           </div>
           <div className="feeManagementRaisedAPSAmount">APS: R {getFeeTotals.totalRaisedAPS}</div>
           <div className="feeManagementRaisedMannieAmount">
-            Mannie: R {getFeeTotals.totalRaisedMannie}
+            Mannie: R {getFeeTotals.totalRaisedMannie.toFixed(2)}
           </div>
           <div className="feeManagementRaisedElizeAmount">
-            Elize: R {getFeeTotals.totalRaisedElize}
+            Elize: R {getFeeTotals.totalRaisedElize.toFixed(2)}
           </div>
           <div className="feeManagementRaisedWillieAmount">
-            Willie: R {getFeeTotals.totalRaisedWillie}
+            Willie: R {getFeeTotals.totalRaisedWillie.toFixed(2)}
           </div>
           <div className="feeManagementRaisedOtherAmount">
-            Other: R {getFeeTotals.totalRaisedOther}
+            Other: R {getFeeTotals.totalRaisedOther.toFixed(2)}
           </div>
         </div>
         <div className="feeManagementActiveTotals">
           <div className="feeManagementActiveTotalsHeading">Active Files</div>
 
           <div className="feeManagementActiveTotalAmount">
-            Total Fee: R {getFeeTotals.totalOpenFee}
+            Total Fee: R {getFeeTotals.totalOpenFee.toFixed(2)}
           </div>
           <div className="feeManagementActiveAPSAmount">APS: R {getFeeTotals.totalOpenAPS}</div>
           <div className="feeManagementActiveMannieAmount">
-            Mannie: R {getFeeTotals.totalOpenMannie}
+            Mannie: R {getFeeTotals.totalOpenMannie.toFixed(2)}
           </div>
           <div className="feeManagementActiveElizeAmount">
-            Elize: R {getFeeTotals.totalOpenElize}
+            Elize: R {getFeeTotals.totalOpenElize.toFixed(2)}
           </div>
           <div className="feeManagementActiveWillieAmount">
-            Willie: R {getFeeTotals.totalOpenWillie}
+            Willie: R {getFeeTotals.totalOpenWillie.toFixed(2)}
           </div>
           <div className="feeManagementActiveOtherAmount">
-            Other: R {getFeeTotals.totalOpenOther}
+            Other: R {getFeeTotals.totalOpenOther.toFixed(2)}
           </div>
         </div>
       </div>
