@@ -19,6 +19,7 @@ const Home: React.FC = () => {
     files = [] as FileRecord[],
     fees = [] as FeeRecord[],
     updateFile,
+    refetchFiles,
   } = useData();
 
   // Edit Status Dropdown
@@ -27,6 +28,10 @@ const Home: React.FC = () => {
   // File note state
   const [showAddNote, setShowAddNote] = useState<number | null>(null);
   const [noteText, setNoteText] = useState<string>('');
+
+  // Diary Date state
+  const [showChangeDiaryDate, setShowChangeDiaryDate] = useState<number | null>(null);
+  const [diaryDate, setDiaryDate] = useState<string>('');
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
@@ -239,7 +244,7 @@ const Home: React.FC = () => {
       return 'action-status-red';
     } else if (file.diary_date && new Date(file.diary_date) < today) {
       return 'action-status-orange';
-    } else if (file.is_important) {
+    } else if (file.is_important === 'true') {
       return 'action-status-yellow';
     }
     return '';
@@ -287,26 +292,30 @@ const Home: React.FC = () => {
   // Handle File Updated
   const handleFileUpdated = useCallback(() => {}, []);
 
-  const handleIsImportandChange = useCallback(
-    async (file: FileRecord) => {
-      let updatedStatus = file.is_important;
-      if (updatedStatus !== true) {
-        updatedStatus = true;
-      } else {
-        updatedStatus = false;
-      }
-      const updatedFileData: Partial<FileRecord> = {
-        is_important: updatedStatus,
-        updated_at: new Date().toISOString(),
-      };
-      try {
-        await updateFile({ id: file.id, updatedFile: updatedFileData });
-        setEditStatus(null);
-      } catch (error) {
-        showErrorToast('Failed to update importance.');
-      }
-    },
+  const debouncedMarkImportant = useMemo(
+    () =>
+      debounce(async (file: FileRecord) => {
+        console.log('Received markImportant for file id', file.id);
+        const updatedFile: Partial<FileRecord> = {
+          is_important: file.is_important === 'true' ? 'false' : 'true',
+          updated_at: new Date().toISOString(),
+        };
+        try {
+          await updateFile({ id: file.id, updatedFile });
+          setEditStatus(null);
+        } catch (error) {
+          showErrorToast('Failed to update importance.');
+        }
+      }, 300),
     [updateFile]
+  );
+
+  const handleIsImportandChange = useCallback(
+    (file: FileRecord) => {
+      console.log('handleIsImportandChange called for file id', file.id);
+      debouncedMarkImportant(file);
+    },
+    [debouncedMarkImportant]
   );
 
   const updateFileHandler = useCallback(
@@ -340,9 +349,13 @@ const Home: React.FC = () => {
 
   //Listener for electron context-menu-action
   const handleContextMenuAction = useCallback(
-    (action: string, contextType: string, contextId: number) => {
+    async (action: string, contextType: string, contextId: number) => {
       if (contextType === 'file') {
-        setSelectedFile(files.find((f) => f.id === contextId) || null);
+        console.log(`handleContextMenuAction Received ${action} for file id ${contextId}`);
+        await refetchFiles(); // Ensure files are up to date
+        const targetFile = files.find((f) => f.id === contextId);
+        console.log('files.find got Selected File:', targetFile);
+        if (!targetFile) return;
         switch (action) {
           case 'viewFile': {
             const file = files.find((f) => f.id === contextId);
@@ -356,6 +369,13 @@ const Home: React.FC = () => {
           case 'changeStatus':
             setEditStatus(contextId);
             break;
+
+          case 'changeDiaryDate': {
+            const fileDiaryDate = files.find((f) => f.id === contextId)?.diary_date;
+            setDiaryDate(fileDiaryDate || '');
+            setShowChangeDiaryDate(contextId);
+            break;
+          }
 
           case 'editNote': {
             const fileNote = files.find((f) => f.id === contextId)?.file_note;
@@ -375,10 +395,7 @@ const Home: React.FC = () => {
           }
 
           case 'markImportant': {
-            const file = files.find((f) => f.id === contextId);
-            if (file) {
-              handleIsImportandChange({ ...file });
-            }
+            handleIsImportandChange(targetFile);
             break;
           }
 
@@ -417,12 +434,11 @@ const Home: React.FC = () => {
         return;
       }
     },
-    [files, companies, contacts, fees, handleIsImportandChange]
+    [files, companies, contacts, fees, handleIsImportandChange, refetchFiles]
   );
 
   useEffect(() => {
     window.electronAPI.onContextMenuAction(handleContextMenuAction);
-
     return () => {
       window.electronAPI.offContextMenuAction(handleContextMenuAction);
     };
@@ -463,6 +479,11 @@ const Home: React.FC = () => {
                     setShowAddNote={setShowAddNote}
                     noteText={noteText}
                     setNoteText={setNoteText}
+                    handleIsImportandChange={handleIsImportandChange}
+                    setDiaryDate={setDiaryDate}
+                    diaryDate={diaryDate}
+                    showChangeDiaryDate={showChangeDiaryDate}
+                    setShowChangeDiaryDate={setShowChangeDiaryDate}
                     updateFile={updateFileHandler}
                     getReminderDueClass={getReminderDueClass}
                     getStatusClass={getStatusClass}

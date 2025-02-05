@@ -64,6 +64,7 @@ export const useData = () => {
     data: files = [],
     isLoading: filesLoading,
     error: filesError,
+    refetch: refetchFiles,
   } = useQuery({
     queryKey: ['files'],
     queryFn: async () => {
@@ -142,6 +143,7 @@ export const useData = () => {
     createFile: createFile.mutateAsync,
     updateFile: updateFile.mutateAsync,
     deleteFile: deleteFile.mutateAsync,
+    refetchFiles,
 
     // Fees
     fees,

@@ -41,7 +41,7 @@ export interface FileRecord {
   fee_id: number | null;
   file_note: string;
   diary_date: string;
-  is_important: boolean;
+  is_important: string;
 }
 
 export interface FeeRecord {

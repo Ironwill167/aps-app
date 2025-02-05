@@ -4,6 +4,7 @@ import { useUpdateFee } from '../hooks/UseMutations';
 import { FileRecord, FeeRecord } from '../types';
 import { showErrorToast } from '../utils/toast';
 import EditableCell from './EditableCell';
+import { convertToLocalDate } from '../utils/DateUtils';
 
 const ViewFileModal = lazy(() => import('../Modals/ViewFileModal'));
 const FeeInvoice = lazy(() => import('./FeeInvoice'));
@@ -335,7 +336,7 @@ const FeeManagement: React.FC = () => {
                     feeId={fee.id}
                     editingFee={fee}
                     field="inv_date"
-                    value={fee.inv_date?.split('T')[0]}
+                    value={convertToLocalDate(fee.inv_date || '')}
                     onSave={handleSave}
                   />
                 </td>

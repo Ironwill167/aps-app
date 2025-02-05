@@ -146,7 +146,7 @@ export const updateFile = async (
   file: Partial<FileRecord>
 ): Promise<APIResponse<FileRecord>> => {
   try {
-    const response: AxiosResponse<FileRecord> = await api.put(`/api/files/${id}`, file);
+    const response = await api.put(`/api/files/${id}`, file);
     return { data: response.data };
   } catch (error) {
     return handleError(error);

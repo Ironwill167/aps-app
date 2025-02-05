@@ -175,6 +175,12 @@ function createWindow() {
             },
           },
           {
+            label: 'Diary Date',
+            click: () => {
+              win?.webContents.send('context-menu-action', 'changeDiaryDate', 'file', contextId);
+            },
+          },
+          {
             label: 'Edit Note',
             click: () => {
               win?.webContents.send('context-menu-action', 'editNote', 'file', contextId);

@@ -159,19 +159,18 @@ export const useCreateFile = () => {
   });
 };
 
+export interface UpdateFileParams {
+  id: number;
+  updatedFile: Partial<FileRecord>;
+}
+
 export const useUpdateFile = () => {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
+
   return useMutation({
-    mutationFn: async ({
-      id,
-      updatedFile,
-    }: {
-      id: number;
-      updatedFile: Partial<FileRecord>;
-    }) => {
-      const res = await updateFile(id, updatedFile);
-      return res.data; // FileRecord
+    mutationFn: async ({ id, updatedFile }: UpdateFileParams) => {
+      return await updateFile(id, updatedFile);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['files'] });

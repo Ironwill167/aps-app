@@ -1,6 +1,7 @@
 import React from 'react';
 import { FileRecord, FeeRecord } from '../types';
 import { showErrorToast } from '../utils/toast';
+import { convertToLocalDate } from '../utils/DateUtils';
 
 interface FileItemProps {
   file: FileRecord;
@@ -13,6 +14,11 @@ interface FileItemProps {
   setShowAddNote: (id: number | null) => void;
   noteText: string | '';
   setNoteText: (text: string) => void;
+  handleIsImportandChange: (file: FileRecord) => void;
+  setDiaryDate: (date: string) => void;
+  diaryDate: string;
+  showChangeDiaryDate: number | null;
+  setShowChangeDiaryDate: (id: number | null) => void;
   updateFile: (file: Partial<FileRecord>) => Promise<void>;
   getReminderDueClass: (file: FileRecord) => string;
   getStatusClass: (file: FileRecord) => string;
@@ -34,6 +40,9 @@ const FileItem: React.FC<FileItemProps> = React.memo(
     setShowAddNote,
     noteText,
     setNoteText,
+    showChangeDiaryDate,
+    diaryDate,
+    setShowChangeDiaryDate,
     updateFile,
     getReminderDueClass,
     getStatusClass,
@@ -89,6 +98,22 @@ const FileItem: React.FC<FileItemProps> = React.memo(
 
     const handleCancelNote = () => {
       setShowAddNote(null);
+    };
+
+    const handleDiaryDateChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const newDate = e.target.value;
+      const updatedFile: Partial<FileRecord> = {
+        id: file.id,
+        diary_date: newDate,
+        updated_at: new Date().toISOString(),
+      };
+      console.log(`handleDiaryDateChange: ${newDate}, ${updatedFile.diary_date}`);
+      try {
+        await updateFile(updatedFile);
+        setShowChangeDiaryDate(null);
+      } catch (error) {
+        showErrorToast('Failed to update diary date.');
+      }
     };
 
     return (
@@ -150,7 +175,21 @@ const FileItem: React.FC<FileItemProps> = React.memo(
         <div className="vertSeperator"></div>
         <div className="PrincipalRefColumn">{file.principal_ref}</div>
         <div className="vertSeperator"></div>
-        <div className="DateUpdatedColumn">{file.updated_at?.split('T')[0]}</div>
+        <div className="DiaryDateColumn">
+          {showChangeDiaryDate === file.id ? (
+            <input
+              type="date"
+              value={diaryDate}
+              onChange={handleDiaryDateChange}
+              onBlur={() => setShowChangeDiaryDate(null)}
+              autoFocus
+            />
+          ) : (
+            <span onDoubleClick={() => setShowChangeDiaryDate(file.id)}>
+              {convertToLocalDate(file.diary_date || '')}
+            </span>
+          )}
+        </div>
         <div className="vertSeperator"></div>
         <div className="FileNoteColumn">
           {showAddNote === file.id ? (
