@@ -3,6 +3,7 @@ import Select from 'react-select';
 import { FileRecord, Company, Contact } from '../types';
 import { useUpdateFile } from '../hooks/UseMutations';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
+import { useData } from '../hooks/UseData';
 
 const AddContactModal = lazy(() => import('./AddContactModal'));
 const AddCompanyModal = lazy(() => import('./AddCompanyModal'));
@@ -22,6 +23,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
   companies,
   contacts,
 }) => {
+  const { causesOfLoss: cause_of_loss_data } = useData();
   const updateFileMutation = useUpdateFile();
   const [formData, setFormData] = useState<FileRecord>({ ...file });
 
@@ -49,7 +51,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: string, selectedOption: any) => {
+  interface Option {
+    value: string | number;
+    label: string;
+  }
+
+  const handleSelectChange = (name: string, selectedOption: Option | null) => {
     setFormData((prev) => ({
       ...prev,
       [name]: selectedOption ? selectedOption.value : null,
@@ -62,7 +69,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
       setFormData((prev) => ({ ...prev, [currentField!]: company.id }));
       setCurrentField(null);
     },
-    [currentField]
+    [currentField, companies]
   );
 
   const handleContactAddedLocal = useCallback(
@@ -183,7 +190,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                     value={formData.status || ''}
                     onChange={(event) => {
                       const selectedValue = event.target.value;
-                      handleSelectChange('status', { value: selectedValue });
+                      handleSelectChange('status', { value: selectedValue, label: selectedValue });
                     }}
                   >
                     <option value="">Select a status...</option>
@@ -209,7 +216,8 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       placeholder="Select a company..."
                       isSearchable
                       value={
-                        companyOptions.find((option) => option.value === formData.insured_id) || 1
+                        companyOptions.find((option) => option.value === formData.insured_id) ||
+                        null
                       }
                       required
                     />
@@ -269,7 +277,8 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       placeholder="Select a principal..."
                       isSearchable
                       value={
-                        companyOptions.find((option) => option.value === formData.principal_id) || 1
+                        companyOptions.find((option) => option.value === formData.principal_id) ||
+                        null
                       }
                     />
                     <button
@@ -328,7 +337,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       placeholder="Select a broker..."
                       isSearchable
                       value={
-                        companyOptions.find((option) => option.value === formData.broker_id) || 1
+                        companyOptions.find((option) => option.value === formData.broker_id) || null
                       }
                     />
                     <button
@@ -401,6 +410,47 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                     value={formData.date_of_loss ? formData.date_of_loss.substring(0, 10) : ''}
                     onChange={handleChange}
                   />
+                </div>
+              </div>
+
+              {/* Cause of Loss */}
+              <div className="modal-row">
+                <div className="modal-form-group">
+                  <label htmlFor="cause_of_loss">Cause of Loss</label>
+                  <select
+                    id="cause_of_loss"
+                    value={formData.cause_of_loss_id ? String(formData.cause_of_loss_id) : ''}
+                    onChange={(event) => {
+                      const selectedValue = event.target.value;
+                      handleSelectChange(
+                        'cause_of_loss_id',
+                        selectedValue
+                          ? {
+                              value: Number(selectedValue),
+                              label:
+                                cause_of_loss_data.find((cl) => cl.id === Number(selectedValue))
+                                  ?.col_name || '',
+                            }
+                          : null
+                      );
+                    }}
+                  >
+                    <option value="">Select a cause of loss...</option>
+                    {cause_of_loss_data.map(
+                      (option) => (
+                        console.log(`Cause of Loss: ${option.id} ${option.col_name}`),
+                        (
+                          <option key={option.id} value={option.id}>
+                            {option.col_name}
+                          </option>
+                        )
+                      )
+                    )}
+                  </select>
+                </div>
+                <div className="modal-form-group">
+                  <label htmlFor="estimate_of_loss">Estimate of Loss</label>
+                  <input id="estimate_of_loss" className="inputMedium" />
                 </div>
               </div>
 

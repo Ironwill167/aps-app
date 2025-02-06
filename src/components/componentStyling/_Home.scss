@@ -86,12 +86,15 @@
 }
 
 .FileNumberColumn {
-  width: 3.5vw;
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 3vw;
+  font-size: medium;
   font-weight: bold;
 }
 
 .StatusColumn {
-  width: 4.5vw;
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 4vw;
   font-weight: bold;
   overflow: visible;
 }
@@ -105,9 +108,8 @@
 }
 
 .InsuredColumn,
-.PrincipalColumn,
-.BrokerColumn {
-  width: 11vw;
+.PrincipalColumn {
+  width: 10vw;
   font-weight: normal;
 }
 
@@ -120,18 +122,27 @@
 }
 
 .DiaryDateColumn {
-  width: 5vw;
+  @include display-flex($direction: row, $align: flex-start, $justify: center);
+  width: 5.7vw;
   font-weight: normal;
+
+  input {
+    width: 4.5vw;
+    height: 3vh;
+    font-size: 0.6vi;
+    border-radius: 4px;
+  }
 }
 
 .FileNoteColumn {
-  width: 10vw;
+  width: 13vw;
   font-weight: normal;
 }
 
 .TotalFeeColumn {
-  width: 5vw;
+  width: 4.5vw;
   font-weight: normal;
+  text-align: right;
 }
 .AddNoteContainer {
   @include display-flex($direction: row, $align: center, $justify: flex-start);
@@ -226,7 +237,7 @@
 .fileDetailsRow {
   @include display-flex($direction: row, $align: center, $justify: center);
   width: 100%;
-  padding-top: 0.5rem;
+  padding-top: 0.2rem;
   font-size: $small;
 }
 /*.fileDetailsLeftItem{

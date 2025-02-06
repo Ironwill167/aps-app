@@ -19,7 +19,7 @@ const Header: React.FC<HeaderProps> = React.memo(({ onStatusSort, sortOrder }) =
     <div className="PrincipalColumn actionHeading">Principal</div>
     <div className="PrincipalContactColumn actionHeading">Principal Contact</div>
     <div className="PrincipalRefColumn actionHeading">Principal Ref</div>
-    <div className="DateUpdatedColumn actionHeading">Diary Date</div>
+    <div className="DiaryDateColumn actionHeading">Diary Date</div>
     <div className="FileNoteColumn actionHeading">File Note</div>
     <div className="TotalFeeColumn actionHeading">Total Fee</div>
   </div>

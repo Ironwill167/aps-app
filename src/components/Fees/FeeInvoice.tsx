@@ -4,6 +4,7 @@ import { useUpdateFile, useUpdateFee } from '../hooks/UseMutations';
 import { useData } from '../hooks/UseData';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
 import FeeInvoicePrint from './FeeInvoicePrint';
+import { validateAndParseNumber, handleNumberInputKeyDown } from '../utils/NumberUtils';
 
 const currencyOptions = [
   { value: 'USD', label: 'USD' },
@@ -34,6 +35,30 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
     initialFeeDetails.total_fee?.toString() || '0'
   );
   const [isValidTotalFee, setIsValidTotalFee] = useState<boolean>(true);
+
+  const [surveyTimeInput, setSurveyTimeInput] = useState<string>(
+    feeDetails.survey_time?.toString() || '0'
+  );
+
+  const [reportTimeInput, setReportTimeInput] = useState<string>(
+    feeDetails.report_time?.toString() || '0'
+  );
+
+  const [handlingTimeInput, setHandlingTimeInput] = useState<string>(
+    feeDetails.handling_time?.toString() || '0'
+  );
+
+  const [travelTimeInput, setTravelTimeInput] = useState<string>(
+    feeDetails.travel_time?.toString() || '0'
+  );
+
+  const [travelKmInput, setTravelKmInput] = useState<string>(
+    feeDetails.travel_km?.toString() || '0'
+  );
+
+  const [sundriesInput, setSundriesInput] = useState<string>(
+    feeDetails.sundries_amount?.toString() || '0'
+  );
 
   const updateFileMutation = useUpdateFile();
   const updateFeeMutation = useUpdateFee();
@@ -111,6 +136,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
         if (
           key === 'handling_time' ||
           key === 'survey_time' ||
+          key === 'report_time' ||
           key === 'travel_time' ||
           key === 'travel_km' ||
           key === 'sundries_amount'
@@ -140,12 +166,15 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
 
         // Recalculate total if not manual
         if (!updated.is_manual_total_fee) {
-          const handlingCalc = updated.handling_time * rates.adminHourlyRate;
-          const surveyCalc = Number(updated.survey_time) * rates.surveyHourlyRate;
-          const travelCalc = Number(updated.travel_time) * rates.travelHourlyRate;
-          const travelKmCalc = Number(updated.travel_km) * rates.travelKmRate;
-          const sundriesCalc = Number(updated.sundries_amount);
-          updated.total_fee = handlingCalc + surveyCalc + travelCalc + travelKmCalc + sundriesCalc;
+          const handlingCalc = (Number(updated.handling_time) || 0) * (rates.adminHourlyRate || 0);
+          const surveyCalc = (Number(updated.survey_time) || 0) * (rates.surveyHourlyRate || 0);
+          const reportCalc = (Number(updated.report_time) || 0) * (rates.reportHourlyRate || 0);
+          const travelCalc = (Number(updated.travel_time) || 0) * (rates.travelHourlyRate || 0);
+          const travelKmCalc = (Number(updated.travel_km) || 0) * (rates.travelKmRate || 0);
+          const sundriesCalc = Number(updated.sundries_amount) || 0;
+          const total =
+            handlingCalc + surveyCalc + reportCalc + travelCalc + travelKmCalc + sundriesCalc;
+          updated.total_fee = parseFloat(total.toFixed(2));
         }
 
         return updated;
@@ -164,7 +193,13 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
         }
       }
     },
-    [rates.adminHourlyRate, rates.surveyHourlyRate, rates.travelHourlyRate, rates.travelKmRate]
+    [
+      rates.adminHourlyRate,
+      rates.surveyHourlyRate,
+      rates.reportHourlyRate,
+      rates.travelHourlyRate,
+      rates.travelKmRate,
+    ]
   );
 
   useEffect(() => {
@@ -308,47 +343,91 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="handlingTime">Handling Time</label>
                 <input
-                  type="number"
+                  type="text"
                   name="handlingTime"
-                  step={0.1}
-                  value={feeDetails.handling_time ?? 0}
-                  onChange={(e) => handleFeeChange('handling_time', e.target.value)}
+                  inputMode="decimal"
+                  value={handlingTimeInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setHandlingTimeInput(value);
+                    handleFeeChange('handling_time', validateAndParseNumber(value));
+                  }}
                 />
               </div>
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="surveyTime">Survey Time</label>
                 <input
-                  type="number"
+                  type="text"
                   name="surveyTime"
-                  value={feeDetails.survey_time ?? 0}
-                  onChange={(e) => handleFeeChange('survey_time', e.target.value)}
+                  inputMode="decimal"
+                  value={surveyTimeInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSurveyTimeInput(value);
+                    handleFeeChange('survey_time', validateAndParseNumber(value));
+                  }}
+                />
+              </div>
+              <div className="invoiceActionQuantityRow">
+                <label htmlFor="reportTime">Report Time</label>
+                <input
+                  type="text"
+                  name="reportTime"
+                  inputMode="decimal"
+                  value={reportTimeInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setReportTimeInput(value);
+                    handleFeeChange('report_time', validateAndParseNumber(value));
+                  }}
                 />
               </div>
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="travelTime">Travel Time</label>
                 <input
-                  type="number"
+                  type="text"
                   name="travelTime"
-                  value={feeDetails.travel_time ?? 0}
-                  onChange={(e) => handleFeeChange('travel_time', e.target.value)}
+                  inputMode="decimal"
+                  value={travelTimeInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setTravelTimeInput(value);
+                    handleFeeChange('travel_time', validateAndParseNumber(value));
+                  }}
                 />
               </div>
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="travelKm">Travel Km</label>
                 <input
-                  type="number"
+                  type="text"
                   name="travelKm"
-                  value={feeDetails.travel_km ?? 0}
-                  onChange={(e) => handleFeeChange('travel_km', e.target.value)}
+                  inputMode="decimal"
+                  value={travelKmInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setTravelKmInput(value);
+                    handleFeeChange('travel_km', validateAndParseNumber(value));
+                  }}
                 />
               </div>
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="sunDries">Sundries</label>
                 <input
-                  type="number"
+                  type="text"
                   name="sunDries"
-                  value={feeDetails.sundries_amount ?? 0}
-                  onChange={(e) => handleFeeChange('sundries_amount', e.target.value)}
+                  inputMode="decimal"
+                  value={sundriesInput}
+                  onKeyDown={handleNumberInputKeyDown}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSundriesInput(value);
+                    handleFeeChange('sundries_amount', validateAndParseNumber(value));
+                  }}
                 />
               </div>
             </div>

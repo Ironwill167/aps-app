@@ -14,11 +14,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
   feeDetails,
   onRenderComplete,
 }) => {
-  const { companies } = useData();
-  const adminHourlyRate = 390;
-  const surveyHourlyRate = 780;
-  const travelHourlyRate = 390;
-  const travelKmRate = 4.75;
+  const { companies, rates, ratesError, ratesLoading } = useData();
 
   const getCompany = useCallback(
     (companyId: number | null): Company | undefined => {
@@ -99,6 +95,14 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
     return (time * rate).toFixed(2);
   };
 
+  if (ratesLoading) {
+    return <div>Loading rates...</div>;
+  }
+
+  if (ratesError) {
+    return <div>Error loading rates: {ratesError.message}</div>;
+  }
+
   return (
     <div className="invoice-container" onClick={(e) => e.stopPropagation()}>
       <div className="invoice-inner-container">
@@ -176,25 +180,40 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
               <p>{feeDetails.handling_time}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
-              <p>{adminHourlyRate}</p>
+              <p>{rates.adminHourlyRate}</p>
             </div>
             <div className="invoiceFeeChargesDetailsAmountCell">
-              <p>{calcTimeXRate(feeDetails.handling_time, adminHourlyRate)}</p>
+              <p>{calcTimeXRate(feeDetails.handling_time, rates.adminHourlyRate)}</p>
             </div>
           </div>
           {/* Survey Time */}
           <div className="invoiceFeeChargesDetailsRow">
             <div className="invoiceFeeChargesDetailsDiscCell">
-              <p>Survey Time</p>
+              <p>Survey and Investigation Time</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
               <p>{feeDetails.survey_time}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
-              <p>{surveyHourlyRate}</p>
+              <p>{rates.surveyHourlyRate}</p>
             </div>
             <div className="invoiceFeeChargesDetailsAmountCell">
-              <p>{calcTimeXRate(feeDetails.survey_time, surveyHourlyRate)}</p>
+              <p>{calcTimeXRate(feeDetails.survey_time, rates.surveyHourlyRate)}</p>
+            </div>
+          </div>
+          {/* Report Time */}
+          <div className="invoiceFeeChargesDetailsRow">
+            <div className="invoiceFeeChargesDetailsDiscCell">
+              <p>Report Time</p>
+            </div>
+            <div className="invoiceFeeChargesDetailsCell">
+              <p>{feeDetails.report_time}</p>
+            </div>
+            <div className="invoiceFeeChargesDetailsCell">
+              <p>{rates.reportHourlyRate}</p>
+            </div>
+            <div className="invoiceFeeChargesDetailsAmountCell">
+              <p>{calcTimeXRate(feeDetails.report_time, rates.reportHourlyRate)}</p>
             </div>
           </div>
           {/* Travel Time */}
@@ -206,10 +225,10 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
               <p>{feeDetails.travel_time}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
-              <p>{travelHourlyRate}</p>
+              <p>{rates.travelHourlyRate}</p>
             </div>
             <div className="invoiceFeeChargesDetailsAmountCell">
-              <p>{calcTimeXRate(feeDetails.travel_time, travelHourlyRate)}</p>
+              <p>{calcTimeXRate(feeDetails.travel_time, rates.travelHourlyRate)}</p>
             </div>
           </div>
           <div className="invoiceFeeChargesDetailsRow">
@@ -220,10 +239,10 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
               <p>{feeDetails.travel_km}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
-              <p>{travelKmRate}</p>
+              <p>{rates.travelKmRate}</p>
             </div>
             <div className="invoiceFeeChargesDetailsAmountCell">
-              <p>{calcTimeXRate(feeDetails.travel_km, travelKmRate)}</p>
+              <p>{calcTimeXRate(feeDetails.travel_km, rates.travelKmRate)}</p>
             </div>
           </div>
           {/* Sundries */}

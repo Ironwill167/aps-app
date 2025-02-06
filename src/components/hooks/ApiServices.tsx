@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import { BaseUrl } from '../config';
-import { Company, Contact, FileRecord, FeeRecord, Rates } from '../types';
+import { Company, Contact, FileRecord, CauseOfLoss, FeeRecord, Rates } from '../types';
 
 interface APIResponse<T> {
   data: T;
@@ -158,6 +158,52 @@ export const deleteFile = async (id: number): Promise<APIResponse<string>> => {
   try {
     await api.delete(`/api/files/${id}`);
     return { data: `File deleted with ID: ${id}` };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// -------------------- Causes of Loss API --------------------
+// Fetch all causes of loss
+export const fetchCausesOfLoss = async (): Promise<APIResponse<CauseOfLoss[]>> => {
+  try {
+    const response = await api.get('/api/cause_of_loss');
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add a new cause of loss
+export const addCauseOfLoss = async (
+  cause: Partial<CauseOfLoss>
+): Promise<APIResponse<CauseOfLoss>> => {
+  try {
+    const response = await api.post('/api/cause-of-loss', cause);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update an existing cause of loss
+export const updateCauseOfLoss = async (
+  id: number,
+  cause: Partial<CauseOfLoss>
+): Promise<APIResponse<CauseOfLoss>> => {
+  try {
+    const response = await api.put(`/api/cause-of-loss/${id}`, cause);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete a cause of loss
+export const deleteCauseOfLoss = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/cause-of-loss/${id}`);
+    return { data: `Cause of loss deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
   }

@@ -42,6 +42,15 @@ export interface FileRecord {
   file_note: string;
   diary_date: string;
   is_important: string;
+  cause_of_loss_id: number | null;
+  estimate_of_loss: number;
+  preliminary_findings: string;
+}
+
+export interface CauseOfLoss {
+  id: number;
+  col_name: string;
+  col_description: string;
 }
 
 export interface FeeRecord {
@@ -68,6 +77,7 @@ export interface FeeRecord {
 
 export interface Rates {
   surveyHourlyRate: number;
+  reportHourlyRate: number;
   adminHourlyRate: number;
   travelHourlyRate: number;
   travelKmRate: number;

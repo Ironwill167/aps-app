@@ -10,11 +10,14 @@ import {
   updateFile,
   deleteFile,
   createFile,
+  addCauseOfLoss,
+  updateCauseOfLoss,
+  deleteCauseOfLoss,
   addFee,
   updateFee,
   deleteFee,
 } from './ApiServices';
-import { Contact, Company, FileRecord, FeeRecord } from '../types';
+import { Contact, Company, FileRecord, CauseOfLoss, FeeRecord } from '../types';
 
 /* -------------------- Contacts -------------------- */
 export const useAddContact = () => {
@@ -196,6 +199,71 @@ export const useDeleteFile = () => {
     },
     onError: (error: Error) => {
       console.error('Delete File Error:', error);
+    },
+  });
+};
+
+/* -------------------- Causes of Loss -------------------- */
+export const useFetchCausesOfLoss = () => {
+  // Optional: Implement if you need specific hooks for fetching causes of loss
+};
+
+export const useAddCauseOfLoss = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (causeOfLoss: Partial<CauseOfLoss>) => {
+      const res = await addCauseOfLoss(causeOfLoss);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['causesOfLoss'] });
+      socket?.emit('dataChanged', { type: 'causesOfLoss' });
+    },
+    onError: (error: Error) => {
+      console.error('Add Cause of Loss Error:', error);
+    },
+  });
+};
+
+export const useUpdateCauseOfLoss = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updatedCauseOfLoss,
+    }: {
+      id: number;
+      updatedCauseOfLoss: Partial<CauseOfLoss>;
+    }) => {
+      const res = await updateCauseOfLoss(id, updatedCauseOfLoss);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['causesOfLoss'] });
+      socket?.emit('dataChanged', { type: 'causesOfLoss' });
+    },
+    onError: (error: Error) => {
+      console.error('Update Cause of Loss Error:', error);
+    },
+  });
+};
+
+export const useDeleteCauseOfLoss = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteCauseOfLoss(id);
+      return res.data; // string
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['causesOfLoss'] });
+      socket?.emit('dataChanged', { type: 'causesOfLoss' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete Cause of Loss Error:', error);
     },
   });
 };

@@ -1,5 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
-import { fetchContacts, fetchCompanies, fetchFiles, fetchFees, fetchRates } from './ApiServices';
+import {
+  fetchContacts,
+  fetchCompanies,
+  fetchFiles,
+  fetchCausesOfLoss,
+  fetchFees,
+  fetchRates,
+} from './ApiServices';
 import {
   useAddContact,
   useUpdateContact,
@@ -10,6 +17,9 @@ import {
   useCreateFile,
   useUpdateFile,
   useDeleteFile,
+  useAddCauseOfLoss,
+  useUpdateCauseOfLoss,
+  useDeleteCauseOfLoss,
   useAddFee,
   useUpdateFee,
   useDeleteFee,
@@ -80,6 +90,26 @@ export const useData = () => {
   const updateFile = useUpdateFile();
   const deleteFile = useDeleteFile();
 
+  /* -------------------- Causes of Loss -------------------- */
+  const {
+    data: causesOfLoss = [],
+    isLoading: causesOfLossLoading,
+    error: causesOfLossError,
+  } = useQuery({
+    queryKey: ['causesOfLoss'],
+    queryFn: async () => {
+      const res = await fetchCausesOfLoss();
+      return res.data; // CauseOfLoss[]
+    },
+    initialData: [],
+    refetchInterval,
+  });
+
+  // Mutations
+  const addCauseOfLoss = useAddCauseOfLoss();
+  const updateCauseOfLoss = useUpdateCauseOfLoss();
+  const deleteCauseOfLoss = useDeleteCauseOfLoss();
+
   /* -------------------- Fees -------------------- */
   const {
     data: fees = [],
@@ -113,6 +143,7 @@ export const useData = () => {
     },
     initialData: {
       surveyHourlyRate: 0,
+      reportHourlyRate: 0,
       adminHourlyRate: 0,
       travelHourlyRate: 0,
       travelKmRate: 0,
@@ -144,6 +175,14 @@ export const useData = () => {
     updateFile: updateFile.mutateAsync,
     deleteFile: deleteFile.mutateAsync,
     refetchFiles,
+
+    // Causes of Loss
+    causesOfLoss,
+    causesOfLossLoading,
+    causesOfLossError,
+    addCauseOfLoss: addCauseOfLoss.mutateAsync,
+    updateCauseOfLoss: updateCauseOfLoss.mutateAsync,
+    deleteCauseOfLoss: deleteCauseOfLoss.mutateAsync,
 
     // Fees
     fees,
