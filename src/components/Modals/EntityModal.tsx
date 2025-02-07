@@ -9,7 +9,7 @@ interface EntityModalProps {
   mode: 'add' | 'edit';
   entity: 'contact' | 'company';
   initialData?: Partial<Contact> | Partial<Company>;
-  onSave: (data: Partial<Contact> | Partial<Company>) => Promise<any>;
+  onSave: (data: Partial<Contact> | Partial<Company>) => Promise<Contact | Company>;
   onClose: () => void;
   onEntityUpdated: (updatedEntity: Contact | Company) => void;
   companies?: Company[]; // For contact's company selection
@@ -48,7 +48,12 @@ const EntityModal: React.FC<EntityModalProps> = ({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: string, selectedOption: any) => {
+  interface SelectOption {
+    value: number;
+    label: string;
+  }
+
+  const handleSelectChange = (name: string, selectedOption: SelectOption | null) => {
     setFormData((prev) => ({ ...prev, [name]: selectedOption ? selectedOption.value : null }));
   };
 
@@ -190,7 +195,9 @@ const EntityModal: React.FC<EntityModalProps> = ({
                             value: company.id,
                             label: company.name,
                           }))}
-                          onChange={(option) => handleSelectChange('company_id', option)}
+                          onChange={(option) =>
+                            handleSelectChange('company_id', option as SelectOption | null)
+                          }
                           placeholder="Select Company"
                           isClearable
                           isSearchable

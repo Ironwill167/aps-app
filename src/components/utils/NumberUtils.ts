@@ -37,7 +37,9 @@ export const parseNumber = (input: string): number => {
  * Formats a number to a string with a fixed number of decimals.
  * Default is 2 decimals.
  */
-export const formatNumber = (numberVal: number, decimals = 2): string => {
+export const formatNumber = (input: unknown, decimals = 2): string => {
+  const numberVal = Number(input);
+  if (isNaN(numberVal)) return '';
   return numberVal.toFixed(decimals);
 };
 
@@ -65,6 +67,10 @@ export const isAllowedKey = (key: string): boolean => {
     'End',
     'Enter',
     'Escape',
+    'Control',
+    'Shift',
+    'Alt',
+    'Meta',
   ];
   return allowedKeys.includes(key) || /\d/.test(key) || key === '.' || key === ',';
 };

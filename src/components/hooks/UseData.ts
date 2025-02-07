@@ -4,6 +4,7 @@ import {
   fetchCompanies,
   fetchFiles,
   fetchCausesOfLoss,
+  fetchAdditionalParties,
   fetchFees,
   fetchRates,
 } from './ApiServices';
@@ -20,6 +21,9 @@ import {
   useAddCauseOfLoss,
   useUpdateCauseOfLoss,
   useDeleteCauseOfLoss,
+  useAddAdditionalParty,
+  useUpdateAdditionalParty,
+  useDeleteAdditionalParty,
   useAddFee,
   useUpdateFee,
   useDeleteFee,
@@ -110,6 +114,26 @@ export const useData = () => {
   const updateCauseOfLoss = useUpdateCauseOfLoss();
   const deleteCauseOfLoss = useDeleteCauseOfLoss();
 
+  /* -------------------- Additional Parties -------------------- */
+  const {
+    data: additionalParties = [],
+    isLoading: additionalPartiesLoading,
+    error: additionalPartiesError,
+  } = useQuery({
+    queryKey: ['additionalParties'],
+    queryFn: async () => {
+      const res = await fetchAdditionalParties();
+      return res.data; // AdditionalParty[]
+    },
+    initialData: [],
+    refetchInterval,
+  });
+
+  // Mutations
+  const addAdditionalParty = useAddAdditionalParty();
+  const updateAdditionalParty = useUpdateAdditionalParty();
+  const deleteAdditionalParty = useDeleteAdditionalParty();
+
   /* -------------------- Fees -------------------- */
   const {
     data: fees = [],
@@ -149,7 +173,6 @@ export const useData = () => {
       travelKmRate: 0,
     },
   });
-
   return {
     // Contacts
     contacts,
@@ -183,6 +206,14 @@ export const useData = () => {
     addCauseOfLoss: addCauseOfLoss.mutateAsync,
     updateCauseOfLoss: updateCauseOfLoss.mutateAsync,
     deleteCauseOfLoss: deleteCauseOfLoss.mutateAsync,
+
+    // Additional Parties
+    additionalParties,
+    additionalPartiesLoading,
+    additionalPartiesError,
+    addAdditionalParty: addAdditionalParty.mutateAsync,
+    updateAdditionalParty: updateAdditionalParty.mutateAsync,
+    deleteAdditionalParty: deleteAdditionalParty.mutateAsync,
 
     // Fees
     fees,

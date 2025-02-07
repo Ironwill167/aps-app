@@ -11,13 +11,16 @@ import {
   deleteFile,
   createFile,
   addCauseOfLoss,
+  addAdditionalParty,
+  updateAdditionalParty,
+  deleteAdditionalParty,
   updateCauseOfLoss,
   deleteCauseOfLoss,
   addFee,
   updateFee,
   deleteFee,
 } from './ApiServices';
-import { Contact, Company, FileRecord, CauseOfLoss, FeeRecord } from '../types';
+import { Contact, Company, FileRecord, CauseOfLoss, AdditionalParty, FeeRecord } from '../types';
 
 /* -------------------- Contacts -------------------- */
 export const useAddContact = () => {
@@ -264,6 +267,67 @@ export const useDeleteCauseOfLoss = () => {
     },
     onError: (error: Error) => {
       console.error('Delete Cause of Loss Error:', error);
+    },
+  });
+};
+
+/* -------------------- Additional Parties -------------------- */
+export const useAddAdditionalParty = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (file_id: number) => {
+      const res = await addAdditionalParty(file_id);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['additionalParties'] });
+      socket?.emit('dataChanged', { type: 'additionalParties' });
+    },
+    onError: (error: Error) => {
+      console.error('Add Additional Party Error:', error);
+    },
+  });
+};
+
+export const useUpdateAdditionalParty = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updatedAdditionalParty,
+    }: {
+      id: number;
+      updatedAdditionalParty: Partial<AdditionalParty>;
+    }) => {
+      const res = await updateAdditionalParty(id, updatedAdditionalParty);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['additionalParties'] });
+      socket?.emit('dataChanged', { type: 'additionalParties' });
+    },
+    onError: (error: Error) => {
+      console.error('Update Additional Party Error:', error);
+    },
+  });
+};
+
+export const useDeleteAdditionalParty = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteAdditionalParty(id);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['additionalParties'] });
+      socket?.emit('dataChanged', { type: 'additionalParties' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete Additional Party Error:', error);
     },
   });
 };

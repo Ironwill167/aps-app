@@ -13,13 +13,15 @@ interface AddContactModalProps {
 const AddContactModal: React.FC<AddContactModalProps> = ({ onClose, companies }) => {
   const addContactMutation = useAddContact();
 
-  const handleSave = async (data: Partial<Contact>) => {
+  const handleSave = async (data: Partial<Contact>): Promise<Contact> => {
     try {
       const newContact = await addContactMutation.mutateAsync(data);
       console.log('New Contact:', newContact);
+      return newContact;
     } catch (error) {
       console.error('Add Contact Error:', error);
       showErrorToast('Failed to add contact');
+      throw error;
     }
   };
 

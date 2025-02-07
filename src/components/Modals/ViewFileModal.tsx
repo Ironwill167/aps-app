@@ -3,7 +3,15 @@ import Select from 'react-select';
 import { FileRecord, Company, Contact } from '../types';
 import { useUpdateFile } from '../hooks/UseMutations';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
+import { convertToLocalDate } from '../utils/DateUtils';
+import {
+  handleNumberInputKeyDown,
+  validateAndParseNumber,
+  formatNumber,
+} from '../utils/NumberUtils';
 import { useData } from '../hooks/UseData';
+import CurrencySelect from '../Shared/CurrencySelect';
+import AdditionalPartyDisplay from '../Reporting/AdditionalPartyDisplay';
 
 const AddContactModal = lazy(() => import('./AddContactModal'));
 const AddCompanyModal = lazy(() => import('./AddCompanyModal'));
@@ -23,9 +31,33 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
   companies,
   contacts,
 }) => {
-  const { causesOfLoss: cause_of_loss_data } = useData();
+  const {
+    causesOfLoss: cause_of_loss_data,
+    additionalParties,
+    addAdditionalParty,
+    updateAdditionalParty,
+    deleteAdditionalParty,
+  } = useData();
   const updateFileMutation = useUpdateFile();
   const [formData, setFormData] = useState<FileRecord>({ ...file });
+  const [estimateLossInput, setEstimateLossInput] = useState<string>(
+    formatNumber(file.estimate_of_loss)
+  );
+
+  const [showAdditionalParties, setShowAdditionalParties] = useState(false);
+
+  const fetchRelevantAdditionalParties = useCallback(() => {
+    let relevantAdditionalParties = [];
+    if (formData.id) {
+      relevantAdditionalParties = additionalParties.filter((ap) => ap.file_id === formData.id);
+    }
+
+    setShowAdditionalParties(relevantAdditionalParties.length > 0);
+  }, [additionalParties, formData.id]);
+
+  useEffect(() => {
+    fetchRelevantAdditionalParties();
+  }, [additionalParties, fetchRelevantAdditionalParties]);
 
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
@@ -135,6 +167,17 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     }
   };
 
+  const handleAddAdditionalParty = async () => {
+    if (formData.id) {
+      try {
+        await addAdditionalParty(formData.id);
+        fetchRelevantAdditionalParties();
+      } catch (error) {
+        console.error('Add Additional Party Error:', error);
+      }
+    }
+  };
+
   const openAddCompanyModal = (field: string) => {
     setCurrentField(field);
     setShowAddCompanyModal(true);
@@ -145,11 +188,16 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     setShowAddContactModal(true);
   };
 
+  const handleEstimateBlur = () => {
+    // Convert the raw input to a number.
+    const parsed = validateAndParseNumber(estimateLossInput);
+    setFormData((prev) => ({ ...prev, estimate_of_loss: parsed }));
+  };
+
   return (
     <>
       <div
         className="modal"
-        onClick={onClose}
         role="dialog"
         aria-modal="true"
         aria-labelledby="view-file-modal-title"
@@ -407,7 +455,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                     className="inputMedium"
                     type="date"
                     name="date_of_loss"
-                    value={formData.date_of_loss ? formData.date_of_loss.substring(0, 10) : ''}
+                    value={formData.date_of_loss ? convertToLocalDate(formData.date_of_loss) : ''}
                     onChange={handleChange}
                   />
                 </div>
@@ -436,21 +484,34 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                     }}
                   >
                     <option value="">Select a cause of loss...</option>
-                    {cause_of_loss_data.map(
-                      (option) => (
-                        console.log(`Cause of Loss: ${option.id} ${option.col_name}`),
-                        (
-                          <option key={option.id} value={option.id}>
-                            {option.col_name}
-                          </option>
-                        )
-                      )
-                    )}
+                    {cause_of_loss_data.map((option) => (
+                      <option key={option.id} value={option.id}>
+                        {option.col_name}
+                      </option>
+                    ))}
                   </select>
                 </div>
+
+                {/* Estimate of Loss */}
                 <div className="modal-form-group">
                   <label htmlFor="estimate_of_loss">Estimate of Loss</label>
-                  <input id="estimate_of_loss" className="inputMedium" />
+                  <CurrencySelect
+                    value={formData.claim_currency || 'ZAR'}
+                    selectClassName="currencySelectViewFile"
+                    onChange={(value) =>
+                      setFormData((prev) => ({ ...prev, claim_currency: value }))
+                    }
+                  />
+                  <input
+                    type="text"
+                    className="inputMedium"
+                    value={estimateLossInput}
+                    onKeyDown={handleNumberInputKeyDown}
+                    onChange={(e) => {
+                      setEstimateLossInput(e.target.value);
+                    }}
+                    onBlur={handleEstimateBlur}
+                  />
                 </div>
               </div>
 
@@ -458,10 +519,62 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
               <div className="modal-row">
                 <div className="modal-form-group">
                   <label htmlFor="subject_matter">Subject Matter</label>
-                  <textarea
+                  <input
+                    type="text"
+                    className="inputLarge"
                     id="subject_matter"
                     name="subject_matter"
                     value={formData.subject_matter || ''}
+                    onChange={handleChange}
+                  ></input>
+                </div>
+              </div>
+
+              {/* Additional Parties */}
+              <div className="modal-row">
+                <div className="additional-parties-container">
+                  <div className="additional-parties-header">
+                    <label htmlFor="additional_parties">Additional Parties</label>
+                    <button
+                      type="button"
+                      className="add-company-button"
+                      aria-label="Add Company"
+                      onClick={handleAddAdditionalParty}
+                    >
+                      +
+                    </button>
+                  </div>
+                  {showAdditionalParties &&
+                    additionalParties
+                      .filter((ap) => ap.file_id === formData.id)
+                      .map((ap) => (
+                        <AdditionalPartyDisplay
+                          key={ap.id}
+                          additionalParty={ap}
+                          onUpdated={(updatedParty) => {
+                            updateAdditionalParty({
+                              id: updatedParty.id,
+                              updatedAdditionalParty: updatedParty,
+                            });
+                          }}
+                          onDelete={(id) => {
+                            deleteAdditionalParty(id);
+                          }}
+                          companies={companies}
+                          contacts={contacts}
+                        />
+                      ))}
+                </div>
+              </div>
+
+              {/* Preliminary Findings */}
+              <div className="modal-row">
+                <div className="modal-form-group">
+                  <label htmlFor="preliminary_findings">Preliminary Findings</label>
+                  <textarea
+                    id="preliminary_findings"
+                    name="preliminary_findings"
+                    value={formData.preliminary_findings || ''}
                     onChange={handleChange}
                   ></textarea>
                 </div>

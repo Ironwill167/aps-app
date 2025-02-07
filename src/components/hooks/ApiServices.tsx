@@ -1,6 +1,14 @@
 import axios, { AxiosResponse } from 'axios';
 import { BaseUrl } from '../config';
-import { Company, Contact, FileRecord, CauseOfLoss, FeeRecord, Rates } from '../types';
+import {
+  Company,
+  Contact,
+  FileRecord,
+  CauseOfLoss,
+  AdditionalParty,
+  FeeRecord,
+  Rates,
+} from '../types';
 
 interface APIResponse<T> {
   data: T;
@@ -204,6 +212,55 @@ export const deleteCauseOfLoss = async (id: number): Promise<APIResponse<string>
   try {
     await api.delete(`/api/cause-of-loss/${id}`);
     return { data: `Cause of loss deleted with ID: ${id}` };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// -------------------- Additional Parties API --------------------
+
+// Fetch additional parties for a file
+export const fetchAdditionalParties = async (): Promise<APIResponse<AdditionalParty[]>> => {
+  try {
+    const response = await api.get(`/api/additional_party`);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add a new additional party
+export const addAdditionalParty = async (
+  file_id: number
+): Promise<APIResponse<AdditionalParty>> => {
+  try {
+    const response: AxiosResponse<AdditionalParty> = await api.post('/api/additional_party', {
+      file_id,
+    });
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update an existing additional party
+export const updateAdditionalParty = async (
+  id: number,
+  additionalParty: Partial<AdditionalParty>
+): Promise<APIResponse<AdditionalParty>> => {
+  try {
+    const response = await api.put(`/api/additional_party/${id}`, additionalParty);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete an additional party
+export const deleteAdditionalParty = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/additional_party/${id}`);
+    return { data: `Additional party deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
   }

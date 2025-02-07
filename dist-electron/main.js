@@ -1,104 +1,75 @@
-import { app, BrowserWindow, ipcMain, dialog, Menu } from "electron";
-import { fileURLToPath } from "node:url";
-import path from "node:path";
-import fs from "node:fs";
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-process.env.APP_ROOT = path.join(__dirname, "..");
-const VITE_DEV_SERVER_URL = process.env["VITE_DEV_SERVER_URL"];
-const MAIN_DIST = path.join(process.env.APP_ROOT, "dist-electron");
-const RENDERER_DIST = path.join(process.env.APP_ROOT, "dist");
-process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL ? path.join(process.env.APP_ROOT, "public") : RENDERER_DIST;
-let win;
-function createWindow() {
-  win = new BrowserWindow({
-    icon: path.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
+import { app as p, BrowserWindow as d, ipcMain as f, dialog as u, Menu as w } from "electron";
+import { fileURLToPath as P } from "node:url";
+import t from "node:path";
+import C from "node:fs";
+const b = t.dirname(P(import.meta.url));
+process.env.APP_ROOT = t.join(b, "..");
+const c = process.env.VITE_DEV_SERVER_URL, R = t.join(process.env.APP_ROOT, "dist-electron"), v = t.join(process.env.APP_ROOT, "dist");
+process.env.VITE_PUBLIC = c ? t.join(process.env.APP_ROOT, "public") : v;
+let e;
+function g() {
+  e = new d({
+    icon: t.join(process.env.VITE_PUBLIC, "electron-vite.svg"),
     webPreferences: {
-      preload: path.join(__dirname, "preload.mjs")
+      preload: t.join(b, "preload.mjs")
     },
-    autoHideMenuBar: true
-  });
-  win.maximize();
-  win.webContents.on("did-finish-load", () => {
-    win == null ? void 0 : win.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
-  });
-  if (VITE_DEV_SERVER_URL) {
-    win.loadURL(VITE_DEV_SERVER_URL);
-  } else {
-    win.loadFile(path.join(RENDERER_DIST, "index.html"));
-  }
-  ipcMain.handle(
+    autoHideMenuBar: !0
+  }), e.maximize(), e.webContents.on("did-finish-load", () => {
+    e == null || e.webContents.send("main-process-message", (/* @__PURE__ */ new Date()).toLocaleString());
+  }), c ? e.loadURL(c) : e.loadFile(t.join(v, "index.html")), f.handle(
     "generate-invoice-pdf",
-    async (event, invoiceData) => {
-      console.log(`${event} Received generate-invoice-pdf request:`, invoiceData);
-      return new Promise((resolve, reject) => {
-        const printWindow = new BrowserWindow({
-          width: 1200,
-          height: 1080,
-          show: false,
-          webPreferences: {
-            preload: path.join(__dirname, "preload.mjs"),
-            nodeIntegration: false,
-            contextIsolation: true
+    async (m, l) => (console.log(`${m} Received generate-invoice-pdf request:`, l), new Promise((o, n) => {
+      const i = new d({
+        width: 1200,
+        height: 1080,
+        show: !1,
+        webPreferences: {
+          preload: t.join(b, "preload.mjs"),
+          nodeIntegration: !1,
+          contextIsolation: !0
+        }
+      }), h = c ? `${c}#/invoice` : `file://${t.join(v, "index.html")}#/invoice`;
+      i.loadURL(h), i.webContents.on("did-finish-load", () => {
+        console.log("Sending invoice data to InvoicePage"), i.webContents.send("invoice-data", l);
+      }), f.once("invoice-rendered", async () => {
+        console.log("Received invoice-rendered event");
+        try {
+          const s = await i.webContents.printToPDF({
+            margins: { top: 0, right: 0, bottom: 0, left: 0 },
+            scale: 1,
+            preferCSSPageSize: !0,
+            pageSize: "A4",
+            printBackground: !0
+          }), { canceled: r, filePath: a } = await u.showSaveDialog({
+            title: "Save Fee Invoice PDF",
+            defaultPath: `Fee Invoice - APS ${l.fileDetails.id}.pdf`,
+            filters: [{ name: "PDF Files", extensions: ["pdf"] }]
+          });
+          if (r || !a) {
+            n(new Error("Save dialog was canceled."));
+            return;
           }
-        });
-        const invoiceUrl = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/invoice` : `file://${path.join(RENDERER_DIST, "index.html")}#/invoice`;
-        printWindow.loadURL(invoiceUrl);
-        printWindow.webContents.on("did-finish-load", () => {
-          console.log("Sending invoice data to InvoicePage");
-          printWindow.webContents.send("invoice-data", invoiceData);
-        });
-        ipcMain.once("invoice-rendered", async () => {
-          console.log("Received invoice-rendered event");
-          try {
-            const pdf = await printWindow.webContents.printToPDF({
-              margins: { top: 0, right: 0, bottom: 0, left: 0 },
-              scale: 1,
-              preferCSSPageSize: true,
-              pageSize: "A4",
-              printBackground: true
-            });
-            const { canceled, filePath } = await dialog.showSaveDialog({
-              title: "Save Fee Invoice PDF",
-              defaultPath: `Fee Invoice - APS ${invoiceData.fileDetails.id}.pdf`,
-              filters: [{ name: "PDF Files", extensions: ["pdf"] }]
-            });
-            if (canceled || !filePath) {
-              reject(new Error("Save dialog was canceled."));
-              return;
-            }
-            fs.writeFileSync(filePath, pdf);
-            dialog.showMessageBox({
-              type: "info",
-              title: "PDF Generated",
-              message: `Fee Invoice has been saved to ${filePath}`
-            });
-            resolve(filePath);
-          } catch (error) {
-            console.error("Failed to generate PDF:", error);
-            dialog.showErrorBox(
-              "PDF Generation Error",
-              "An error occurred while generating the PDF."
-            );
-            reject(error);
-          } finally {
-            printWindow.close();
-          }
-        });
-        printWindow.webContents.on("did-fail-load", (event2, errorCode, errorDescription) => {
-          console.error(`${event2}Failed to load InvoicePage: ${errorDescription} (${errorCode})`);
-          reject(new Error(`Failed to load InvoicePage: ${errorDescription} (${errorCode})`));
-        });
-        setTimeout(() => {
-          reject(new Error("PDF generation timed out."));
-          if (!printWindow.isDestroyed()) {
-            printWindow.close();
-          }
-        }, 15e3);
-      });
-    }
-  );
-  ipcMain.on("show-context-menu", (event, contextType, contextId) => {
-    const template = [
+          C.writeFileSync(a, s), u.showMessageBox({
+            type: "info",
+            title: "PDF Generated",
+            message: `Fee Invoice has been saved to ${a}`
+          }), o(a);
+        } catch (s) {
+          console.error("Failed to generate PDF:", s), u.showErrorBox(
+            "PDF Generation Error",
+            "An error occurred while generating the PDF."
+          ), n(s);
+        } finally {
+          i.close();
+        }
+      }), i.webContents.on("did-fail-load", (s, r, a) => {
+        console.error(`${s}Failed to load InvoicePage: ${a} (${r})`), n(new Error(`Failed to load InvoicePage: ${a} (${r})`));
+      }), setTimeout(() => {
+        n(new Error("PDF generation timed out.")), i.isDestroyed() || i.close();
+      }, 15e3);
+    }))
+  ), f.on("show-context-menu", (m, l, o) => {
+    const n = [
       //{ role: 'undo' },
       // { role: 'redo' },
       // { type: 'separator' },
@@ -108,108 +79,102 @@ function createWindow() {
       //{ role: 'delete' },
       { type: "separator" }
     ];
-    switch (contextType) {
+    switch (l) {
       case "nothing":
         break;
       case "file":
-        template.push(
+        n.push(
           {
             label: "View File Details",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "viewFile", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "viewFile", "file", o);
             }
           },
           {
             label: "Change Status",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "changeStatus", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "changeStatus", "file", o);
             }
           },
           {
             label: "Diary Date",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "changeDiaryDate", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "changeDiaryDate", "file", o);
             }
           },
           {
             label: "Edit Note",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "editNote", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "editNote", "file", o);
             }
           },
           {
             label: "Edit Fee",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "editFee", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "editFee", "file", o);
             }
           },
           {
             label: "Mark as Important",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "markImportant", "file", contextId);
+              e == null || e.webContents.send("context-menu-action", "markImportant", "file", o);
             }
           }
         );
         break;
       case "contact":
-        template.push(
+        n.push(
           {
             label: "View Contact Details",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "viewContact", "contact", contextId);
+              e == null || e.webContents.send("context-menu-action", "viewContact", "contact", o);
             }
           },
           {
             label: "Copy Email Address",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "copyEmail", "contact", contextId);
+              e == null || e.webContents.send("context-menu-action", "copyEmail", "contact", o);
             }
           }
         );
         break;
       case "company":
-        template.push({
+        n.push({
           label: "View Company Details",
           click: () => {
-            win == null ? void 0 : win.webContents.send("context-menu-action", "viewCompany", "company", contextId);
+            e == null || e.webContents.send("context-menu-action", "viewCompany", "company", o);
           }
         });
         break;
       case "fee":
-        template.push(
+        n.push(
           {
             label: "View File Details",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "viewFile", "fee", contextId);
+              e == null || e.webContents.send("context-menu-action", "viewFile", "fee", o);
             }
           },
           {
             label: "Edit Fee",
             click: () => {
-              win == null ? void 0 : win.webContents.send("context-menu-action", "editFee", "fee", contextId);
+              e == null || e.webContents.send("context-menu-action", "editFee", "fee", o);
             }
           }
         );
         break;
     }
-    const menu = Menu.buildFromTemplate(template);
-    menu.popup({ window: BrowserWindow.fromWebContents(event.sender) || void 0 });
+    w.buildFromTemplate(n).popup({ window: d.fromWebContents(m.sender) || void 0 });
   });
 }
-app.on("window-all-closed", () => {
-  if (process.platform !== "darwin") {
-    app.quit();
-    win = null;
-  }
+p.on("window-all-closed", () => {
+  process.platform !== "darwin" && (p.quit(), e = null);
 });
-app.on("activate", () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
-  }
+p.on("activate", () => {
+  d.getAllWindows().length === 0 && g();
 });
-app.whenReady().then(createWindow);
+p.whenReady().then(g);
 export {
-  MAIN_DIST,
-  RENDERER_DIST,
-  VITE_DEV_SERVER_URL
+  R as MAIN_DIST,
+  v as RENDERER_DIST,
+  c as VITE_DEV_SERVER_URL
 };

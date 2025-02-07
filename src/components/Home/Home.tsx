@@ -3,6 +3,7 @@ import debounce from 'lodash.debounce';
 import { useData } from '../hooks/UseData';
 import { FileRecord, Company, FeeRecord, Contact } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
+import { convertToLocalDate } from '../utils/DateUtils';
 import Header from './Header';
 import FileGroup from './FileGroup';
 
@@ -10,6 +11,7 @@ import FileGroup from './FileGroup';
 const ViewContactModal = lazy(() => import('../Modals/ViewContactModal'));
 const ViewFileModal = lazy(() => import('../Modals/ViewFileModal'));
 const ViewCompanyModal = lazy(() => import('../Modals/ViewCompanyModal'));
+const PrelimReport = lazy(() => import('../Reporting/PrelimRoport'));
 const FeeInvoice = lazy(() => import('../Fees/FeeInvoice'));
 
 const Home: React.FC = () => {
@@ -42,6 +44,8 @@ const Home: React.FC = () => {
   // View/Edit Modals
   const [showViewContactModal, setShowViewContactModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+
+  const [showPrelimReport, setShowPrelimReport] = useState(false);
 
   const [showViewCompanyModal, setShowViewCompanyModal] = useState(false);
   const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
@@ -509,6 +513,12 @@ const Home: React.FC = () => {
                     </button>
                     <button
                       className="actionFileDetailsFeeButton"
+                      onClick={() => setShowPrelimReport(true)}
+                    >
+                      Prelim
+                    </button>
+                    <button
+                      className="actionFileDetailsFeeButton"
                       onClick={() => setShowFeeInvoice(true)}
                     >
                       Fee Invoice
@@ -608,7 +618,11 @@ const Home: React.FC = () => {
                 <div className="fileDetailsRow">
                   <div className="fileDetailsItem">
                     <p className="fileDetailsLabel">Date of Loss:</p>
-                    <p className="fileDetailsData">{selectedFile.date_of_loss?.split('T')[0]}</p>
+                    <p className="fileDetailsData">
+                      {selectedFile.date_of_loss
+                        ? convertToLocalDate(selectedFile.date_of_loss)
+                        : ''}
+                    </p>
                   </div>
                 </div>
                 <div className="fileDetailsRow">
@@ -676,6 +690,18 @@ const Home: React.FC = () => {
             onFileUpdated={handleFileUpdated}
             companies={companies}
             contacts={contacts}
+          />
+        </Suspense>
+      )}
+
+      {/* Preliminary Report */}
+      {showPrelimReport && selectedFile && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <PrelimReport
+            file={selectedFile}
+            contacts={contacts}
+            companies={companies}
+            onClose={() => setShowPrelimReport(false)}
           />
         </Suspense>
       )}

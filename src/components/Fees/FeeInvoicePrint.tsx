@@ -148,7 +148,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
             </div>
             <div className="invoiceDateDetailsRow">
               <p className="invoicePBold invoiceDateDetailLabel">Currency: </p>
-              <p>{feeDetails.invoice_currency}</p>
+              <p>{feeDetails.invoice_currency || 'ZAR'}</p>
             </div>
             <div className="invoiceDateDetailsRow">
               <p className="invoicePBold invoiceDateDetailLabel">Your Reference: </p>

@@ -45,12 +45,21 @@ export interface FileRecord {
   cause_of_loss_id: number | null;
   estimate_of_loss: number;
   preliminary_findings: string;
+  claim_currency: string;
 }
 
 export interface CauseOfLoss {
   id: number;
   col_name: string;
   col_description: string;
+}
+
+export interface AdditionalParty {
+  id: number;
+  file_id: number;
+  adp_name: string;
+  adp_company_id: number;
+  adp_contact_id: number;
 }
 
 export interface FeeRecord {

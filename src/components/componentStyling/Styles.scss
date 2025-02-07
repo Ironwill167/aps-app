@@ -13,8 +13,8 @@
 @use 'FeeInvoice';
 @use 'CustomDialog';
 @use 'Companies';
-
+@use 'PrelimReport';
 
 * {
-font-family: var(--font-family);
+  font-family: var(--font-family);
 }

@@ -5,13 +5,7 @@ import { useData } from '../hooks/UseData';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
 import FeeInvoicePrint from './FeeInvoicePrint';
 import { validateAndParseNumber, handleNumberInputKeyDown } from '../utils/NumberUtils';
-
-const currencyOptions = [
-  { value: 'USD', label: 'USD' },
-  { value: 'EUR', label: 'EUR' },
-  { value: 'GBP', label: 'GBP' },
-  { value: 'ZAR', label: 'ZAR' },
-];
+import CurrencySelect from '../Shared/CurrencySelect';
 
 interface FeeInvoiceProps {
   fileDetails: FileRecord;
@@ -37,27 +31,27 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
   const [isValidTotalFee, setIsValidTotalFee] = useState<boolean>(true);
 
   const [surveyTimeInput, setSurveyTimeInput] = useState<string>(
-    feeDetails.survey_time?.toString() || '0'
+    initialFeeDetails.survey_time?.toString() || '0'
   );
 
   const [reportTimeInput, setReportTimeInput] = useState<string>(
-    feeDetails.report_time?.toString() || '0'
+    initialFeeDetails.report_time?.toString() || '0'
   );
 
   const [handlingTimeInput, setHandlingTimeInput] = useState<string>(
-    feeDetails.handling_time?.toString() || '0'
+    initialFeeDetails.handling_time?.toString() || '0'
   );
 
   const [travelTimeInput, setTravelTimeInput] = useState<string>(
-    feeDetails.travel_time?.toString() || '0'
+    initialFeeDetails.travel_time?.toString() || '0'
   );
 
   const [travelKmInput, setTravelKmInput] = useState<string>(
-    feeDetails.travel_km?.toString() || '0'
+    initialFeeDetails.travel_km?.toString() || '0'
   );
 
   const [sundriesInput, setSundriesInput] = useState<string>(
-    feeDetails.sundries_amount?.toString() || '0'
+    initialFeeDetails.sundries_amount?.toString() || '0'
   );
 
   const updateFileMutation = useUpdateFile();
@@ -279,22 +273,16 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
         <div className="invoiceEditingContainer">
           <div className="invoiceActionCurrencyContainer">
             <label htmlFor="currency">Currency</label>
-            <select
-              name="currency"
+            <CurrencySelect
               value={feeDetails.invoice_currency || 'ZAR'}
-              onChange={(e) => handleFeeChange('invoice_currency', e.target.value)}
-            >
-              {currencyOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              selectClassName="currencySelectFeeInvoice"
+              onChange={(value) => handleFeeChange('invoice_currency', value)}
+            />
           </div>
           <div className="invoiceActionEditingFields">
             <div className="invoiceQuantityContainer">
               <div className="invoiceActionQuantityRow">
-                <label htmlFor="invoiceActionApsCut">APS Cut</label>
+                <label htmlFor="invoiceActionApsCut">APS</label>
                 <input
                   type="number"
                   name="invoiceActionApsCut"
@@ -303,7 +291,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 />
               </div>
               <div className="invoiceActionQuantityRow">
-                <label htmlFor="invoiceActionMannieCut">Mannie Cut</label>
+                <label htmlFor="invoiceActionMannieCut">Mannie</label>
                 <input
                   type="number"
                   name="invoiceActionMannieCut"
@@ -312,7 +300,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 />
               </div>
               <div className="invoiceActionQuantityRow">
-                <label htmlFor="invoiceActionElizeCut">Elize Cut</label>
+                <label htmlFor="invoiceActionElizeCut">Elize</label>
                 <input
                   type="number"
                   name="invoiceActionElizeCut"
@@ -321,7 +309,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 />
               </div>
               <div className="invoiceActionQuantityRow">
-                <label htmlFor="invoiceActionWillieCut">Willie Cut</label>
+                <label htmlFor="invoiceActionWillieCut">Willie</label>
                 <input
                   type="number"
                   name="invoiceActionWillieCut"
@@ -330,7 +318,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 />
               </div>
               <div className="invoiceActionQuantityRow">
-                <label htmlFor="invoiceActionOtherCut">Other Cut</label>
+                <label htmlFor="invoiceActionOtherCut">Other</label>
                 <input
                   type="number"
                   name="invoiceActionOtherCut"
