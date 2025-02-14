@@ -55,9 +55,7 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
             type="text"
             value={additionalParty.adp_name}
             onChange={(e) => onUpdated({ ...additionalParty, adp_name: e.target.value })}
-          >
-            {additionalParty.adp_name}
-          </input>
+          />
         </div>
         <div className="adp-company-form-group">
           <label htmlFor="adp_company_id">Company:</label>

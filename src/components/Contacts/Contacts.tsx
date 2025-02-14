@@ -99,6 +99,83 @@ const Contacts: React.FC = () => {
     });
   }, [contacts, companies, debouncedSearchTerm]);
 
+  // Set up react-select options for companies
+  const companyOptions = useMemo(
+    () =>
+      (companies as Company[]).map((company) => ({
+        value: company.id,
+        label: company.name,
+      })),
+    [companies]
+  );
+
+  // Cancel Editing
+  const handleCancelEdit = useCallback(() => {
+    setEditContactId(null);
+  }, []);
+
+  const handleDeleteContact = useCallback(
+    (id: number) => {
+      const contact = contacts.find((c) => c.id === id) || null;
+      setContactToDelete(contact);
+    },
+    [contacts]
+  );
+
+  // 3. Implement confirmation handlers
+  const handleConfirmDelete = async () => {
+    if (contactToDelete) {
+      try {
+        const message = await deleteContact(contactToDelete.id);
+        showSuccessToast(message);
+        setContactToDelete(null);
+      } catch (err) {
+        console.error('Error deleting contact:', err);
+        showErrorToast('There was an error deleting the contact. Please try again.');
+      }
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setContactToDelete(null);
+  };
+
+  // Save Edited Contact
+  const handleSaveEdit = useCallback(
+    async (id: number) => {
+      const updatedContact: Contact = {
+        id,
+        name: editName,
+        surname: editSurname,
+        email: editEmail,
+        contact_no: editContactNo,
+        company_contact_no: editCompanyContactNo,
+        company_id: editCompanyId ?? undefined,
+        position: editPosition,
+      };
+
+      try {
+        await updateContact({ id, updatedContact });
+        showSuccessToast('Contact updated successfully!');
+        setEditContactId(null);
+      } catch (err) {
+        console.error('Error updating contact:', err);
+        showErrorToast('There was an error updating the contact. Please try again.');
+      }
+    },
+    [
+      editName,
+      editSurname,
+      editEmail,
+      editContactNo,
+      editCompanyContactNo,
+      editCompanyId,
+      editPosition,
+      updateContact,
+      setEditContactId,
+    ]
+  );
+
   // Define Columns for DataTable
   const columns: TableColumn<Contact>[] = useMemo(
     () => [
@@ -277,21 +354,16 @@ const Contacts: React.FC = () => {
       editSurname,
       editEmail,
       editContactNo,
-      editCompanyContactNo,
+      companyOptions,
       editCompanyId,
       editPosition,
       getCompanyName,
+      handleRightClick,
+      handleDeleteContact,
+      handleSaveEdit,
+      handleCancelEdit,
+      editCompanyContactNo,
     ]
-  );
-
-  // Set up react-select options for companies
-  const companyOptions = useMemo(
-    () =>
-      (companies as Company[]).map((company) => ({
-        value: company.id,
-        label: company.name,
-      })),
-    [companies]
   );
 
   // Handle Edit Row
@@ -304,57 +376,6 @@ const Contacts: React.FC = () => {
     setEditCompanyContactNo(row.company_contact_no || '');
     setEditCompanyId(row.company_id ?? null);
     setEditPosition(row.position || '');
-  };
-
-  // Save Edited Contact
-  const handleSaveEdit = async (id: number) => {
-    const updatedContact: Contact = {
-      id,
-      name: editName,
-      surname: editSurname,
-      email: editEmail,
-      contact_no: editContactNo,
-      company_contact_no: editCompanyContactNo,
-      company_id: editCompanyId ?? undefined,
-      position: editPosition,
-    };
-
-    try {
-      await updateContact({ id, updatedContact });
-      showSuccessToast('Contact updated successfully!');
-      setEditContactId(null);
-    } catch (err) {
-      console.error('Error updating contact:', err);
-      showErrorToast('There was an error updating the contact. Please try again.');
-    }
-  };
-
-  // Cancel Editing
-  const handleCancelEdit = () => {
-    setEditContactId(null);
-  };
-
-  const handleDeleteContact = (id: number) => {
-    const contact = contacts.find((c) => c.id === id) || null;
-    setContactToDelete(contact);
-  };
-
-  // 3. Implement confirmation handlers
-  const handleConfirmDelete = async () => {
-    if (contactToDelete) {
-      try {
-        const message = await deleteContact(contactToDelete.id);
-        showSuccessToast(message);
-        setContactToDelete(null);
-      } catch (err) {
-        console.error('Error deleting contact:', err);
-        showErrorToast('There was an error deleting the contact. Please try again.');
-      }
-    }
-  };
-
-  const handleCancelDelete = () => {
-    setContactToDelete(null);
   };
 
   const handleContactAddedLocal = (newContact: Contact) => {
@@ -386,20 +407,22 @@ const Contacts: React.FC = () => {
       if (contextType !== 'contact') return;
 
       switch (action) {
-        case 'viewContact':
+        case 'viewContact': {
           const contact = contacts.find((c) => c.id === contextId);
           if (contact) {
             setSelectedContact(contact);
             setShowViewContactModal(true);
           }
           break;
+        }
 
-        case 'copyEmail':
+        case 'copyEmail': {
           const contactToCopy = contacts.find((c) => c.id === contextId);
           if (contactToCopy && contactToCopy.email) {
             navigator.clipboard.writeText(contactToCopy.email);
           }
           break;
+        }
 
         default:
           break;

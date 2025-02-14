@@ -13,6 +13,7 @@ const ViewFileModal = lazy(() => import('../Modals/ViewFileModal'));
 const ViewCompanyModal = lazy(() => import('../Modals/ViewCompanyModal'));
 const PrelimReport = lazy(() => import('../Reporting/PrelimRoport'));
 const FeeInvoice = lazy(() => import('../Fees/FeeInvoice'));
+const DocumentRequest = lazy(() => import('../Reporting/DocumentRequest'));
 
 const Home: React.FC = () => {
   const {
@@ -55,6 +56,8 @@ const Home: React.FC = () => {
 
   const [showFeeInvoice, setShowFeeInvoice] = useState(false);
   const [selectedFee, setSelectedFee] = useState<FeeRecord | null>(null);
+
+  const [showDocumentRequest, setShowDocumentRequest] = useState(false);
 
   // Handle Right-Click to Show Electron Context Menu
   const handleRightClick = useCallback(
@@ -521,7 +524,13 @@ const Home: React.FC = () => {
                       className="actionFileDetailsFeeButton"
                       onClick={() => setShowFeeInvoice(true)}
                     >
-                      Fee Invoice
+                      Invoice
+                    </button>
+                    <button
+                      className="actionFileDetailsFeeButton"
+                      onClick={() => setShowDocumentRequest(true)}
+                    >
+                      Docs
                     </button>
                   </div>
                 </div>
@@ -716,6 +725,16 @@ const Home: React.FC = () => {
             onFileUpdated={handleFileUpdated}
             companies={companies}
             contacts={contacts}
+          />
+        </Suspense>
+      )}
+
+      {/* Document Request */}
+      {showDocumentRequest && selectedFile && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <DocumentRequest
+            filerecord={selectedFile}
+            onClose={() => setShowDocumentRequest(false)}
           />
         </Suspense>
       )}

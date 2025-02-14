@@ -5,9 +5,14 @@ import Register from './Register.tsx';
 import Contacts from './Contacts/Contacts.tsx';
 import Companies from './Contacts/Companies.tsx';
 import FeeManagement from './Fees/FeeManagement.tsx';
+import Data from './Data/DataMain.tsx';
+
+interface RootState {
+  currentView: string;
+}
 
 const MainContent: React.FC = () => {
-  const currentView = useSelector((state: any) => state.currentView);
+  const currentView = useSelector((state: RootState) => state.currentView);
 
   const renderContent = () => {
     switch (currentView) {
@@ -21,6 +26,8 @@ const MainContent: React.FC = () => {
         return <Companies />;
       case 'FeeManagement':
         return <FeeManagement />;
+      case 'Data':
+        return <Data />;
       default:
         return <Home />;
     }

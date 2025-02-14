@@ -124,18 +124,21 @@ const Companies: React.FC = () => {
     }
   };
 
-  const handleDeleteCompany = useCallback(async (id: number): Promise<void> => {
-    try {
-      const message = await deleteCompany(id);
-      showSuccessToast(message);
-      setCompanyToDelete(null);
-      setShowDialog(false);
-      // Optionally, refresh data or update state
-    } catch (err) {
-      console.error('Error deleting company:', err);
-      showErrorToast('There was an error deleting the company. Please try again.');
-    }
-  }, []);
+  const handleDeleteCompany = useCallback(
+    async (id: number): Promise<void> => {
+      try {
+        const message = await deleteCompany(id);
+        showSuccessToast(message);
+        setCompanyToDelete(null);
+        setShowDialog(false);
+        // Optionally, refresh data or update state
+      } catch (err) {
+        console.error('Error deleting company:', err);
+        showErrorToast('There was an error deleting the company. Please try again.');
+      }
+    },
+    [deleteCompany]
+  );
 
   const handleCancelDelete = () => {
     setCompanyToDelete(null);
@@ -162,20 +165,22 @@ const Companies: React.FC = () => {
       if (contextType !== 'contact') return;
 
       switch (action) {
-        case 'viewContact':
+        case 'viewContact': {
           const contact = contacts.find((c) => c.id === contextId);
           if (contact) {
             setSelectedContact(contact);
             setShowViewContactModal(true);
           }
           break;
+        }
 
-        case 'copyEmail':
+        case 'copyEmail': {
           const contactToCopy = contacts.find((c) => c.id === contextId);
           if (contactToCopy && contactToCopy.email) {
             navigator.clipboard.writeText(contactToCopy.email);
           }
           break;
+        }
 
         default:
           break;

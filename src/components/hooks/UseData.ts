@@ -3,6 +3,8 @@ import {
   fetchContacts,
   fetchCompanies,
   fetchFiles,
+  fetchOutstandingDocuments,
+  fetchFileDocuments,
   fetchCausesOfLoss,
   fetchAdditionalParties,
   fetchFees,
@@ -18,6 +20,12 @@ import {
   useCreateFile,
   useUpdateFile,
   useDeleteFile,
+  useAddOutstandingDoc,
+  useUpdateOutstandingDoc,
+  useDeleteOutstandingDoc,
+  useAddFileDocument,
+  useUpdateFileDocument,
+  useDeleteFileDocument,
   useAddCauseOfLoss,
   useUpdateCauseOfLoss,
   useDeleteCauseOfLoss,
@@ -93,6 +101,46 @@ export const useData = () => {
   const createFile = useCreateFile();
   const updateFile = useUpdateFile();
   const deleteFile = useDeleteFile();
+
+  /* -------------------- Outstanding Documents -------------------- */
+  const {
+    data: outstandingDocuments = [],
+    isLoading: outstandingDocumentsLoading,
+    error: outstandingDocumentsError,
+  } = useQuery({
+    queryKey: ['outstandingDocuments'],
+    queryFn: async () => {
+      const res = await fetchOutstandingDocuments();
+      return res.data; // OutstandingDocument[]
+    },
+    initialData: [],
+    refetchInterval,
+  });
+
+  // Mutations
+  const addOutstandingDocument = useAddOutstandingDoc();
+  const updateOutstandingDocument = useUpdateOutstandingDoc();
+  const deleteOutstandingDocument = useDeleteOutstandingDoc();
+
+  /* -------------------- File Documents -------------------- */
+  const {
+    data: fileDocuments = [],
+    isLoading: fileDocumentsLoading,
+    error: fileDocumentsError,
+  } = useQuery({
+    queryKey: ['fileDocuments'],
+    queryFn: async () => {
+      const res = await fetchFileDocuments();
+      return res.data; // File[]
+    },
+    initialData: [],
+    refetchInterval,
+  });
+
+  // Mutations
+  const addFileDocument = useAddFileDocument();
+  const updateFileDocument = useUpdateFileDocument();
+  const deleteFileDocument = useDeleteFileDocument();
 
   /* -------------------- Causes of Loss -------------------- */
   const {
@@ -198,6 +246,22 @@ export const useData = () => {
     updateFile: updateFile.mutateAsync,
     deleteFile: deleteFile.mutateAsync,
     refetchFiles,
+
+    // Outstanding Documents
+    outstandingDocuments,
+    outstandingDocumentsLoading,
+    outstandingDocumentsError,
+    addOutstandingDocument: addOutstandingDocument.mutateAsync,
+    updateOutstandingDocument: updateOutstandingDocument.mutateAsync,
+    deleteOutstandingDocument: deleteOutstandingDocument.mutateAsync,
+
+    // File Documents
+    fileDocuments,
+    fileDocumentsLoading,
+    fileDocumentsError,
+    addFileDocument: addFileDocument.mutateAsync,
+    updateFileDocument: updateFileDocument.mutateAsync,
+    deleteFileDocument: deleteFileDocument.mutateAsync,
 
     // Causes of Loss
     causesOfLoss,

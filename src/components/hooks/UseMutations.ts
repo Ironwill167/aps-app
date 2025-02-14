@@ -10,6 +10,12 @@ import {
   updateFile,
   deleteFile,
   createFile,
+  addOutstandingDocument,
+  updateOutstandingDocument,
+  deleteOutstandingDocument,
+  addFileDocument,
+  updateFileDocument,
+  deleteFileDocument,
   addCauseOfLoss,
   addAdditionalParty,
   updateAdditionalParty,
@@ -20,7 +26,16 @@ import {
   updateFee,
   deleteFee,
 } from './ApiServices';
-import { Contact, Company, FileRecord, CauseOfLoss, AdditionalParty, FeeRecord } from '../types';
+import {
+  Contact,
+  Company,
+  FileRecord,
+  CauseOfLoss,
+  AdditionalParty,
+  FeeRecord,
+  OutstandingDocument,
+  FileDocument,
+} from '../types';
 
 /* -------------------- Contacts -------------------- */
 export const useAddContact = () => {
@@ -206,11 +221,129 @@ export const useDeleteFile = () => {
   });
 };
 
-/* -------------------- Causes of Loss -------------------- */
-export const useFetchCausesOfLoss = () => {
-  // Optional: Implement if you need specific hooks for fetching causes of loss
+/* -------------------- Outstanding Documents -------------------- */
+export const useAddOutstandingDoc = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (outstandingDocument: Partial<OutstandingDocument>) => {
+      const res = await addOutstandingDocument(outstandingDocument);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outstandingDocuments'] });
+      socket?.emit('dataChanged', { type: 'outstandingDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Add Outstanding Document Error:', error);
+    },
+  });
 };
 
+export const useUpdateOutstandingDoc = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updatedOutstandingDoc,
+    }: {
+      id: number;
+      updatedOutstandingDoc: Partial<OutstandingDocument>;
+    }) => {
+      const res = await updateOutstandingDocument(id, updatedOutstandingDoc);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outstandingDocuments'] });
+      socket?.emit('dataChanged', { type: 'outstandingDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Update Outstanding Document Error:', error);
+    },
+  });
+};
+
+export const useDeleteOutstandingDoc = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteOutstandingDocument(id);
+      return res.data; // string
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['outstandingDocuments'] });
+      socket?.emit('dataChanged', { type: 'outstandingDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete Outstanding Document Error:', error);
+    },
+  });
+};
+
+/* -------------------- File Documents -------------------- */
+export const useAddFileDocument = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (fileDoc: Partial<FileDocument>) => {
+      const res = await addFileDocument(fileDoc);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileDocuments'] });
+      socket?.emit('dataChanged', { type: 'fileDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Add File Document Error:', error);
+    },
+  });
+};
+
+export const useUpdateFileDocument = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updatedFileDoc,
+    }: {
+      id: number;
+      updatedFileDoc: Partial<FileDocument>;
+    }) => {
+      const res = await updateFileDocument(id, updatedFileDoc);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileDocuments'] });
+      socket?.emit('dataChanged', { type: 'fileDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Update File Document Error:', error);
+    },
+  });
+};
+
+export const useDeleteFileDocument = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteFileDocument(id);
+      return res.data; // string
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileDocuments'] });
+      socket?.emit('dataChanged', { type: 'fileDocuments' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete File Document Error:', error);
+    },
+  });
+};
+
+/* -------------------- Causes of Loss -------------------- */
 export const useAddCauseOfLoss = () => {
   const queryClient = useQueryClient();
   const { socket } = useSocket();

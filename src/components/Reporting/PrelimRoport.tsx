@@ -16,8 +16,9 @@ interface PrelimReportProps {
 const PrelimReport: React.FC<PrelimReportProps> = ({ file, contacts, companies, onClose }) => {
   const [formData] = React.useState<FileRecord>(file);
 
-  const { additionalParties } = useData();
+  const { additionalParties, causesOfLoss } = useData();
   const additionalPartiesForFile = additionalParties.filter((party) => party.file_id === file.id);
+  const colForFile = causesOfLoss.find((col) => col.id === file.cause_of_loss_id);
 
   const updateFileMutation = useUpdateFile();
 
@@ -112,12 +113,14 @@ const PrelimReport: React.FC<PrelimReportProps> = ({ file, contacts, companies, 
                     <p>
                       <strong>Subject Matter:</strong> {file.subject_matter}
                     </p>
+                    {file.estimate_of_loss && file.estimate_of_loss !== 0 && (
+                      <p>
+                        <strong>Estimate of Loss:</strong>{' '}
+                        {`${file.claim_currency} ${file.estimate_of_loss}`}
+                      </p>
+                    )}
                     <p>
-                      <strong>Estimate of Loss:</strong>{' '}
-                      {`${file.claim_currency} ${file.estimate_of_loss}`}
-                    </p>
-                    <p>
-                      <strong>Cause of Loss:</strong> {file.cause_of_loss_id}
+                      <strong>Cause of Loss:</strong> {colForFile?.col_name}
                     </p>
                   </div>
                   {additionalPartiesForFile.length > 0 && (
@@ -125,17 +128,21 @@ const PrelimReport: React.FC<PrelimReportProps> = ({ file, contacts, companies, 
                       <h3>Additional Parties</h3>
                       {additionalPartiesForFile.map((party) => (
                         <div className="prelim-additional-party-row" key={party.id}>
+                          <label>Role: </label>
+                          <p>{party.adp_name}</p>
+                          <label>Company: </label>
                           <p>
-                            <strong>{party.adp_name}</strong>
-                          </p>
-                          <p>
-                            <label>Company: </label>
                             {companies.find((company) => company.id === party.adp_company_id)?.name}
-                            <label> Contact Person: </label>
-                            {party.adp_contact_id
-                              ? getContactNameSurname(party.adp_contact_id, contacts)
-                              : ''}
                           </p>
+
+                          {party.adp_contact_id ? (
+                            <>
+                              <label> Contact Person: </label>{' '}
+                              <p>${getContactNameSurname(party.adp_contact_id, contacts)}</p>
+                            </>
+                          ) : (
+                            ''
+                          )}
                         </div>
                       ))}
                     </div>

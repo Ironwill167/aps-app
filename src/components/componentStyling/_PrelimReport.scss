@@ -66,6 +66,9 @@ p {
   label {
     font-size: $small;
     font-weight: bold;
-    margin-bottom: 0.5rem;
+  }
+  p {
+    font-size: $small;
+    margin: 0 0.5rem;
   }
 }

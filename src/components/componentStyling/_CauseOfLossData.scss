@@ -1,0 +1,25 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.data-cause-name,
+.data-cause-description,
+.data-cause-actions {
+  height: 2vh;
+  padding: 0.5rem;
+  background-color: $lighter-green;
+  border: 1px solid $rich-black;
+}
+
+.data-cause-name {
+  width: 25vw;
+  border-radius: 10px 0 0 10px;
+}
+
+.data-cause-description {
+  width: 35vw;
+}
+
+.data-cause-actions {
+  width: 5vw;
+  border-radius: 0 10px 10px 0;
+}

@@ -28,6 +28,9 @@ const Sidebar: React.FC = () => {
         <button onClick={() => handleNavigation('Companies')} className="SidebarLink">
           Companies
         </button>
+        <button onClick={() => handleNavigation('Data')} className="SidebarLink">
+          Data
+        </button>
       </div>
       <img src={logo} alt="APS Logo" className="logo" />
     </div>

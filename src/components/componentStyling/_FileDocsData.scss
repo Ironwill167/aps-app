@@ -1,0 +1,200 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.data-table {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 100%;
+  height: 100%;
+}
+
+.data-file-doc-name,
+.data-file-doc-description,
+.data-file-doc-long-description,
+.data-file-doc-category,
+.data-file-doc-actions {
+  height: 2vh;
+  padding: 0;
+  background-color: $lighter-green;
+  border: 1px solid $rich-black;
+}
+
+.data-file-doc-name {
+  width: 15vw;
+  padding: 0.5rem;
+  border-radius: 5px 0 0 5px;
+}
+
+.data-file-doc-description {
+  width: 25vw;
+  padding: 0.5rem;
+}
+
+.data-file-doc-long-description {
+  width: 30vw;
+  padding: 0.5rem;
+}
+
+.data-file-doc-category {
+  width: 10vw;
+  padding: 0.5rem;
+}
+
+.data-file-doc-actions {
+  width: 5vw;
+  padding: 0.5rem;
+  border-radius: 0 5px 5px 0;
+}
+
+.edit-file-doc-modal {
+  @include display-flex($direction: column, $align: center, $justify: center);
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+  align-items: center;
+  justify-content: center;
+
+  .edit-file-doc-modal-content {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    background-color: $light-green;
+    border: 1px solid $border-color;
+
+    padding: 1vh;
+    position: relative;
+    overflow: auto;
+    border-radius: 20px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding-top: 1vh;
+
+    .edit-file-doc-modal-header {
+      @include display-flex($direction: row, $align: center, $justify: center);
+      width: 19vw;
+      height: 4vh;
+      background-color: $lightest-green;
+      border-radius: 20px 20px 0 0;
+
+      p {
+        margin: 0;
+        color: $rich-black;
+        font-size: $medium;
+        font-weight: bold;
+      }
+    }
+
+    .edit-file-doc-modal-body {
+      @include display-flex($direction: column, $align: center, $justify: flex-start);
+      font-size: $small;
+
+      background-color: $lightest-green;
+
+      .file-doc-modal-row {
+        width: 19vw;
+        background-color: $lighter-green;
+        padding-top: 0.2rem;
+        padding-bottom: 0.2rem;
+      }
+      .file-doc-modal-name,
+      .file-doc-modal-description,
+      .file-doc-modal-long-description,
+      .file-doc-modal-category {
+        label {
+          margin-left: 0.2vw;
+
+          font-weight: bold;
+        }
+      }
+
+      .file-doc-modal-name {
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+        height: 4vh;
+
+        input {
+          height: 3vh;
+          width: 15vw;
+          margin-right: 0.3vw;
+          font-size: medium;
+        }
+      }
+      .file-doc-modal-description {
+        @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+        height: 7vh;
+
+        label {
+          margin-bottom: 0.2vh;
+        }
+        textarea {
+          margin-left: 0.3vw;
+          width: 18vw;
+          height: 4vh;
+          resize: none;
+          font-size: medium;
+        }
+      }
+      .file-doc-modal-long-description {
+        @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+        height: 11vh;
+
+        label {
+          margin-bottom: 0.2vh;
+        }
+        textarea {
+          margin-left: 0.3vw;
+          width: 18vw;
+          height: 8vh;
+          resize: none;
+          font-size: medium;
+        }
+      }
+      .file-doc-modal-category {
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+        height: 4vh;
+
+        select {
+          text-align: right;
+          width: 15vw;
+          height: 3vh;
+          margin-right: 0.3vw;
+          font-size: medium;
+        }
+      }
+    }
+
+    .file-doc-modal-actions {
+      @include display-flex($direction: row, $align: center, $justify: center);
+      width: 19vw;
+      height: 7vh;
+      border-radius: 0 0 20px 20px;
+      background-color: $lightest-green;
+
+      .file-doc-modal-save,
+      .file-doc-modal-cancel {
+        width: 9vw;
+        height: 4vh;
+        font-weight: bold;
+        font-size: $medium;
+        padding: 0.5rem;
+        border: 1px solid $border-color;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+
+        &:hover,
+        &:focus {
+          background-color: $secondary-color;
+        }
+      }
+      .file-doc-modal-save {
+        border-radius: 0 0 0 20px;
+        background-color: $light-green;
+      }
+      .file-doc-modal-cancel {
+        border-radius: 0 0 20px 0;
+        background-color: lightcoral;
+      }
+    }
+  }
+}

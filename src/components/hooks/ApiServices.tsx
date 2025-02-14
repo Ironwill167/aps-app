@@ -4,6 +4,8 @@ import {
   Company,
   Contact,
   FileRecord,
+  FileDocument,
+  OutstandingDocument,
   CauseOfLoss,
   AdditionalParty,
   FeeRecord,
@@ -16,6 +18,10 @@ interface APIResponse<T> {
 
 const api = axios.create({
   baseURL: BaseUrl,
+  headers: {
+    'Content-Type': 'application/json',
+    'X-Electron-App-Secret': 'apskeytoconnectelectron',
+  },
 });
 
 // Error handling for API calls
@@ -166,6 +172,98 @@ export const deleteFile = async (id: number): Promise<APIResponse<string>> => {
   try {
     await api.delete(`/api/files/${id}`);
     return { data: `File deleted with ID: ${id}` };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// -------------------- File Documents API --------------------
+// Fetch all documents
+export const fetchFileDocuments = async (): Promise<APIResponse<FileDocument[]>> => {
+  try {
+    const response = await api.get('/api/file_documents');
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add a new document
+export const addFileDocument = async (
+  document: Partial<FileDocument>
+): Promise<APIResponse<FileDocument>> => {
+  try {
+    const response = await api.post('/api/file_documents', document);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update an existing document
+export const updateFileDocument = async (
+  id: number,
+  document: Partial<FileDocument>
+): Promise<APIResponse<FileDocument>> => {
+  try {
+    const response = await api.put(`/api/file_documents/${id}`, document);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete a document
+export const deleteFileDocument = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/file_documents/${id}`);
+    return { data: `Document deleted with ID: ${id}` };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// -------------------- Outstanding Documents API --------------------
+// Fetch outstanding documents for file
+export const fetchOutstandingDocuments = async (): Promise<APIResponse<OutstandingDocument[]>> => {
+  try {
+    const response = await api.get(`/api/outstanding_docs`);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add a new outstanding document
+export const addOutstandingDocument = async (
+  document: Partial<OutstandingDocument>
+): Promise<APIResponse<OutstandingDocument>> => {
+  try {
+    const response = await api.post('/api/outstanding_docs', document);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update an existing outstanding document
+export const updateOutstandingDocument = async (
+  id: number,
+  document: Partial<OutstandingDocument>
+): Promise<APIResponse<OutstandingDocument>> => {
+  try {
+    const response = await api.put(`/api/outstanding_docs/${id}`, document);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete an outstanding document
+export const deleteOutstandingDocument = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/outstanding_docs/${id}`);
+    return { data: `Outstanding document deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
   }

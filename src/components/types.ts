@@ -62,6 +62,21 @@ export interface AdditionalParty {
   adp_contact_id: number;
 }
 
+export interface FileDocument {
+  id: number;
+  name: string;
+  description: string;
+  long_description: string;
+  category: string;
+}
+
+export interface OutstandingDocument {
+  file_id: number;
+  doc_id: number;
+  from_company_id: number;
+  from_contact_id: number;
+}
+
 export interface FeeRecord {
   id: number;
   file_id: number;
