@@ -1,0 +1,216 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.document-request-container {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 80vw;
+  height: 90vh;
+  background-color: $app-bg;
+  border-radius: 10px;
+}
+
+.document-request-header {
+  @include display-flex($direction: row, $align: center, $justify: space-between);
+  width: 80vw;
+  height: 5vh;
+  border-radius: 10px 10px 0 0;
+  background-color: $main-color-hover;
+  color: $rich-black;
+  font-size: $large;
+  z-index: 100;
+
+  .document-request-header-title {
+    margin: 0;
+    padding: 0.5rem;
+  }
+
+  span {
+    margin-right: 1rem;
+  }
+}
+
+.document-request-content {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 80vw;
+  height: 85vh;
+  overflow-y: auto;
+  background-color: $light-cream;
+}
+
+.document-request-content-header {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 80vw;
+  height: 3vh;
+  border-radius: 0 0 10px 10px;
+  background-color: $main-color-hover;
+  color: $rich-black;
+  font-size: $medium;
+  border-bottom: 1px solid $border-color;
+  z-index: 100;
+
+  .document-request-content-header-toggle {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+
+    input {
+      margin-left: 2rem;
+    }
+  }
+}
+
+.document-request-content-body {
+  @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
+  width: 80vw;
+  height: 85vh;
+  font-size: $small;
+  overflow-y: auto;
+  background-color: $light-cream;
+}
+
+.document-request-all-docs {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 40vw;
+  border-top: 1px solid $border-color;
+  z-index: 100;
+
+  .document-category-section {
+    @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+    width: 38vw;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+
+    h3 {
+      margin: 0;
+      padding: 0.5rem;
+    }
+  }
+}
+
+.document-request-content-required-docs {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 100%;
+
+  .document-request-content-required-list {
+    @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+    width: 38vw;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+
+    h3 {
+      font-size: $medium;
+      margin: 0;
+      padding: 0.5rem;
+    }
+
+    .document-request-content-required-list-header {
+      @include display-flex($direction: row, $align: center, $justify: space-between);
+      width: 38vw;
+      height: 3vh;
+      border-radius: 10px;
+      background-color: $main-color-hover;
+      color: $rich-black;
+      font-size: $medium;
+      border-bottom: 1px solid $border-color;
+      z-index: 100;
+
+      span {
+        margin-right: 1rem;
+      }
+    }
+
+    .document-request-content-required-list-header-checkbox {
+      font-size: $small;
+      font-weight: bold;
+
+      label {
+        margin-right: 1rem;
+      }
+    }
+
+    .document-category-section {
+      @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+      width: 38vw;
+      border: 1px solid $border-color;
+      border-radius: 10px;
+    }
+  }
+}
+
+.document-request-print-screen {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 38vw;
+  border: 1px solid $border-color;
+  border-radius: 10px;
+
+  h3 {
+    font-size: $medium;
+    margin: 0;
+    padding: 0.5rem;
+  }
+
+  .document-request-print-screen-header {
+    @include display-flex($direction: row, $align: center, $justify: space-between);
+    width: 100%;
+    height: 3vh;
+    border-radius: 10px;
+    background-color: $main-color-hover;
+    color: $rich-black;
+    font-size: $small;
+    border-bottom: 1px solid $border-color;
+    z-index: 100;
+
+    label {
+      margin-left: 1rem;
+    }
+    button {
+      margin-right: 1rem;
+    }
+  }
+
+  .document-request-print-screen-body {
+    @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+    width: 38vw;
+    height: 80vh;
+    overflow-y: auto;
+    background-color: $light-cream;
+
+    h4 {
+      font-size: $small;
+      font-weight: bold;
+      margin: 0.5rem 0 0.5rem 1rem;
+    }
+    .document-request-outstanding-row {
+      .document-request-row-outstanding-container {
+        span {
+          margin: 0.5rem 0 0.5rem 1rem;
+        }
+        p {
+          font-size: $small;
+          margin: 0.5rem 0 0.5rem 2rem;
+          white-space: pre-wrap;
+        }
+      }
+    }
+  }
+}
+
+.document-request-row {
+  @include display-flex($direction: row, $align: center, $justify: space-between);
+  width: 38vw;
+  min-height: 3vh;
+  padding-top: 0.2rem;
+  border-radius: 10px;
+
+  span {
+    margin-left: 1rem;
+  }
+
+  input {
+    margin-right: 1rem;
+  }
+
+  &:hover {
+    background-color: $main-color-hover;
+  }
+}

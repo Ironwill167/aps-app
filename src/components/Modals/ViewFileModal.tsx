@@ -44,6 +44,8 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     formatNumber(file.estimate_of_loss)
   );
 
+  const causesSorted = cause_of_loss_data.sort((a, b) => a.col_name.localeCompare(b.col_name));
+
   const [showAdditionalParties, setShowAdditionalParties] = useState(false);
 
   const fetchRelevantAdditionalParties = useCallback(() => {
@@ -151,6 +153,8 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
       showErrorToast('Please fill in all required fields.');
       return;
     }
+    const todayDate = new Date();
+    formData.updated_at = todayDate.toISOString();
 
     try {
       await updateFileMutation.mutateAsync({
@@ -476,7 +480,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           ? {
                               value: Number(selectedValue),
                               label:
-                                cause_of_loss_data.find((cl) => cl.id === Number(selectedValue))
+                                causesSorted.find((cl) => cl.id === Number(selectedValue))
                                   ?.col_name || '',
                             }
                           : null
@@ -484,7 +488,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                     }}
                   >
                     <option value="">Select a cause of loss...</option>
-                    {cause_of_loss_data.map((option) => (
+                    {causesSorted.map((option) => (
                       <option key={option.id} value={option.id}>
                         {option.col_name}
                       </option>

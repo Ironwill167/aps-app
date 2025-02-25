@@ -245,13 +245,15 @@ export const useUpdateOutstandingDoc = () => {
   const { socket } = useSocket();
   return useMutation({
     mutationFn: async ({
-      id,
+      file_id,
+      doc_id,
       updatedOutstandingDoc,
     }: {
-      id: number;
+      file_id: number;
+      doc_id: number;
       updatedOutstandingDoc: Partial<OutstandingDocument>;
     }) => {
-      const res = await updateOutstandingDocument(id, updatedOutstandingDoc);
+      const res = await updateOutstandingDocument(file_id, doc_id, updatedOutstandingDoc);
       return res.data;
     },
     onSuccess: () => {
@@ -268,9 +270,9 @@ export const useDeleteOutstandingDoc = () => {
   const queryClient = useQueryClient();
   const { socket } = useSocket();
   return useMutation({
-    mutationFn: async (id: number) => {
-      const res = await deleteOutstandingDocument(id);
-      return res.data; // string
+    mutationFn: async ({ file_id, doc_id }: { file_id: number; doc_id: number }) => {
+      const res = await deleteOutstandingDocument(file_id, doc_id);
+      return res.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['outstandingDocuments'] });

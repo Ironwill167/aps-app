@@ -15,10 +15,6 @@ interface FileGroupProps {
   noteText: string | '';
   setNoteText: (text: string) => void;
   handleIsImportandChange: (file: FileRecord) => void;
-  setDiaryDate: (date: string) => void;
-  diaryDate: string;
-  showChangeDiaryDate: number | null;
-  setShowChangeDiaryDate: (id: number | null) => void;
   updateFile: (file: Partial<FileRecord>) => Promise<void>;
   getReminderDueClass: (file: FileRecord) => string;
   getStatusClass: (file: FileRecord) => string;
@@ -41,10 +37,6 @@ const FileGroup: React.FC<FileGroupProps> = ({
   noteText,
   setNoteText,
   handleIsImportandChange,
-  setDiaryDate,
-  diaryDate,
-  setShowChangeDiaryDate,
-  showChangeDiaryDate,
   updateFile,
   getReminderDueClass,
   getStatusClass,
@@ -73,10 +65,6 @@ const FileGroup: React.FC<FileGroupProps> = ({
             noteText={noteText}
             setNoteText={setNoteText}
             handleIsImportandChange={handleIsImportandChange}
-            setDiaryDate={setDiaryDate}
-            diaryDate={diaryDate}
-            showChangeDiaryDate={showChangeDiaryDate}
-            setShowChangeDiaryDate={setShowChangeDiaryDate}
             updateFile={updateFile}
             getReminderDueClass={getReminderDueClass}
             getStatusClass={getStatusClass}

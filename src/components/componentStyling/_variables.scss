@@ -19,7 +19,7 @@ $lighter-blue: #a1aebd;
 $lightest-blue: #c2cad3;
 
 $dark-green: #3d5707;
-$darker-green: #2d3f05;
+$darker-green: #202710;
 $darkest-green: #101602;
 
 $dark-blue: #031c3b;
@@ -27,7 +27,7 @@ $darker-blue: #021327;
 $darkest-blue: #010a14;
 
 // Backgrounds
-$app-bg: #c0c9d3;
+$app-bg: #585858;
 $sidebar-bg: $secondary-color;
 $modal-bg: $dark-green;
 $content-bg: $lightest-green;
@@ -35,7 +35,7 @@ $input-light-bg: #f8fdf1;
 
 // Text Colors
 $text-color: $rich-black;
-$dark-text-color: #333;
+$light-text-color: $main-color-hover;
 $link-color: $light-green;
 $link-hover-color: $darker-blue;
 

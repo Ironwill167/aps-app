@@ -17,6 +17,37 @@ const FileDocsData: React.FC = () => {
 
   const [mode, setMode] = React.useState<'add' | 'edit'>('add');
 
+  const categoryOrder = React.useMemo(
+    () => [
+      'Claim',
+      'Claim Amount',
+      'Driver and Vehicle Details',
+      'Goods in Transit',
+      'Investigation',
+      'Other Party/ies',
+      'Import',
+      'On Discharge',
+      'Full Container Load',
+      'Less than Container Load',
+      'Exports',
+      'Rail',
+      'Container',
+      'Farming / Frozen / Chilled Product',
+      'Fuel Tankers',
+      'SAB Documentation',
+      'Technical Reports',
+      'Construction',
+      'Engineering / Liability / Business Interuption',
+    ],
+    []
+  );
+
+  const sortedFileDocuments = React.useMemo(() => {
+    return [...fileDocuments].sort(
+      (a, b) => categoryOrder.indexOf(a.category!) - categoryOrder.indexOf(b.category!)
+    );
+  }, [fileDocuments, categoryOrder]);
+
   const editFile = (id: number) => {
     setSelectedFileDoc(fileDocuments.find((fileDoc) => fileDoc.id === id) || {});
     setMode('edit');
@@ -61,7 +92,7 @@ const FileDocsData: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {fileDocuments.map((fileDocument) => (
+          {sortedFileDocuments.map((fileDocument) => (
             <tr key={fileDocument.id}>
               <td className="data-file-doc-name">{fileDocument.name}</td>
               <td className="data-file-doc-description">{fileDocument.description}</td>

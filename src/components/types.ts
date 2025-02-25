@@ -75,6 +75,9 @@ export interface OutstandingDocument {
   doc_id: number;
   from_company_id: number;
   from_contact_id: number;
+  is_required: boolean;
+  is_received: boolean;
+  long_description: boolean;
 }
 
 export interface FeeRecord {

@@ -15,7 +15,7 @@ const Data: React.FC = () => {
   return (
     <div className="main-content-contents">
       <div className="mainContentHeader">
-        <h2 className="mainContentHeading">Data Management</h2>
+        <h2 className="mainContentHeading">Data</h2>
         <div className="mainControlsContainer">
           {!showFileDocs ? (
             <button

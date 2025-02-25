@@ -248,11 +248,12 @@ export const addOutstandingDocument = async (
 
 // Update an existing outstanding document
 export const updateOutstandingDocument = async (
-  id: number,
+  file_id: number,
+  doc_id: number,
   document: Partial<OutstandingDocument>
 ): Promise<APIResponse<OutstandingDocument>> => {
   try {
-    const response = await api.put(`/api/outstanding_docs/${id}`, document);
+    const response = await api.put(`/api/outstanding_docs/${file_id}/${doc_id}`, document);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -260,10 +261,13 @@ export const updateOutstandingDocument = async (
 };
 
 // Delete an outstanding document
-export const deleteOutstandingDocument = async (id: number): Promise<APIResponse<string>> => {
+export const deleteOutstandingDocument = async (
+  file_id: number,
+  doc_id: number
+): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/outstanding_docs/${id}`);
-    return { data: `Outstanding document deleted with ID: ${id}` };
+    await api.delete(`/api/outstanding_docs/${file_id}/${doc_id}`);
+    return { data: `Outstanding document deleted with ID: ${file_id}/${doc_id}` };
   } catch (error) {
     return handleError(error);
   }
@@ -285,7 +289,7 @@ export const addCauseOfLoss = async (
   cause: Partial<CauseOfLoss>
 ): Promise<APIResponse<CauseOfLoss>> => {
   try {
-    const response = await api.post('/api/cause-of-loss', cause);
+    const response = await api.post('/api/cause_of_loss', cause);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -298,7 +302,7 @@ export const updateCauseOfLoss = async (
   cause: Partial<CauseOfLoss>
 ): Promise<APIResponse<CauseOfLoss>> => {
   try {
-    const response = await api.put(`/api/cause-of-loss/${id}`, cause);
+    const response = await api.put(`/api/cause_of_loss/${id}`, cause);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -308,7 +312,7 @@ export const updateCauseOfLoss = async (
 // Delete a cause of loss
 export const deleteCauseOfLoss = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/cause-of-loss/${id}`);
+    await api.delete(`/api/cause_of_loss/${id}`);
     return { data: `Cause of loss deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);

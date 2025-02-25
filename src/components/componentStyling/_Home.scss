@@ -13,48 +13,56 @@
 .actionHeadingsContainer {
   @include display-flex($direction: row, $align: center, $justify: center);
   position: sticky;
-  top: 12vh;
+  top: 9.7vh;
   z-index: 10;
-  box-shadow: 0 0 0.5vi 0 $rich-black;
 }
 
 .actionHeadingsContainer > .actionHeading {
   @include display-flex($direction: row, $align: center, $justify: flex-start);
   font-weight: bold;
   font-size: $small;
+  padding-left: 0.15rem;
+  padding-right: 0.1rem;
   height: 4vh;
   background-color: $main-color-hover;
   border: 1px solid $main-color;
   border-radius: 5px;
+  box-shadow: 0 0 3px 0 $light-cream;
 }
 
 .filesGroupContainer {
   @include display-flex($direction: column, $align: center, $justify: flex-start);
   font-weight: bold;
+  box-shadow: 0 0 5px 0 $light-cream;
+  border-radius: 10px;
+  width: 64.3vw;
+  margin-top: 0.5rem;
+  background-color: $lightest-green;
 }
 .actionGroupHeading {
   font-weight: bold;
   font-size: $large;
+  color: $text-color;
   margin-block: 0.5rem;
 }
 
 .filesGroup {
-  @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
   width: 100%;
+  margin-bottom: 0.5rem;
 }
 .fileItem {
   @include display-flex($direction: row, $align: center, $justify: center);
-  width: 100%;
+  width: 64vw;
+  padding-top: 0.2vh;
+  padding-bottom: 0.2vh;
+  border-radius: 10px;
   margin: 0;
   font-size: $small;
-  border-top: 1px solid $main-color;
-  border-bottom: 1px solid $main-color;
   background-color: $main-color-hover;
   cursor: pointer;
+  box-shadow: 0 0 3px 0 $rich-black;
 
-  &:hover {
-    background-color: $lighter-green;
-  }
   &.action-status-red {
     background-color: rgb(255, 50, 50);
   }
@@ -64,10 +72,13 @@
   &.action-status-yellow {
     background-color: rgb(255, 255, 0);
   }
+  &:hover {
+    background-color: $dark-green;
+  }
 }
 .vertSeperator {
   min-height: 4vh;
-  width: 0.1vw;
+  width: 0.15vw;
 }
 .FileNumberColumn,
 .StatusColumn,
@@ -75,9 +86,10 @@
 .PrincipalColumn,
 .PrincipalContactColumn,
 .PrincipalRefColumn,
-.DiaryDateColumn,
+.LastUpdatedColumn,
 .FileNoteColumn,
 .TotalFeeColumn {
+  @include display-flex($direction: row, $align: center, $justify: flex-start);
   padding-left: 0.2em;
   min-height: 4vh;
   height: 4vh;
@@ -86,14 +98,13 @@
 }
 
 .FileNumberColumn {
-  @include display-flex($direction: row, $align: center, $justify: center);
   width: 3vw;
   font-size: medium;
   font-weight: bold;
+  border-radius: 10px 0 0 10px;
 }
 
 .StatusColumn {
-  @include display-flex($direction: row, $align: center, $justify: center);
   width: 4vw;
   font-weight: bold;
   overflow: visible;
@@ -109,6 +120,7 @@
 
 .InsuredColumn,
 .PrincipalColumn {
+  @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
   width: 10vw;
   font-weight: normal;
 }
@@ -121,9 +133,9 @@
   font-weight: normal;
 }
 
-.DiaryDateColumn {
-  @include display-flex($direction: row, $align: flex-start, $justify: center);
-  width: 5.7vw;
+.LastUpdatedColumn {
+  @include display-flex($direction: row, $align: center, $justify: center);
+  width: 5vw;
   font-weight: normal;
 
   input {
@@ -135,15 +147,18 @@
 }
 
 .FileNoteColumn {
+  @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
   width: 13vw;
   font-weight: normal;
 }
 
 .TotalFeeColumn {
-  width: 4.5vw;
+  @include display-flex($direction: row, $align: center, $justify: flex-end);
+  width: 4.3vw;
   font-weight: normal;
-  text-align: right;
+  border-radius: 0 10px 10px 0;
 }
+
 .AddNoteContainer {
   @include display-flex($direction: row, $align: center, $justify: flex-start);
   width: 100%;
@@ -179,7 +194,7 @@
   position: sticky;
   top: 12vh;
   z-index: 10;
-  box-shadow: 0 0 5px 0 $border-inset-shadow;
+  box-shadow: 0 0 5px 0 $light-cream;
   background-color: $lighter-green;
   border: 1px solid $main-color;
   border-radius: 5px;
@@ -202,6 +217,7 @@
   font-weight: bold;
   background-color: $light-green;
   border-bottom: 2px solid $rich-black;
+  border-radius: 5px 5px 0 0;
 
   h2 {
     margin: 0;
@@ -274,6 +290,8 @@
 
   &:hover {
     cursor: pointer;
+    background-color: $dark-green;
+    color: $light-cream;
   }
 }
 

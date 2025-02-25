@@ -247,7 +247,7 @@ const FeeManagement: React.FC = () => {
   return (
     <div className="main-content-contents">
       <div className="mainContentHeader">
-        <h2 className="mainContentHeading">Fee Management</h2>
+        <h2 className="mainContentHeading">Fees</h2>
       </div>
       <div className="feeManagementTotalsContainer">
         <div className="feeManagementRaisedTotals">

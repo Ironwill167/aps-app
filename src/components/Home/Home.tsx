@@ -32,10 +32,6 @@ const Home: React.FC = () => {
   const [showAddNote, setShowAddNote] = useState<number | null>(null);
   const [noteText, setNoteText] = useState<string>('');
 
-  // Diary Date state
-  const [showChangeDiaryDate, setShowChangeDiaryDate] = useState<number | null>(null);
-  const [diaryDate, setDiaryDate] = useState<string>('');
-
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
@@ -140,38 +136,8 @@ const Home: React.FC = () => {
     });
   }, [files, debouncedSearchTerm, getCompanyName, getContactName]);
 
-  // Status Priority Within Each Group using useMemo to avoid re-creation on every render
-  const statusPriorityWithinGroups: { [group: string]: { [key: string]: number } } = useMemo(
-    () => ({
-      'New Files': {
-        NEW: 1,
-        SURVEY: 2,
-        PRELIM: 3,
-      },
-      'Doc Requests': {
-        'DOC-RI': 1,
-        'DOC-RR': 2,
-        'DOC-RF': 3,
-      },
-      Reports: {
-        'RPT-BS': 1,
-        'RPT-C': 2,
-        'RPT-D': 3,
-        'RPT-S': 4,
-      },
-      Fees: {
-        'FEE-R': 1,
-        'FEE-P': 2,
-      },
-      OpenFiles: {
-        // Assign priorities to any other statuses if needed
-      },
-    }),
-    []
-  );
-
   const groupOrder = useMemo(
-    () => ['New Files', 'Doc Requests', 'Reports', 'Fees', 'OpenFiles'],
+    () => ['New Files', 'Doc Requests', 'Report Writing', 'Fees', 'OpenFiles'],
     []
   );
 
@@ -180,64 +146,72 @@ const Home: React.FC = () => {
     const groups: { [key: string]: FileRecord[] } = {
       'New Files': [],
       'Doc Requests': [],
-      Reports: [],
+      'Report Writing': [],
       Fees: [],
       OpenFiles: [],
     };
 
+    // Status orders for each group
+    const newFilesOrder: Record<string, number> = {
+      NEW: 1,
+      SURVEY: 2,
+      PRELIM: 3,
+    };
+    const docRequestsOrder: Record<string, number> = {
+      'DOC-RI': 1,
+      'DOC-RR': 2,
+      'DOC-RF': 3,
+    };
+    const reportWritingOrder: Record<string, number> = {
+      'RPT-BS': 1,
+      'RPT-C': 2,
+      'RPT-D': 3,
+      'RPT-S': 4,
+    };
+    const feesOrder: Record<string, number> = {
+      'FEE-R': 1,
+      'FEE-P': 2,
+    };
+
+    // Distribute files into groups
     filteredFiles.forEach((file) => {
-      switch (file.status) {
-        case 'NEW':
-        case 'SURVEY':
-        case 'PRELIM':
-          groups['New Files'].push(file);
-          break;
-
-        case 'DOC-RI':
-        case 'DOC-RR':
-        case 'DOC-RF':
-          groups['Doc Requests'].push(file);
-          break;
-
-        case 'RPT-BS':
-        case 'RPT-C':
-        case 'RPT-D':
-        case 'RPT-S':
-          groups['Reports'].push(file);
-          break;
-
-        case 'FEE-R':
-        case 'FEE-P':
-          groups['Fees'].push(file);
-          break;
-
-        default:
-          if (file.status !== 'Closed' && file.status !== '') {
-            groups['OpenFiles'].push(file);
-          }
-          break;
+      if (file.status && newFilesOrder[file.status] !== undefined) {
+        groups['New Files'].push(file);
+      } else if (file.status && docRequestsOrder[file.status] !== undefined) {
+        groups['Doc Requests'].push(file);
+      } else if (file.status && reportWritingOrder[file.status] !== undefined) {
+        groups['Report Writing'].push(file);
+      } else if (file.status && feesOrder[file.status] !== undefined) {
+        groups['Fees'].push(file);
       }
     });
 
-    // Sort each group based on status priority
-    groupOrder.forEach((groupName) => {
-      if (groups[groupName].length > 0) {
-        const priorityMap = statusPriorityWithinGroups[groupName] || {};
-        groups[groupName].sort((a, b) => {
-          const priorityA = priorityMap[a.status] || 999;
-          const priorityB = priorityMap[b.status] || 999;
+    // Helper to sort by defined order, then updated_at ascending (oldest on top)
+    const sortGroup = (items: FileRecord[], priority: Record<string, number>) =>
+      items.sort((a, b) => {
+        const orderA = priority[a.status!] || 999;
+        const orderB = priority[b.status!] || 999;
+        if (orderA !== orderB) {
+          return orderA - orderB;
+        }
+        // Same status => sort by updated_at ascending
+        const dateA = new Date(a.updated_at || '').getTime();
+        const dateB = new Date(b.updated_at || '').getTime();
+        return dateA - dateB;
+      });
 
-          if (statusSortOrder === 'asc') {
-            return priorityA - priorityB;
-          } else {
-            return priorityB - priorityA;
-          }
-        });
-      }
-    });
+    // Sort each group
+    groups['New Files'] = sortGroup(groups['New Files'], newFilesOrder);
+    groups['Doc Requests'] = sortGroup(groups['Doc Requests'], docRequestsOrder);
+    groups['Report Writing'] = sortGroup(groups['Report Writing'], reportWritingOrder);
+    groups['Fees'] = sortGroup(groups['Fees'], feesOrder);
+    // If needed, define an order for OpenFiles or just use updated_at
+    groups['OpenFiles'].sort(
+      (a, b) => new Date(a.updated_at || '').getTime() - new Date(b.updated_at || '').getTime()
+    );
 
     return groups;
-  }, [filteredFiles, groupOrder, statusSortOrder, statusPriorityWithinGroups]);
+  }, [filteredFiles]);
 
   const getReminderDueClass = useCallback((file: FileRecord) => {
     const today = new Date();
@@ -249,7 +223,7 @@ const Home: React.FC = () => {
       (file.status === 'DOC-RR' && diffDays >= 7)
     ) {
       return 'action-status-red';
-    } else if (file.diary_date && new Date(file.diary_date) < today) {
+    } else if (file.updated_at && diffDays >= 7) {
       return 'action-status-orange';
     } else if (file.is_important === 'true') {
       return 'action-status-yellow';
@@ -373,14 +347,8 @@ const Home: React.FC = () => {
             break;
           }
 
-          case 'changeStatus':
+          case 'changeStatus': {
             setEditStatus(contextId);
-            break;
-
-          case 'changeDiaryDate': {
-            const fileDiaryDate = files.find((f) => f.id === contextId)?.diary_date;
-            setDiaryDate(fileDiaryDate || '');
-            setShowChangeDiaryDate(contextId);
             break;
           }
 
@@ -487,10 +455,6 @@ const Home: React.FC = () => {
                     noteText={noteText}
                     setNoteText={setNoteText}
                     handleIsImportandChange={handleIsImportandChange}
-                    setDiaryDate={setDiaryDate}
-                    diaryDate={diaryDate}
-                    showChangeDiaryDate={showChangeDiaryDate}
-                    setShowChangeDiaryDate={setShowChangeDiaryDate}
                     updateFile={updateFileHandler}
                     getReminderDueClass={getReminderDueClass}
                     getStatusClass={getStatusClass}
