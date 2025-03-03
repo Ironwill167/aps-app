@@ -34,32 +34,32 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
   }, [invoice_rates, feeDetails.invoice_rate_preset]);
 
   const [manualTotalFeeInput, setManualTotalFeeInput] = useState<string>(
-    initialFeeDetails.total_fee?.toString() || '0'
+    initialFeeDetails.total_fee?.toString() || ''
   );
   const [isValidTotalFee, setIsValidTotalFee] = useState<boolean>(true);
 
   const [surveyTimeInput, setSurveyTimeInput] = useState<string>(
-    initialFeeDetails.survey_time?.toString() || '0'
+    initialFeeDetails.survey_time?.toString() || ''
   );
 
   const [reportTimeInput, setReportTimeInput] = useState<string>(
-    initialFeeDetails.report_time?.toString() || '0'
+    initialFeeDetails.report_time?.toString() || ''
   );
 
   const [handlingTimeInput, setHandlingTimeInput] = useState<string>(
-    initialFeeDetails.handling_time?.toString() || '0'
+    initialFeeDetails.handling_time?.toString() || ''
   );
 
   const [travelTimeInput, setTravelTimeInput] = useState<string>(
-    initialFeeDetails.travel_time?.toString() || '0'
+    initialFeeDetails.travel_time?.toString() || ''
   );
 
   const [travelKmInput, setTravelKmInput] = useState<string>(
-    initialFeeDetails.travel_km?.toString() || '0'
+    initialFeeDetails.travel_km?.toString() || ''
   );
 
   const [sundriesInput, setSundriesInput] = useState<string>(
-    initialFeeDetails.sundries_amount?.toString() || '0'
+    initialFeeDetails.sundries_amount?.toString() || ''
   );
 
   const updateFileMutation = useUpdateFile();
@@ -334,13 +334,15 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 />
               </div>
             </div>
+
+            {/* Hourly Quantity Inputs */}
+
             <div className="invoiceQuantityContainer">
               <div className="invoiceActionQuantityRow">
                 <label htmlFor="handlingTime">Handling Time</label>
                 <input
                   type="text"
                   name="handlingTime"
-                  inputMode="decimal"
                   value={handlingTimeInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
@@ -355,7 +357,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 <input
                   type="text"
                   name="surveyTime"
-                  inputMode="decimal"
                   value={surveyTimeInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
@@ -370,7 +371,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 <input
                   type="text"
                   name="reportTime"
-                  inputMode="decimal"
                   value={reportTimeInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
@@ -385,7 +385,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 <input
                   type="text"
                   name="travelTime"
-                  inputMode="decimal"
                   value={travelTimeInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
@@ -400,7 +399,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 <input
                   type="text"
                   name="travelKm"
-                  inputMode="decimal"
                   value={travelKmInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
@@ -415,7 +413,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                 <input
                   type="text"
                   name="sunDries"
-                  inputMode="decimal"
                   value={sundriesInput}
                   onKeyDown={handleNumberInputKeyDown}
                   onChange={(e) => {
