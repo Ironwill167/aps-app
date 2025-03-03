@@ -9,7 +9,7 @@ import {
   CauseOfLoss,
   AdditionalParty,
   FeeRecord,
-  Rates,
+  InvoiceRates,
 } from '../types';
 
 interface APIResponse<T> {
@@ -413,11 +413,44 @@ export const deleteFee = async (id: number): Promise<APIResponse<string>> => {
   }
 };
 
-// Fetch Variables from backend
-export const fetchRates = async (): Promise<APIResponse<Rates>> => {
+// Fetch Invoice Rates from backend
+export const fetchRates = async (): Promise<APIResponse<InvoiceRates[]>> => {
   try {
-    const response = await api.get('/api/rates');
+    const response: AxiosResponse<InvoiceRates[]> = await api.get('/api/invoice_rates');
     return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add new Invoice Rates Preset
+export const addRate = async (rate: Partial<InvoiceRates>): Promise<APIResponse<InvoiceRates>> => {
+  try {
+    const response: AxiosResponse<InvoiceRates> = await api.post('/api/invoice_rates', rate);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update Invoice Rates Preset
+export const updateRate = async (
+  id: number,
+  rate: Partial<InvoiceRates>
+): Promise<APIResponse<InvoiceRates>> => {
+  try {
+    const response: AxiosResponse<InvoiceRates> = await api.put(`/api/invoice_rates/${id}`, rate);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete Invoice Rates Preset
+export const deleteRate = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/invoice_rates/${id}`);
+    return { data: `Invoice Rate deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
   }

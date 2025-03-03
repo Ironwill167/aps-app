@@ -25,6 +25,9 @@ import {
   addFee,
   updateFee,
   deleteFee,
+  addRate,
+  updateRate,
+  deleteRate,
 } from './ApiServices';
 import {
   Contact,
@@ -35,6 +38,7 @@ import {
   FeeRecord,
   OutstandingDocument,
   FileDocument,
+  InvoiceRates,
 } from '../types';
 
 /* -------------------- Contacts -------------------- */
@@ -522,6 +526,65 @@ export const useDeleteFee = () => {
     },
     onError: (error: Error) => {
       console.error('Delete Fee Error:', error);
+    },
+  });
+};
+
+/* -------------------- Invoice Rates -------------------- */
+export const useFetchInvoiceRates = () => {
+  // Optional: Implement if you need specific hooks for fetching invoice rates
+};
+
+export const useAddInvoiceRate = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (invoiceRate: Partial<InvoiceRates>) => {
+      const res = await addRate(invoiceRate);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoiceRates'] });
+      socket?.emit('dataChanged', { type: 'invoiceRates' });
+    },
+    onError: (error: Error) => {
+      console.error('Add Invoice Rate Error:', error);
+    },
+  });
+};
+
+export const useUpdateInvoiceRate = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({ id, updatedRate }: { id: number; updatedRate: Partial<InvoiceRates> }) => {
+      const res = await updateRate(id, updatedRate);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoiceRates'] });
+      socket?.emit('dataChanged', { type: 'invoiceRates' });
+    },
+    onError: (error: Error) => {
+      console.error('Update Invoice Rate Error:', error);
+    },
+  });
+};
+
+export const useDeleteInvoiceRate = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteRate(id);
+      return res.data; // string
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['invoiceRates'] });
+      socket?.emit('dataChanged', { type: 'invoiceRates' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete Invoice Rate Error:', error);
     },
   });
 };

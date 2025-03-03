@@ -18,7 +18,14 @@ const DocumentRequest: React.FC<DocumentRequestProps> = ({ filerecord, onClose }
   const addOutstandingDocument = useAddOutstandingDoc();
   const updateOutstandingDocument = useUpdateOutstandingDoc();
 
-  const [showAllDocuments, setShowAllDocuments] = React.useState(true);
+  const [showAllDocuments, setShowAllDocuments] = React.useState(false);
+
+  React.useEffect(() => {
+    const hasRequiredDocs = outstandingDocuments.some(
+      (doc) => doc.file_id === filerecord.id && doc.is_required
+    );
+    setShowAllDocuments(!hasRequiredDocs);
+  }, [filerecord.id, outstandingDocuments]);
 
   const categoryOrder = useMemo(
     () => [
@@ -132,6 +139,10 @@ const DocumentRequest: React.FC<DocumentRequestProps> = ({ filerecord, onClose }
   };
 
   const generatePlainTextEmailBody = () => {
+    // Note:
+    // Plain text emails do not support font styling.
+    // To use Times New Roman, consider creating an HTML email body instead.
+    // In an HTML email, you could wrap the content in a <div style="font-family: 'Times New Roman', serif;">...</div>
     const lines: string[] = [];
 
     // Header section

@@ -27,6 +27,7 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
 }) => {
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
+  const [partyName, setPartyName] = useState(additionalParty.adp_name || '');
 
   const companyOptions = companies.map((company) => ({
     value: company.id,
@@ -46,6 +47,25 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
     onUpdated(updated);
   };
 
+  // Update local state on each keystroke
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPartyName(e.target.value);
+  };
+
+  // Call onUpdated on blur (when user leaves the field)
+  const handleNameBlur = () => {
+    if (partyName !== additionalParty.adp_name) {
+      onUpdated({ ...additionalParty, adp_name: partyName });
+    }
+  };
+
+  // Call onUpdated when user presses Enter, but not for other keys
+  const handleNameKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.currentTarget.blur(); // triggers handleNameBlur
+    }
+  };
+
   return (
     <div className="additional-party-content">
       <div className="additional-party-row">
@@ -53,8 +73,10 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
           <label>Additional Party:</label>
           <input
             type="text"
-            value={additionalParty.adp_name}
-            onChange={(e) => onUpdated({ ...additionalParty, adp_name: e.target.value })}
+            value={partyName}
+            onChange={handleNameChange}
+            onBlur={handleNameBlur}
+            onKeyDown={handleNameKeyDown}
           />
         </div>
         <div className="adp-company-form-group">

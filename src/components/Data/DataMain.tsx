@@ -1,16 +1,20 @@
 import React, { useState, lazy, Suspense } from 'react';
 import FileDocsData from './DataTables/FileDocsData';
 import CausesOfLossData from './DataTables/CausesOfLossData';
+import InvoiceRatesData from './DataTables/InvoiceRatesData';
 import EditCauseOfLossModal from './DataModals/EditCauseOfLossModal';
 
 const EditFileDocModal = lazy(() => import('./DataModals/EditFileDocModal'));
+const EditInvoiceRateModal = lazy(() => import('./DataModals/EditInvoiceRateModal'));
 
 const Data: React.FC = () => {
   const [showFileDocs, setShowFileDocs] = useState(false);
   const [showCausesOfLoss, setShowCausesOfLoss] = useState(false);
+  const [showInvoiceRates, setShowInvoiceRates] = useState(false);
 
   const [showEditFileModal, setShowEditFileModal] = React.useState(false);
   const [showEditCauseModal, setShowEditCauseModal] = React.useState(false);
+  const [showEditInvoiceRateModal, setShowEditInvoiceRateModal] = React.useState(false);
 
   return (
     <div className="main-content-contents">
@@ -34,7 +38,7 @@ const Data: React.FC = () => {
                 setShowEditFileModal(true);
               }}
             >
-              Add File Doc
+              Add Doc
             </button>
           )}
           {!showCausesOfLoss ? (
@@ -54,7 +58,28 @@ const Data: React.FC = () => {
                 setShowEditCauseModal(true);
               }}
             >
-              Add Cause of Loss
+              Add Cause
+            </button>
+          )}
+          {!showInvoiceRates ? (
+            <button
+              className="mainControlButton"
+              onClick={() => {
+                setShowFileDocs(false);
+                setShowCausesOfLoss(false);
+                setShowInvoiceRates(true);
+              }}
+            >
+              Invoice Rates
+            </button>
+          ) : (
+            <button
+              className="mainControlButton"
+              onClick={() => {
+                setShowEditInvoiceRateModal(true);
+              }}
+            >
+              Add Rate
             </button>
           )}
         </div>
@@ -62,6 +87,7 @@ const Data: React.FC = () => {
       <div className="mainContentSubject">
         {showFileDocs && <FileDocsData />}
         {showCausesOfLoss && <CausesOfLossData />}
+        {showInvoiceRates && <InvoiceRatesData />}
       </div>
       <Suspense fallback={<div>Loading...</div>}>
         {showEditFileModal && (
@@ -71,6 +97,11 @@ const Data: React.FC = () => {
       <Suspense fallback={<div>Loading...</div>}>
         {showEditCauseModal && (
           <EditCauseOfLossModal mode="add" onClose={() => setShowEditCauseModal(false)} />
+        )}
+      </Suspense>
+      <Suspense fallback={<div>Loading...</div>}>
+        {showEditInvoiceRateModal && (
+          <EditInvoiceRateModal mode="add" onClose={() => setShowEditInvoiceRateModal(false)} />
         )}
       </Suspense>
     </div>

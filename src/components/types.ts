@@ -98,16 +98,22 @@ export interface FeeRecord {
   willie_cut: number;
   other_cut: number;
   sundries_amount: number;
+  sundries_description: string;
+  total_description: string;
   is_manual_total_fee?: boolean;
-  invoice_currency: string;
+  invoice_rate_preset: number;
 }
 
-export interface Rates {
-  surveyHourlyRate: number;
-  reportHourlyRate: number;
-  adminHourlyRate: number;
-  travelHourlyRate: number;
-  travelKmRate: number;
+export interface InvoiceRates {
+  id: number;
+  rate_preset_currency: string;
+  rate_preset_name: string;
+  survey_hourly_rate: number;
+  report_hourly_rate: number;
+  admin_hourly_rate: number;
+  travel_hourly_rate: number;
+  travel_km_rate: number;
+  rate_preset_description: string;
 }
 
 export interface FileContext {

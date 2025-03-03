@@ -55,8 +55,9 @@ export const validateAndParseNumber = (input: string): number => {
   return parseNumber(input);
 };
 
-// Returns true if the key should be allowed.
-export const isAllowedKey = (key: string): boolean => {
+// Reusable onKeyDown handler for numeric inputs.
+export const handleNumberInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
+  // Commonly allowed keys
   const allowedKeys = [
     'Backspace',
     'Tab',
@@ -72,13 +73,29 @@ export const isAllowedKey = (key: string): boolean => {
     'Alt',
     'Meta',
   ];
-  return allowedKeys.includes(key) || /\d/.test(key) || key === '.' || key === ',';
-};
 
-// Reusable onKeyDown handler for numeric inputs.
-export const handleNumberInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>): void => {
-  if (!isAllowedKey(e.key)) {
-    e.preventDefault();
-    showInfoToast('Please enter a valid number');
+  // If it’s one of the basic allowed keys, do nothing
+  if (allowedKeys.includes(e.key)) {
+    return;
   }
+
+  // Check for '.' or ',' or numeric keypad decimal:
+  if (
+    e.key === '.' ||
+    e.key === ',' ||
+    e.code === 'NumpadDecimal' ||
+    e.code === 'Period' ||
+    e.code === 'Comma'
+  ) {
+    return;
+  }
+
+  // Check if digit
+  if (/^\d$/.test(e.key)) {
+    return;
+  }
+
+  // Otherwise block it
+  e.preventDefault();
+  showInfoToast('Only numbers, ".", and "," are allowed.');
 };

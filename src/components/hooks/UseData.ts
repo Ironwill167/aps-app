@@ -35,8 +35,10 @@ import {
   useAddFee,
   useUpdateFee,
   useDeleteFee,
+  useAddInvoiceRate,
+  useUpdateInvoiceRate,
+  useDeleteInvoiceRate,
 } from './UseMutations';
-import { Rates } from '../types';
 
 export const useData = () => {
   const refetchInterval = 30000;
@@ -204,23 +206,24 @@ export const useData = () => {
 
   /* -------------------- Rates -------------------- */
   const {
-    data: rates,
-    isLoading: ratesLoading,
-    error: ratesError,
-  } = useQuery<Rates, Error>({
-    queryKey: ['rates'],
+    data: invoice_rates = [],
+    isLoading: invoiceRatesLoading,
+    error: invoiceRatesError,
+  } = useQuery({
+    queryKey: ['invoiceRates'],
     queryFn: async () => {
       const res = await fetchRates();
-      return res.data; // Rates
+      return res.data; // InvoiceRates[]
     },
-    initialData: {
-      surveyHourlyRate: 0,
-      reportHourlyRate: 0,
-      adminHourlyRate: 0,
-      travelHourlyRate: 0,
-      travelKmRate: 0,
-    },
+    initialData: [],
+    refetchInterval,
   });
+
+  // Mutations
+  const addRate = useAddInvoiceRate();
+  const updateRate = useUpdateInvoiceRate();
+  const deleteRate = useDeleteInvoiceRate();
+
   return {
     // Contacts
     contacts,
@@ -288,8 +291,11 @@ export const useData = () => {
     deleteFee: deleteFee.mutateAsync,
 
     // Rates
-    rates,
-    ratesLoading,
-    ratesError,
+    invoice_rates,
+    invoiceRatesLoading,
+    invoiceRatesError,
+    addRate: addRate.mutateAsync,
+    updateRate: updateRate.mutateAsync,
+    deleteRate: deleteRate.mutateAsync,
   };
 };

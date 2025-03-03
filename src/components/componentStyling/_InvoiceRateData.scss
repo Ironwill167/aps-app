@@ -1,0 +1,78 @@
+@use 'variables' as *;
+@use 'mixins' as *;
+
+.data_invoice_rate_name,
+.data_invoice_rate_description,
+.data_invoice_rate_currency,
+.data_invoice_survey_rate,
+.data_invoice_report_rate,
+.date_invoice_admin_rate,
+.data_invoice_travel_hourly_rate,
+.data_invoice_travel_km_rate,
+.data_invoice_survey_rate_actions {
+  height: 2vh;
+  padding: 0;
+  background-color: $lighter-green;
+  border: 1px solid $rich-black;
+}
+
+.data_invoice_rate_name {
+  width: 10vw;
+  padding: 0.5rem;
+  border-radius: 5px 0 0 5px;
+}
+
+.data_invoice_rate_description {
+  width: 15vw;
+  padding: 0.5rem;
+}
+
+.data_invoice_rate_currency {
+  width: 6vw;
+  padding: 0.5rem;
+}
+
+.data_invoice_survey_rate,
+.data_invoice_report_rate,
+.date_invoice_admin_rate,
+.data_invoice_travel_hourly_rate,
+.data_invoice_travel_km_rate {
+  width: 5vw;
+  padding: 0.5rem;
+}
+
+.data_invoice_survey_rate_actions {
+  width: 8vw;
+  padding: 0.5rem;
+  border-radius: 0 5px 5px 0;
+}
+
+.file-doc-modal-invoice-rate-currency {
+  @include display-flex($direction: row, $align: center, $justify: space-evenly);
+  label {
+    font-size: $small;
+    font-weight: bold;
+  }
+  select {
+    width: 6vw;
+    height: 3vh;
+    font-size: $small;
+    border-radius: 4px;
+  }
+}
+
+.file-doc-modal-invoice-rates {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  background-color: $lighter-green;
+  width: 19vw;
+
+  label {
+    font-weight: bold;
+  }
+}
+
+.file-doc-modal-invoice-rates-row {
+  @include display-flex($direction: row, $align: center, $justify: space-between);
+  width: 14vw;
+  height: 3vh;
+}

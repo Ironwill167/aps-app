@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
+import React, { useCallback, useRef, useEffect, useState, useMemo } from 'react';
 import { FileRecord, FeeRecord, Company } from '../types';
 import { useData } from '../hooks/UseData';
 import logo from '../../assets/logotpbg.png';
@@ -14,7 +14,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
   feeDetails,
   onRenderComplete,
 }) => {
-  const { companies, rates, ratesError, ratesLoading } = useData();
+  const { companies, invoice_rates } = useData();
 
   const getCompany = useCallback(
     (companyId: number | null): Company | undefined => {
@@ -25,6 +25,19 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
     [companies]
   );
 
+  const currentRatePreset = useMemo(
+    () => invoice_rates.find((rate) => rate.id === feeDetails.invoice_rate_preset),
+    [invoice_rates, feeDetails.invoice_rate_preset]
+  );
+
+  const rates = {
+    surveyHourlyRate: currentRatePreset?.survey_hourly_rate,
+    reportHourlyRate: currentRatePreset?.report_hourly_rate,
+    adminHourlyRate: currentRatePreset?.admin_hourly_rate,
+    travelHourlyRate: currentRatePreset?.travel_hourly_rate,
+    travelKmRate: currentRatePreset?.travel_km_rate,
+  };
+
   const principalCompany = getCompany(fileDetails.principal_id);
   const insuredCompany = getCompany(fileDetails.insured_id)?.name;
 
@@ -32,10 +45,10 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
   const [dataLoaded, setDataLoaded] = useState(false);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   useEffect(() => {
-    if (principalCompany && insuredCompany) {
+    if (principalCompany && insuredCompany && (currentRatePreset?.admin_hourly_rate || 0) > 0) {
       setDataLoaded(true);
     }
-  }, [principalCompany, insuredCompany]);
+  }, [principalCompany, insuredCompany, currentRatePreset]);
 
   useEffect(() => {
     if (onRenderComplete) {
@@ -91,17 +104,10 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
     return `${dd} ${mm} ${yyyy}`;
   };
 
-  const calcTimeXRate = (time: number, rate: number) => {
+  const calcTimeXRate = (time: number, rate?: number) => {
+    if (rate === undefined) return '0.00';
     return (time * rate).toFixed(2);
   };
-
-  if (ratesLoading) {
-    return <div>Loading rates...</div>;
-  }
-
-  if (ratesError) {
-    return <div>Error loading rates: {ratesError.message}</div>;
-  }
 
   return (
     <div className="invoice-container" onClick={(e) => e.stopPropagation()}>
@@ -148,7 +154,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
             </div>
             <div className="invoiceDateDetailsRow">
               <p className="invoicePBold invoiceDateDetailLabel">Currency: </p>
-              <p>{feeDetails.invoice_currency || 'ZAR'}</p>
+              <p>{currentRatePreset?.rate_preset_currency || 'ZAR'}</p>
             </div>
             <div className="invoiceDateDetailsRow">
               <p className="invoicePBold invoiceDateDetailLabel">Your Reference: </p>
@@ -249,9 +255,10 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
           <div className="invoiceFeeChargesDetailsRow">
             <div className="invoiceFeeChargesDetailsDiscCell">
               <p>Sundries</p>
+              <p>{feeDetails.sundries_description ? feeDetails.sundries_description : ''}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
-              <p>1</p>
+              <p>{feeDetails.sundries_amount}</p>
             </div>
             <div className="invoiceFeeChargesDetailsCell">
               <p>{feeDetails.sundries_amount ? feeDetails.sundries_amount : 0}</p>
@@ -302,6 +309,11 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
             </div>
           </div>
           <div className="invoiceFooterRight">
+            {feeDetails.total_description && (
+              <div className="invoiceTotalDescription">
+                <h5>{feeDetails.total_description}</h5>
+              </div>
+            )}
             <p>Total Fee: {feeDetails.total_fee}</p>
           </div>
         </div>

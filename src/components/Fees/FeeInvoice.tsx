@@ -1,11 +1,11 @@
 import React, { useCallback, useState, useEffect } from 'react';
-import { FileRecord, FeeRecord, Company, Contact } from '../types';
+import { FileRecord, FeeRecord, Company, Contact, InvoiceRates } from '../types';
 import { useUpdateFile, useUpdateFee } from '../hooks/UseMutations';
 import { useData } from '../hooks/UseData';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
 import FeeInvoicePrint from './FeeInvoicePrint';
 import { validateAndParseNumber, handleNumberInputKeyDown } from '../utils/NumberUtils';
-import CurrencySelect from '../Shared/CurrencySelect';
+import RatePresetSelect from '../Shared/RatePresetSelect';
 
 interface FeeInvoiceProps {
   fileDetails: FileRecord;
@@ -22,8 +22,16 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
   onClose,
   onFileUpdated,
 }) => {
-  const { rates, ratesLoading, ratesError } = useData();
+  const { invoice_rates } = useData();
   const [feeDetails, setFeeDetails] = useState<FeeRecord>(initialFeeDetails);
+
+  const [currentRatePreset, setCurrentRatePreset] = useState<InvoiceRates>();
+  useEffect(() => {
+    if (invoice_rates.length > 0) {
+      const ratePreset = invoice_rates.find((rate) => rate.id === feeDetails.invoice_rate_preset);
+      setCurrentRatePreset(ratePreset);
+    }
+  }, [invoice_rates, feeDetails.invoice_rate_preset]);
 
   const [manualTotalFeeInput, setManualTotalFeeInput] = useState<string>(
     initialFeeDetails.total_fee?.toString() || '0'
@@ -100,8 +108,16 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
       setFeeDetails((prev) => {
         const updated: FeeRecord = { ...prev };
 
-        if (key === 'invoice_currency') {
-          updated.invoice_currency = value as string;
+        if (key === 'invoice_rate_preset') {
+          updated.invoice_rate_preset = value as number;
+        }
+
+        if (key === 'sundries_description') {
+          updated.sundries_description = value as string;
+        }
+
+        if (key === 'total_description') {
+          updated.total_description = value as string;
         }
 
         // Handle cuts
@@ -160,11 +176,16 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
 
         // Recalculate total if not manual
         if (!updated.is_manual_total_fee) {
-          const handlingCalc = (Number(updated.handling_time) || 0) * (rates.adminHourlyRate || 0);
-          const surveyCalc = (Number(updated.survey_time) || 0) * (rates.surveyHourlyRate || 0);
-          const reportCalc = (Number(updated.report_time) || 0) * (rates.reportHourlyRate || 0);
-          const travelCalc = (Number(updated.travel_time) || 0) * (rates.travelHourlyRate || 0);
-          const travelKmCalc = (Number(updated.travel_km) || 0) * (rates.travelKmRate || 0);
+          const handlingCalc =
+            (Number(updated.handling_time) || 0) * (currentRatePreset?.admin_hourly_rate || 0);
+          const surveyCalc =
+            (Number(updated.survey_time) || 0) * (currentRatePreset?.survey_hourly_rate || 0);
+          const reportCalc =
+            (Number(updated.report_time) || 0) * (currentRatePreset?.report_hourly_rate || 0);
+          const travelCalc =
+            (Number(updated.travel_time) || 0) * (currentRatePreset?.travel_hourly_rate || 0);
+          const travelKmCalc =
+            (Number(updated.travel_km) || 0) * (currentRatePreset?.travel_km_rate || 0);
           const sundriesCalc = Number(updated.sundries_amount) || 0;
           const total =
             handlingCalc + surveyCalc + reportCalc + travelCalc + travelKmCalc + sundriesCalc;
@@ -187,13 +208,7 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
         }
       }
     },
-    [
-      rates.adminHourlyRate,
-      rates.surveyHourlyRate,
-      rates.reportHourlyRate,
-      rates.travelHourlyRate,
-      rates.travelKmRate,
-    ]
+    [currentRatePreset]
   );
 
   useEffect(() => {
@@ -201,15 +216,6 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
       setManualTotalFeeInput(feeDetails.total_fee?.toString() || '0');
     }
   }, [feeDetails.is_manual_total_fee, feeDetails.total_fee]);
-
-  // Handle loading and error states for rates
-  if (ratesLoading) {
-    return <div>Loading rates...</div>;
-  }
-
-  if (ratesError) {
-    return <div>Error loading rates: {ratesError.message}</div>;
-  }
 
   const getTodayDate = () => {
     const today = new Date();
@@ -273,10 +279,11 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
         <div className="invoiceEditingContainer">
           <div className="invoiceActionCurrencyContainer">
             <label htmlFor="currency">Currency</label>
-            <CurrencySelect
-              value={feeDetails.invoice_currency || 'ZAR'}
+            <RatePresetSelect
+              value={feeDetails.invoice_rate_preset}
               selectClassName="currencySelectFeeInvoice"
-              onChange={(value) => handleFeeChange('invoice_currency', value)}
+              onChange={(value) => handleFeeChange('invoice_rate_preset', value)}
+              options={invoice_rates}
             />
           </div>
           <div className="invoiceActionEditingFields">
@@ -418,45 +425,64 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
                   }}
                 />
               </div>
+              <div className="invoiceActionQuantityRow">
+                <textarea
+                  name="sunDriesDescription"
+                  value={feeDetails.sundries_description || ''}
+                  placeholder="Sundries Description"
+                  onChange={(e) => handleFeeChange('sundries_description', e.target.value)}
+                />
+              </div>
             </div>
           </div>
-          <div className="invoiceActionTotalFeeContainer">
-            <div className="invoiceActionTotalFeeRow">
-              <label htmlFor="manualTotalFee">Set Total Fee</label>
+          <div className="invoiceActionTotalFooter">
+            <div className="invoiceActionTotalFeeDescription">
+              <label htmlFor="minimumFee">Total Description:</label>
               <input
-                className="manualTotalFeeCheckbox"
-                type="checkbox"
-                name="manualTotalFee"
-                checked={feeDetails.is_manual_total_fee ?? false}
-                onChange={(e) => handleFeeChange('is_manual_total_fee', e.target.checked)}
+                type="text"
+                name="minimumFee"
+                value={feeDetails.total_description || ''}
+                onChange={(e) => handleFeeChange('total_description', e.target.value)}
               />
             </div>
-            <input
-              className="manualTotalFeeInput"
-              type="text"
-              inputMode="decimal"
-              name="totalFee"
-              value={manualTotalFeeInput}
-              onChange={(e) => {
-                const value = e.target.value;
+            <div className="invoiceActionTotalFeeContainer">
+              <div className="invoiceActionTotalFeeRow">
+                <label htmlFor="manualTotalFee">Set Total Fee</label>
+                <input
+                  className="manualTotalFeeCheckbox"
+                  type="checkbox"
+                  name="manualTotalFee"
+                  checked={feeDetails.is_manual_total_fee ?? false}
+                  onChange={(e) => handleFeeChange('is_manual_total_fee', e.target.checked)}
+                />
+              </div>
+              <input
+                className="manualTotalFeeInput"
+                type="text"
+                inputMode="decimal"
+                name="totalFee"
+                value={manualTotalFeeInput}
+                onChange={(e) => {
+                  const value = e.target.value;
 
-                // Allow only numbers and a single decimal point
-                const regex = /^\d*\.?\d*$/;
-                if (regex.test(value)) {
-                  handleFeeChange('total_fee', value);
-                  setIsValidTotalFee(true);
-                } else {
-                  setIsValidTotalFee(false);
-                }
-              }}
-              disabled={!feeDetails.is_manual_total_fee}
-              style={{
-                borderColor: isValidTotalFee ? 'initial' : 'red',
-              }}
-            />
-            {!isValidTotalFee && (
-              <span className="error-message">Please enter a valid number.</span>
-            )}
+                  // Allow only numbers and a single decimal point
+                  const regex = /^\d*\.?\d*$/;
+                  if (regex.test(value)) {
+                    handleFeeChange('total_fee', value);
+                    setIsValidTotalFee(true);
+                  } else {
+                    setIsValidTotalFee(false);
+                  }
+                }}
+                disabled={!feeDetails.is_manual_total_fee}
+                style={{
+                  borderColor: isValidTotalFee ? 'initial' : 'red',
+                }}
+              />
+              {!isValidTotalFee && (
+                <span className="error-message">Please enter a valid number.</span>
+              )}
+            </div>
           </div>
         </div>
         <div className="invoiceEditingFooter">

@@ -82,9 +82,9 @@
   background-color: $lightest-green;
   border: 1px solid $border-color;
   border-radius: 6px;
-  padding: 0.4rem;
 
   label {
+    margin-left: 0.6vw;
     font-size: $small;
     font-weight: bold;
     margin-bottom: 0.5rem;
@@ -93,7 +93,7 @@
   .inputLarge,
   .inputMedium,
   .inputSmall {
-    padding: 0.5rem;
+    height: 3vh;
     font-size: $small;
     text-align: right;
     border: 1px solid $border-color;
@@ -167,8 +167,8 @@
 
 .modal-footer-button-container {
   @include display-flex($direction: row, $align: center, $justify: center);
-  width: 17vw;
-  height: 8vh;
+  width: 15vw;
+  height: 7vh;
   background-color: $lightest-green;
   border: 1px solid $border-color;
   border-radius: 6px;
@@ -190,7 +190,7 @@
   background-color: #4caf50; /* Green */
   color: white;
   border: none;
-  padding: 1vi 1.2vi;
+  padding: 0.8vi 1vi;
   font-size: $medium;
   margin-right: 10px;
   border-radius: 4px;
@@ -206,7 +206,7 @@
   background-color: #f44336; /* Red */
   color: white;
   border: none;
-  padding: 1vi 1.2vi;
+  padding: 0.8vi 1vi;
   font-size: $medium;
   border-radius: 4px;
   cursor: pointer;
@@ -258,7 +258,7 @@
 
   .additional-party-content {
     @include display-flex($direction: row, $align: center, $justify: flex-start);
-    width: 59vw;
+    width: 60vw;
     margin-bottom: 10px;
     border: 1px solid $border-color;
     border-radius: 6px;
@@ -266,24 +266,24 @@
 
     .additional-party-row {
       @include display-flex($direction: row, $align: center, $justify: space-between);
-      width: 59vw;
+      width: 60vw;
 
       .additional-party-name {
         @include display-flex($direction: column, $align: flex-start, $justify: center);
         width: 20%;
         font-size: $small;
-        border-radius: 4px;
+        margin-left: 0.4vw;
 
         input {
           margin: 0;
           border-radius: 4px;
-          margin-left: 0.1vw;
         }
       }
 
       label {
         font-size: $small;
         font-weight: bold;
+
         margin-bottom: 0.5rem;
       }
 
@@ -293,7 +293,6 @@
         min-height: 4vh;
         margin: 0.2rem 0.05vi;
         border-radius: 6px;
-        padding: 0.4rem;
       }
       .adp-contact-form-group {
         @include display-flex($direction: row, $align: center, $justify: space-between);
@@ -301,7 +300,6 @@
         min-height: 4vh;
         margin: 0.2rem 0.05vi;
         border-radius: 6px;
-        padding: 0.4rem;
       }
 
       .adp-select-container {
@@ -319,6 +317,7 @@
         border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.3s;
+        margin-right: 0.4vw;
       }
     }
   }

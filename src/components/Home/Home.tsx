@@ -486,7 +486,11 @@ const Home: React.FC = () => {
                     </button>
                     <button
                       className="actionFileDetailsFeeButton"
-                      onClick={() => setShowFeeInvoice(true)}
+                      onClick={() => {
+                        const fee = fees.find((f) => f.id === selectedFile.id);
+                        setSelectedFee(fee || null); // pass the correct fee record
+                        setShowFeeInvoice(true);
+                      }}
                     >
                       Invoice
                     </button>
