@@ -159,14 +159,32 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
 
       <Suspense fallback={<div>Loading...</div>}>
         {showAddContactModal && (
-          <AddContactModal
-            onClose={() => setShowAddContactModal(false)}
-            companies={companies}
-            onContactAdded={(contact) => {
-              onUpdated({ ...additionalParty, adp_contact_id: contact.id });
-              setShowAddContactModal(false);
+          <div
+            className="nested-modal-container"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
             }}
-          />
+            style={{ position: 'relative', zIndex: 1000 }}
+          >
+            <AddContactModal
+              onClose={(e) => {
+                console.log('Contact modal close requested');
+                if (e) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }
+                setShowAddContactModal(false);
+              }}
+              companies={companies}
+              onContactAdded={(contact) => {
+                console.log('Contact added in AdditionalPartyDisplay:', contact);
+                // Immediately update to avoid timing issues
+                onUpdated({ ...additionalParty, adp_contact_id: contact.id });
+                setShowAddContactModal(false);
+              }}
+            />
+          </div>
         )}
       </Suspense>
     </div>

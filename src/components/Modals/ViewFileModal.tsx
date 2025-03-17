@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, lazy, Suspense, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef, lazy, Suspense, useCallback } from 'react';
 import Select from 'react-select';
 import { FileRecord, Company, Contact } from '../types';
 import { useUpdateFile } from '../hooks/UseMutations';
@@ -114,20 +114,28 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     [currentField]
   );
 
-  const companyOptions = companies.map((company) => ({
-    value: company.id,
-    label: company.name,
-  }));
+  const companyOptions = useMemo(() => {
+    return companies
+      .map((company) => ({
+        value: company.id,
+        label: company.name,
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+  }, [companies]);
 
-  const contactOptionsForCompany = (id: number | null) => {
-    if (id === null) return [];
-    return contacts
-      .filter((contact) => contact.company_id === id)
-      .map((contact) => ({
-        value: contact.id,
-        label: `${contact.name} ${contact.surname ? contact.surname : ''}`,
-      }));
-  };
+  const contactOptionsForCompany = useCallback(
+    (id: number | null) => {
+      if (id === null) return [];
+      return contacts
+        .filter((contact) => contact.company_id === id)
+        .map((contact) => ({
+          value: contact.id,
+          label: `${contact.name} ${contact.surname ? contact.surname : ''}`,
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+    },
+    [contacts]
+  );
 
   const statusOptions = [
     { value: 'NEW', label: 'New' },
@@ -272,6 +280,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                         null
                       }
                       required
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
                     <button
                       type="button"
@@ -303,6 +316,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                             ) || null
                           : null
                       }
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
                     <button
                       type="button"
@@ -332,6 +350,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                         companyOptions.find((option) => option.value === formData.principal_id) ||
                         null
                       }
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
                     <button
                       type="button"
@@ -363,6 +386,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                             ) || null
                           : null
                       }
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
                     <button
                       type="button"
@@ -391,6 +419,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       value={
                         companyOptions.find((option) => option.value === formData.broker_id) || null
                       }
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
                     <button
                       type="button"
@@ -422,6 +455,11 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                             ) || null
                           : null
                       }
+                      filterOption={(option, input) =>
+                        option.label.toLowerCase().includes(input.toLowerCase())
+                      }
+                      menuPlacement="auto"
+                      maxMenuHeight={200}
                     />
 
                     <button

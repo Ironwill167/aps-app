@@ -15,7 +15,7 @@ const AddCompanyModal = lazy(() => import('../Modals/AddCompanyModal'));
 const ViewCompanyModal = lazy(() => import('../Modals/ViewCompanyModal'));
 
 const Contacts: React.FC = () => {
-  const { contacts, companies, updateContact, deleteContact } = useData();
+  const { contacts, companies, files, updateContact, deleteContact } = useData();
 
   // Search & Sort State
   const [searchTerm, setSearchTerm] = useState('');
@@ -40,6 +40,8 @@ const Contacts: React.FC = () => {
   const [editPosition, setEditPosition] = useState('');
 
   const [contactToDelete, setContactToDelete] = useState<Contact | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+
   // Handle Right-Click to Show Electron Context Menu
   const handleRightClick = useCallback((event: React.MouseEvent, contact: Contact) => {
     event.preventDefault();
@@ -117,9 +119,22 @@ const Contacts: React.FC = () => {
   const handleDeleteContact = useCallback(
     (id: number) => {
       const contact = contacts.find((c) => c.id === id) || null;
+      const activeFiles = files.filter(
+        (file) =>
+          file.insured_contact_id === id ||
+          file.principal_contact_id === id ||
+          file.broker_contact_id === id
+      );
+      if (activeFiles.length > 0) {
+        showErrorToast(
+          `Cannot delete contact as it is associated with ${activeFiles.map((file) => file.id).join(', ')}`
+        );
+        return;
+      }
       setContactToDelete(contact);
+      setShowDeleteDialog(true);
     },
-    [contacts]
+    [contacts, files]
   );
 
   // 3. Implement confirmation handlers
@@ -134,10 +149,12 @@ const Contacts: React.FC = () => {
         showErrorToast('There was an error deleting the contact. Please try again.');
       }
     }
+    setShowDeleteDialog(false);
   };
 
   const handleCancelDelete = () => {
     setContactToDelete(null);
+    setShowDeleteDialog(false);
   };
 
   // Save Edited Contact
@@ -496,7 +513,7 @@ const Contacts: React.FC = () => {
         />
         {/* Custom Dialog */}
         <CustomDialog
-          open={false}
+          open={showDeleteDialog}
           title="Delete Contact"
           message={`Are you sure you want to delete ${contactToDelete?.name}?`}
           onConfirm={handleConfirmDelete}

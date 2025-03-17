@@ -99,3 +99,36 @@ export const handleNumberInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement
   e.preventDefault();
   showInfoToast('Only numbers, ".", and "," are allowed.');
 };
+
+/**
+ * Formats a number as currency with proper thousands separators and decimal places
+ * @param value - The number to format
+ * @param decimals - Number of decimal places (default: 2)
+ * @param thousandsSeparator - Character to use as thousands separator (default: ',')
+ * @param decimalSeparator - Character to use as decimal separator (default: '.')
+ * @returns Formatted string (e.g. "1,234.56" or "1.234,56" based on separators)
+ */
+export const formatCurrency = (
+  value: number | string | null | undefined,
+  decimals = 2,
+  thousandsSeparator = ',',
+  decimalSeparator = '.'
+): string => {
+  // Handle null/undefined/empty cases
+  if (value === null || value === undefined || value === '') return '';
+
+  // Convert to number if it's a string
+  const numValue = typeof value === 'string' ? parseNumber(value) : Number(value);
+
+  // Handle NaN
+  if (isNaN(numValue)) return '';
+
+  // Format the number with fixed decimal places
+  const parts = numValue.toFixed(decimals).split('.');
+
+  // Add thousands separators to the integer part
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, thousandsSeparator);
+
+  // Join with the decimal separator and return
+  return parts.join(decimalSeparator);
+};

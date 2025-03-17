@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FileRecord, Company, Contact } from '../types';
 import { useUpdateFile } from '../hooks/UseMutations';
 import { getContactNameSurname } from '../utils/ContactUtils';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
 import { formatDbDateDisplay } from '../utils/DateUtils';
+import { formatCurrency } from '../utils/NumberUtils';
 import { useData } from '../hooks/UseData';
 
 interface PrelimReportProps {
@@ -21,6 +22,14 @@ const PrelimReport: React.FC<PrelimReportProps> = ({ file, contacts, companies, 
   const colForFile = causesOfLoss.find((col) => col.id === file.cause_of_loss_id);
 
   const updateFileMutation = useUpdateFile();
+
+  const checkCurrency = useMemo(() => {
+    if (file.claim_currency === null) {
+      return 'R';
+    } else {
+      return file.claim_currency;
+    }
+  }, [file.claim_currency]);
 
   const handleUpdate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,15 +122,16 @@ const PrelimReport: React.FC<PrelimReportProps> = ({ file, contacts, companies, 
                     <p>
                       <strong>Subject Matter:</strong> {file.subject_matter}
                     </p>
-                    {file.estimate_of_loss && file.estimate_of_loss !== 0 && (
-                      <p>
-                        <strong>Estimate of Loss:</strong>{' '}
-                        {`${file.claim_currency} ${file.estimate_of_loss}`}
-                      </p>
-                    )}
+
                     <p>
                       <strong>Cause of Loss:</strong> {colForFile?.col_name}
                     </p>
+                    {file.estimate_of_loss && file.estimate_of_loss !== 0 && (
+                      <p>
+                        <strong>Estimate of Loss:</strong>{' '}
+                        {`${checkCurrency} ${formatCurrency(file.estimate_of_loss)}`}
+                      </p>
+                    )}
                   </div>
                   {additionalPartiesForFile.length > 0 && (
                     <div className="prelim-report-section">

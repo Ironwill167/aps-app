@@ -5,6 +5,7 @@ import { FileRecord, FeeRecord } from '../types';
 import { showErrorToast } from '../utils/toast';
 import EditableCell from './EditableCell';
 import { convertToLocalDate } from '../utils/DateUtils';
+import { formatCurrency } from '../utils/NumberUtils';
 
 const ViewFileModal = lazy(() => import('../Modals/ViewFileModal'));
 const FeeInvoice = lazy(() => import('./FeeInvoice'));
@@ -254,40 +255,44 @@ const FeeManagement: React.FC = () => {
           <div className="feeManagementRaisedTotalsHeading">Fee Raised</div>
 
           <div className="feeManagementRaisedTotalAmount">
-            Total Fee: R {getFeeTotals.totalRaisedFee.toFixed(2)}
+            Total Fee: R {formatCurrency(getFeeTotals.totalRaisedFee)}
           </div>
-          <div className="feeManagementRaisedAPSAmount">APS: R {getFeeTotals.totalRaisedAPS}</div>
+          <div className="feeManagementRaisedAPSAmount">
+            APS: R {formatCurrency(getFeeTotals.totalRaisedAPS)}
+          </div>
           <div className="feeManagementRaisedMannieAmount">
-            Mannie: R {getFeeTotals.totalRaisedMannie.toFixed(2)}
+            Mannie: R {formatCurrency(getFeeTotals.totalRaisedMannie)}
           </div>
           <div className="feeManagementRaisedElizeAmount">
-            Elize: R {getFeeTotals.totalRaisedElize.toFixed(2)}
+            Elize: R {formatCurrency(getFeeTotals.totalRaisedElize)}
           </div>
           <div className="feeManagementRaisedWillieAmount">
-            Willie: R {getFeeTotals.totalRaisedWillie.toFixed(2)}
+            Willie: R {formatCurrency(getFeeTotals.totalRaisedWillie)}
           </div>
           <div className="feeManagementRaisedOtherAmount">
-            Other: R {getFeeTotals.totalRaisedOther.toFixed(2)}
+            Other: R {formatCurrency(getFeeTotals.totalRaisedOther)}
           </div>
         </div>
         <div className="feeManagementActiveTotals">
           <div className="feeManagementActiveTotalsHeading">Active Files</div>
 
           <div className="feeManagementActiveTotalAmount">
-            Total Fee: R {getFeeTotals.totalOpenFee.toFixed(2)}
+            Total Fee: R {formatCurrency(getFeeTotals.totalOpenFee)}
           </div>
-          <div className="feeManagementActiveAPSAmount">APS: R {getFeeTotals.totalOpenAPS}</div>
+          <div className="feeManagementActiveAPSAmount">
+            APS: R {formatCurrency(getFeeTotals.totalOpenAPS)}
+          </div>
           <div className="feeManagementActiveMannieAmount">
-            Mannie: R {getFeeTotals.totalOpenMannie.toFixed(2)}
+            Mannie: R {formatCurrency(getFeeTotals.totalOpenMannie)}
           </div>
           <div className="feeManagementActiveElizeAmount">
-            Elize: R {getFeeTotals.totalOpenElize.toFixed(2)}
+            Elize: R {formatCurrency(getFeeTotals.totalOpenElize)}
           </div>
           <div className="feeManagementActiveWillieAmount">
-            Willie: R {getFeeTotals.totalOpenWillie.toFixed(2)}
+            Willie: R {formatCurrency(getFeeTotals.totalOpenWillie)}
           </div>
           <div className="feeManagementActiveOtherAmount">
-            Other: R {getFeeTotals.totalOpenOther.toFixed(2)}
+            Other: R {formatCurrency(getFeeTotals.totalOpenOther)}
           </div>
         </div>
       </div>
@@ -358,7 +363,7 @@ const FeeManagement: React.FC = () => {
                     onSave={handleSave}
                   />
                 </td>
-                <td className="FeeManageApsCut">{fee.aps_cut}</td>
+                <td className="FeeManageApsCut">{formatCurrency(fee.aps_cut)}</td>
                 <td className="FeeManageManCut">
                   <EditableCell
                     feeId={fee.id}
@@ -447,7 +452,7 @@ const FeeManagement: React.FC = () => {
                     onSave={handleSave}
                   />
                 </td>
-                <td className="FeeManageApsCut">{fee.aps_cut}</td>
+                <td className="FeeManageApsCut">{formatCurrency(fee.aps_cut)}</td>
                 <td className="FeeManageManCut">
                   <EditableCell
                     feeId={fee.id}
@@ -536,7 +541,7 @@ const FeeManagement: React.FC = () => {
                     onSave={handleSave}
                   />
                 </td>
-                <td className="FeeManageApsCut">{fee.aps_cut}</td>
+                <td className="FeeManageApsCut">{formatCurrency(fee.aps_cut)}</td>
                 <td className="FeeManageManCut">
                   <EditableCell
                     feeId={fee.id}

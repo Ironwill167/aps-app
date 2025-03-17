@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Suspense } from 'react';
 import Select from 'react-select';
 import { Contact, Company } from '../types';
 import { showSuccessToast, showErrorToast } from '../utils/toast';
+import CustomDialog from '../utils/CustomDialog';
 
 const AddCompanyModal = React.lazy(() => import('./AddCompanyModal'));
 
@@ -28,61 +29,100 @@ const EntityModal: React.FC<EntityModalProps> = ({
 
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
 
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const [customDialogTitle, setCustomDialogTitle] = useState('');
+  const [customDialogMessage, setCustomDialogMessage] = useState('');
+
   const firstInputRef = useRef<HTMLInputElement>(null);
+  const initialFocusApplied = useRef<boolean>(false);
 
   useEffect(() => {
-    firstInputRef.current?.focus();
+    if (!initialFocusApplied.current && firstInputRef.current) {
+      firstInputRef.current.focus();
+      initialFocusApplied.current = true;
+    }
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
+
     window.addEventListener('keydown', handleKeyDown);
     document.body.style.overflow = 'hidden';
+
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = 'auto';
     };
   }, [onClose]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+  }, []);
 
   interface SelectOption {
     value: number;
     label: string;
   }
 
-  const handleSelectChange = (name: string, selectedOption: SelectOption | null) => {
+  const handleSelectChange = useCallback((name: string, selectedOption: SelectOption | null) => {
     setFormData((prev) => ({ ...prev, [name]: selectedOption ? selectedOption.value : null }));
-  };
+  }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
 
     // Basic Validation
     if (
       (entity === 'contact' && !(formData as Contact).name) ||
       (entity === 'company' && !(formData as Company).name)
     ) {
-      showErrorToast('Please fill in all required fields.');
+      showErrorToast(`Name is required to create a new ${entity}.`);
       return;
     }
 
-    try {
-      const savedEntity = await onSave(formData);
-      showSuccessToast(`${entity.charAt(0).toUpperCase() + entity.slice(1)} saved successfully!`);
-      onEntityUpdated(savedEntity);
-      onClose();
-    } catch (err) {
-      console.error(`Error saving ${entity}:`, err);
-      showErrorToast(`Failed to ${mode} ${entity}. Please try again.`);
+    if (
+      entity === 'company' &&
+      (!(formData as Company).streetaddress || (formData as Company).streetaddress?.trim() === '')
+    ) {
+      setCustomDialogTitle('No Street Address');
+      setCustomDialogMessage(
+        'You have not entered a street address for the company. Do you wish to proceed without entering a street address?'
+      );
+      setShowCustomDialog(true);
+      return;
     }
+
+    saveFunction();
   };
 
   const handleCompanyAddedLocal = (company: Company) => {
     setFormData((prev) => ({ ...prev, company_id: company.id }));
     setShowAddCompanyModal(false);
+  };
+
+  const saveFunction = async () => {
+    try {
+      console.log('Entity modal saving:', formData);
+      const savedEntity = await onSave(formData);
+      console.log('Entity saved successfully:', savedEntity);
+      showSuccessToast(`${entity.charAt(0).toUpperCase() + entity.slice(1)} saved successfully!`);
+      if (savedEntity) {
+        console.log('Entity updated callback called with:', savedEntity);
+        onEntityUpdated(savedEntity);
+        console.log('Entity updated callback called');
+        setTimeout(() => {
+          console.log('Closing modal after save');
+          onClose();
+        }, 10);
+
+        return;
+      }
+      onClose();
+    } catch (err) {
+      console.error(`Error saving ${entity}:`, err);
+      showErrorToast(`Failed to ${mode} ${entity}. Please try again.`);
+    }
   };
 
   return (
@@ -103,7 +143,10 @@ const EntityModal: React.FC<EntityModalProps> = ({
             </p>
             <span
               className="close-modal-button"
-              onClick={onClose}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose();
+              }}
               role="button"
               aria-label="Close Modal"
               tabIndex={0}
@@ -384,10 +427,27 @@ const EntityModal: React.FC<EntityModalProps> = ({
 
               {/* Form Actions */}
               <div className="modal-footer">
-                <button type="submit" className="modal-submit" tabIndex={6}>
+                <button
+                  type="submit"
+                  className="modal-submit"
+                  tabIndex={6}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleSubmit(e);
+                  }}
+                >
                   {mode === 'add' ? 'Add' : 'Save'}
                 </button>
-                <button type="button" className="modal-cancel" onClick={onClose} tabIndex={7}>
+                <button
+                  type="button"
+                  className="modal-cancel"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClose();
+                  }}
+                  tabIndex={7}
+                >
                   Cancel
                 </button>
               </div>
@@ -402,10 +462,19 @@ const EntityModal: React.FC<EntityModalProps> = ({
               />
             </Suspense>
           )}
+
+          {/* Custom Dialog */}
+          <CustomDialog
+            open={showCustomDialog}
+            title={customDialogTitle}
+            message={customDialogMessage}
+            onConfirm={saveFunction}
+            onCancel={() => {}}
+          />
         </div>
       </div>
     </>
   );
 };
 
-export default EntityModal;
+export default React.memo(EntityModal);
