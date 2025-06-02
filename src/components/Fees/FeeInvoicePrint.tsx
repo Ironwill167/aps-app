@@ -123,6 +123,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
             <p>Gauteng Province</p>
             <p>South Africa</p>
             <p>1759</p>
+            <p>Non V.A.T. Vendor</p>
           </div>
 
           <div className="invoiceLogoContainer">

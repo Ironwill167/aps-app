@@ -25,7 +25,8 @@ const DocumentRequest: React.FC<DocumentRequestProps> = ({ filerecord, onClose }
       (doc) => doc.file_id === filerecord.id && doc.is_required
     );
     setShowAllDocuments(!hasRequiredDocs);
-  }, [filerecord.id, outstandingDocuments]);
+  }, [filerecord.id]); // DO NOT ADD outstandingDocuments here, it will cause infinite loop
+  // useEffect will run when filerecord.id changes, and it will set showAllDocuments based on the presence of required documents.
 
   const categoryOrder = useMemo(
     () => [

@@ -31,6 +31,18 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
   companies,
   contacts,
 }) => {
+  const [localCompanies, setLocalCompanies] = useState<Company[]>([]);
+
+  const combinedCompanies = useMemo(
+    () =>
+      [...companies, ...localCompanies].filter(
+        (company, index, self) =>
+          // Remove duplicates by ID
+          index === self.findIndex((c) => c.id === company.id)
+      ),
+    [companies, localCompanies]
+  );
+
   const {
     causesOfLoss: cause_of_loss_data,
     additionalParties,
@@ -99,11 +111,17 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
 
   const handleCompanyAddedLocal = useCallback(
     (company: Company) => {
-      companies.push(company);
+      // Add to local companies list
+      setLocalCompanies((prev) => [...prev, company]);
+
+      // Update the form data with the new company ID for the current field
       setFormData((prev) => ({ ...prev, [currentField!]: company.id }));
       setCurrentField(null);
+
+      // Close modal
+      setShowAddCompanyModal(false);
     },
-    [currentField, companies]
+    [currentField]
   );
 
   const handleContactAddedLocal = useCallback(
@@ -115,13 +133,13 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
   );
 
   const companyOptions = useMemo(() => {
-    return companies
+    return combinedCompanies
       .map((company) => ({
         value: company.id,
         label: company.name,
       }))
       .sort((a, b) => a.label.localeCompare(b.label));
-  }, [companies]);
+  }, [combinedCompanies]);
 
   const contactOptionsForCompany = useCallback(
     (id: number | null) => {
