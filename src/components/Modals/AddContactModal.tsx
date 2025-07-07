@@ -8,16 +8,23 @@ interface AddContactModalProps {
   onClose: (e?: React.MouseEvent) => void;
   companies: Company[];
   onContactAdded: (newContact: Contact) => void;
+  preselectedCompanyId?: number | null;
 }
 
 const AddContactModal: React.FC<AddContactModalProps> = ({
   onClose,
   companies,
   onContactAdded,
+  preselectedCompanyId,
 }) => {
   const addContactMutation = useAddContact();
 
   console.log('AddContactModal rendered');
+
+  // Create initial data with preselected company if provided
+  const initialData: Partial<Contact> = preselectedCompanyId
+    ? { company_id: preselectedCompanyId }
+    : {};
 
   const handleSave = async (data: Partial<Contact>): Promise<Contact> => {
     try {
@@ -55,6 +62,7 @@ const AddContactModal: React.FC<AddContactModalProps> = ({
       <EntityModal
         mode="add"
         entity="contact"
+        initialData={initialData}
         onSave={handleSave}
         onClose={handleModalClose}
         onEntityUpdated={handleEntityUpdated}

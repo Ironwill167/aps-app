@@ -1,173 +1,183 @@
-@use "variables" as *;
-@use "mixins" as *;
+@use 'variables' as *;
+@use 'mixins' as *;
 
 .companiesContentContainer {
-    @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
+  @include display-flex($direction: row, $align: flex-start, $justify: flex-start);
 }
 
-.companiesTable{
-    @include display-flex($direction: column, $align: center, $justify: flex-start);
-    width: 60vw;
-    background-color: $lighter-green;
+.companiesTable {
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  width: 60vw;
+  background-color: $lighter-green;
+  border: 1px solid $rich-black;
+  padding: 5px;
+  border-radius: 4px;
 
-    .companiesTableHeader{
-        @include display-flex($direction: row, $align: center, $justify: flex-start);
-        background-color: $light-green;
-        color: $text-color;
-        font-size: $medium;
-        font-weight: bold;
+  .companiesTableHeader {
+    @include display-flex($direction: row, $align: center, $justify: flex-start);
+    background-color: $light-green;
+    color: $text-color;
+    font-size: $medium;
+    font-weight: bold;
 
-        .companiesTableHeaderCell{
-            @include display-flex($direction: row, $align: center, $justify: flex-start);
-        }
+    .companiesTableHeaderCell {
+      @include display-flex($direction: row, $align: center, $justify: flex-start);
+    }
+  }
+
+  .companiesTableNameColumn {
+    width: 24vw;
+  }
+
+  .companiesTableAddressColumn {
+    width: 25vw;
+  }
+
+  .companiesTableTypeColumn {
+    width: 10vw;
+  }
+
+  .companiesTableRow {
+    @include display-flex($direction: row, $align: stretch, $justify: flex-start);
+    min-height: 3.4vh;
+
+    &:nth-child(even) {
+      background-color: $lighter-green;
     }
 
-    .companiesTableNameColumn{
-        width: 24vw;
+    &:nth-child(odd) {
+      background-color: $lightest-blue;
     }
 
-    .companiesTableAddressColumn{
-        width: 25vw;
+    &:hover {
+      background-color: $light-green;
+      cursor: pointer;
     }
+  }
 
-    .companiesTableTypeColumn{
-        width: 10vw;
-    }
-
-    .companiesTableRow{
-        @include display-flex($direction: row, $align: center, $justify: flex-start);
-        
-        
-
-        &:nth-child(even) {
-            background-color: $lighter-green;
-        }
-
-        &:nth-child(odd) {
-            background-color: $lightest-blue;
-        }
-
-        &:hover{
-            background-color: $light-green;
-            cursor: pointer;
-        }
-    }
-
-    .companiesTableCell{
-        height: 3.4vh;
-        padding-left: 2px;
-        border: 1px solid $rich-black;
-    }
+  .companiesTableCell {
+    min-height: 3.4vh;
+    max-height: calc(3.4vh * 2); // Allow up to 2 lines of text
+    padding: 4px 2px;
+    border: 1px solid $rich-black;
+    @include display-flex($direction: column, $align: flex-start, $justify: center);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; // Limit to 2 lines
+    line-clamp: 2; // Standard property for compatibility
+    -webkit-box-orient: vertical;
+  }
 }
-
-
 
 .companiesViewerContainer {
-    @include display-flex($direction: column, $align: center, $justify: flex-start);
-    position: sticky;
-    top: 11.6vh;
-    width: 28vw;
-    background-color: $lightest-green;
-    
+  @include display-flex($direction: column, $align: center, $justify: flex-start);
+  position: sticky;
+  border: 1px solid $rich-black;
+  border-radius: 4px;
+  padding: 5px;
+  width: 28vw;
+  background-color: $lightest-green;
 
-    .companiesViewerDetailsHeader{
-        @include display-flex($direction: column, $align: center, $justify: space-between);
-        background-color: $lighter-green;
+  .companiesViewerDetailsHeader {
+    @include display-flex($direction: column, $align: center, $justify: space-between);
+    background-color: $lighter-green;
+    color: $text-color;
+    font-size: $medium;
+    font-weight: bold;
+    width: 100%;
+    padding: 5px;
+
+    .companiesViewerDetailsButtons {
+      @include display-flex($direction: row, $align: center, $justify: flex-end);
+      width: 100%;
+
+      button {
+        background-color: $button-bg;
+        color: $button-text-color;
+        font-size: $small;
+        padding: 5px;
+        border: 1px solid $main-color;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .companiesViewerDetailsViewButton {
+        &:hover {
+          background-color: $main-color-hover;
+          color: $rich-black;
+        }
+      }
+
+      .companiesViewerDetailsDeleteButton {
+        &:hover {
+          background-color: lightcoral;
+          color: $rich-black;
+        }
+      }
+    }
+  }
+
+  .companiesViewerDetailsBody {
+    @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+    padding: 5px;
+    border: 1px solid $rich-black;
+    border-radius: 4px;
+
+    .companiesViewerContacts {
+      @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
+      width: 100%;
+      margin-top: 10px;
+
+      .companiesViewerContactsHeader {
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+        background-color: $main-color-hover;
         color: $text-color;
         font-size: $medium;
         font-weight: bold;
-        width: 28vw;
-        border-bottom: 2px solid $rich-black;
-        
+        width: 100%;
+        padding: 5px;
+        border-radius: 4px;
+      }
 
-        .companiesViewerDetailsButtons{
-            @include display-flex($direction: row, $align: center, $justify: flex-end);
-            width: 100%;
-
-            button {
-                background-color: $button-bg;
-                color: $button-text-color;
-                font-size: $small;
-                padding: 5px;
-                border: 1px solid $main-color;
-                border-radius: 4px;
-                cursor: pointer;
-            }
-            .companiesViewerDetailsViewButton{
-                
-                &:hover{
-                    background-color: $main-color-hover;
-                    color: $rich-black;
-                }
-            }
-
-            .companiesViewerDetailsDeleteButton{
-
-                &:hover{
-                    background-color: lightcoral;
-                    color: $rich-black;
-                }
-            }
-        }
-    }
-
-    .companiesViewerDetailsBody{
+      .companiesViewerContactsList {
         @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
-        
-        
+        width: 100%;
 
-        .companiesViewerContacts{
+        .companiesViewerContact {
+          @include display-flex($direction: row, $align: center, $justify: space-between);
+          width: 100%;
+          padding: 5px;
+          background-color: $lighter-green;
+          border: 1px solid $rich-black;
+          border-radius: 4px;
+          margin-top: 5px;
+
+          .companiesViewerContactName {
+            width: 50%;
+          }
+          .companiesViewerContactDetails {
             @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
-            width: 100%;
-            margin-top: 10px;
+            width: 50%;
 
-            .companiesViewerContactsHeader{
-                @include display-flex($direction: row, $align: center, $justify: space-between);
-                background-color: $main-color-hover;
-                color: $text-color;
-                font-size: $medium;
-                font-weight: bold;
-                width: 100%;
-                
+            .companiesViewerContactPhone {
+              width: 30%;
             }
 
-            .companiesViewerContactsList{
-                @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
-                width: 100%;
-                
-
-                .companiesViewerContact{
-                    @include display-flex($direction: row, $align: center, $justify: space-between);
-                    width: 100%;
-                    padding: 5px;
-                    background-color: $lighter-green;
-                    border: 1px solid $rich-black;
-                    border-radius: 4px;
-                    margin-top: 5px;
-
-                    .companiesViewerContactName{
-                        width: 50%;
-                        
-                    }
-                    .companiesViewerContactDetails{
-                        @include display-flex($direction: column, $align: flex-start, $justify: flex-start);
-                        width: 50%;
-                    
-                        .companiesViewerContactPhone{
-                            width: 30%;
-                        }
-
-                        .companiesViewerContactEmail{
-                            width: 20%;
-                        }
-                    }
-
-                    &:hover{
-                        background-color: $lightest-green;
-                        cursor: pointer;
-                    }
-                }
+            .companiesViewerContactEmail {
+              width: 20%;
             }
+          }
+
+          &:hover {
+            background-color: $lightest-green;
+            cursor: pointer;
+          }
         }
+      }
     }
+  }
 }

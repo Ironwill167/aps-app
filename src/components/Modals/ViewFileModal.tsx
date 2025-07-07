@@ -218,6 +218,19 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
     setShowAddContactModal(true);
   };
 
+  const getPreselectedCompanyId = (field: string): number | null => {
+    switch (field) {
+      case 'insured_contact_id':
+        return formData.insured_id || null;
+      case 'principal_contact_id':
+        return formData.principal_id || null;
+      case 'broker_contact_id':
+        return formData.broker_id || null;
+      default:
+        return null;
+    }
+  };
+
   const handleEstimateBlur = () => {
     // Convert the raw input to a number.
     const parsed = validateAndParseNumber(estimateLossInput);
@@ -683,6 +696,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
             onClose={() => setShowAddContactModal(false)}
             companies={companies}
             onContactAdded={handleContactAddedLocal}
+            preselectedCompanyId={currentField ? getPreselectedCompanyId(currentField) : null}
           />
         </Suspense>
       )}
