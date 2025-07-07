@@ -1,48 +1,89 @@
 @use 'variables' as *;
 @use 'mixins' as *;
 
-
-
-.rdt_Table
-{
-    width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    border: 2px solid $main-color;
-    margin: 0;
-    padding: 0;
-    
+.rdt_Table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+  border: 2px solid $main-color;
+  margin: 0;
+  padding: 0;
+  font-size: $small;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.rdt_TableHeadRow
-{
-    color: $dark-blue;
-    font-size: $medium;
-    font-weight: bold;  
+.rdt_TableHeadRow {
+  color: $dark-blue;
+  font-size: $medium;
+  font-weight: bold;
+  background: linear-gradient(135deg, $lighter-green 0%, $lightest-green 100%);
 }
 
-.rdt_TableCol
-{
-    border: 1px solid $main-color;
-    padding: 0;
-    text-align: center;
-
+.rdt_TableCol {
+  border: 1px solid $main-color;
+  padding: clamp(8px, 1vw, 16px);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: clamp(80px, 10vw, 150px);
 }
 
-.rdt_TableRow
-{
-    padding: 0;
+.rdt_TableRow {
+  padding: 0;
+  transition: background-color 0.2s ease;
 }
 
-.rdt_TableCell
-{
-    border: 1px solid $main-color;
-    padding: 0;
+.rdt_TableRow:hover {
+  background-color: rgba(122, 173, 13, 0.1);
 }
 
+.rdt_TableRow:nth-child(even) {
+  background-color: rgba(248, 253, 241, 0.5);
+}
 
+.rdt_TableCell {
+  border: 1px solid $main-color;
+  padding: clamp(6px, 0.8vw, 12px);
+  font-size: $small;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
-.column-file-number
-{
-    color: $main-color;
+.column-file-number {
+  color: $main-color;
+  font-weight: bold;
+}
+
+/* Responsive table container */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Desktop-focused table responsiveness (1024px and above) */
+@media (min-width: 1024px) and (max-width: 1366px) {
+  .rdt_TableCol,
+  .rdt_TableCell {
+    padding: clamp(6px, 0.8vw, 12px);
+    font-size: clamp(12px, 1vw, 16px);
+    min-width: clamp(80px, 10vw, 140px);
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1200px) {
+  .rdt_Table {
+    font-size: clamp(12px, 0.9vw, 14px);
+  }
+
+  .rdt_TableCol,
+  .rdt_TableCell {
+    padding: clamp(5px, 0.6vw, 10px);
+    min-width: clamp(70px, 8vw, 120px);
+  }
 }

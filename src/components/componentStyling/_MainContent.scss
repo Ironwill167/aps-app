@@ -6,6 +6,7 @@
 .main-content-contents {
   @include display-flex($direction: column, $align: center, $justify: flex-start);
   width: 100%;
+  height: 100%; /* Take full height */
 
   .mainContentHeader {
     @include display-flex($direction: row, $justify: space-between);
@@ -13,49 +14,70 @@
     position: sticky;
     top: 0;
     width: 100%;
-    height: 8vh;
-    padding: 0.5rem;
+    height: clamp(60px, 8vh, 80px);
+    padding: clamp(8px, 0.5rem, 16px);
     z-index: 100;
     background-color: $app-bg;
     color: $light-text-color;
+    align-items: center;
 
     .mainContentHeading {
-      width: 17vw;
+      min-width: clamp(200px, 20vw, 300px);
       margin-block: 0;
       text-align: center;
       font-size: $superlarge;
-      text-shadow: 0 0 1vi rgba(0, 0, 0, 0.1);
-      margin-left: 1rem;
-      padding: 0.3rem 0.5rem;
+      text-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+      margin-left: clamp(8px, 1rem, 20px);
+      padding: clamp(4px, 0.3rem, 12px) clamp(8px, 0.5rem, 16px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .mainControlsContainer {
       @include display-flex($direction: row, $justify: space-evenly);
-      width: 80%;
+      flex: 1;
+      gap: clamp(8px, 1vw, 20px);
+      align-items: center;
+      padding: 0 clamp(8px, 1vw, 20px);
 
       .mainControlSearchBar {
-        width: 30vw;
-        height: 5vh;
-        font-size: 1.5vi;
-        padding-left: 1vi;
-        border-radius: 5px;
-        border: 1px solid $main-color;
+        flex: 1;
+        max-width: clamp(250px, 35vw, 500px);
+        min-width: 200px;
+        height: clamp(35px, 5vh, 50px);
+        font-size: $medium;
+        padding-left: clamp(8px, 1vw, 16px);
+        border-radius: 6px;
+        border: 2px solid $main-color;
+        transition: all 0.3s ease;
+      }
+
+      .mainControlSearchBar:focus {
+        outline: none;
+        border-color: $main-color-hover;
+        box-shadow: 0 0 0 3px rgba(122, 173, 13, 0.2);
       }
 
       .mainControlButton {
-        width: 7vw;
-        height: 5vh;
-        font-size: 1vi;
+        width: clamp(80px, 10vw, 140px);
+        min-width: 80px;
+        height: clamp(35px, 5vh, 50px);
+        font-size: $small;
         background-color: $button-bg;
         color: $button-text-color;
-        border: 1px solid $main-color;
-        border-radius: 5px;
-        padding: 0.5rem;
+        border: 2px solid $main-color;
+        border-radius: 6px;
+        padding: clamp(4px, 0.5rem, 12px);
         cursor: pointer;
+        transition: all 0.3s ease;
+        white-space: nowrap;
 
         &:hover {
           background-color: $button-hover-bg;
           color: $link-hover-color;
+          transform: translateY(-1px);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
       }
     }
@@ -65,8 +87,42 @@
     position: relative;
     flex: 1;
     width: 100%;
-    height: 90vh;
+    height: calc(100vh - clamp(60px, 8vh, 80px)); /* Set explicit height */
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     color: $text-color;
+    padding: clamp(4px, 0.5vw, 8px);
+    background-color: $content-bg;
+    /* This is the scrollable container for sticky elements */
+    overflow-y: auto; /* Allow vertical scrolling */
+    overflow-x: visible; /* Allow horizontal overflow if needed */
+    /* Ensure sticky elements work properly */
+    contain: layout style paint;
+  }
+
+  /* Responsive adjustments for 1366x768 laptop screens */
+  @media (max-width: 1366px) and (max-height: 768px) {
+    .mainContentHeaderContainer {
+      height: clamp(60px, 8vh, 80px) !important; /* Reduced height */
+
+      .mainContentHeader {
+        font-size: $large !important; /* Reduced from $superlarge */
+      }
+    }
+
+    .mainContentNavigation {
+      .mainContentNavigationButton {
+        font-size: $small !important; /* Reduced from $medium */
+        height: clamp(28px, 4vh, 36px) !important;
+        padding: 0 clamp(8px, 1.2vw, 16px) !important;
+      }
+
+      .mainContentNavigationSelected {
+        font-size: $smaller !important; /* Reduced from $small */
+      }
+    }
+
+    .mainContentInnerContainer {
+      padding: 0 clamp(3px, 0.4vw, 12px) !important; /* Reduced padding */
+    }
   }
 }

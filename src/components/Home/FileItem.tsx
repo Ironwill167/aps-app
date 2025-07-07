@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import { FileRecord, FeeRecord } from '../types';
 import { showErrorToast } from '../utils/toast';
 import { convertToLocalDate } from '../utils/DateUtils';
@@ -44,6 +45,227 @@ const FileItem: React.FC<FileItemProps> = React.memo(
     setSelectedFee,
     openFileDetails,
   }) => {
+    // Add refs for dropdown click-outside detection and column positioning
+    const statusDropdownRef = useRef<HTMLDivElement>(null);
+    const statusColumnRef = useRef<HTMLDivElement>(null);
+    const fileNoteColumnRef = useRef<HTMLDivElement>(null);
+    const fileNoteEditorRef = useRef<HTMLDivElement>(null);
+
+    // State to track dropdown and note editor positions
+    const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0 });
+    const [noteEditorPosition, setNoteEditorPosition] = React.useState({
+      top: 0,
+      left: 0,
+      maxHeight: 350,
+    });
+
+    // Initial positioning of the dropdown when it opens
+    useEffect(() => {
+      if (editStatus === file.id && statusColumnRef.current) {
+        const rect = statusColumnRef.current.getBoundingClientRect();
+
+        // Initial positioning - assume default height
+        // We'll adjust this in the next effect after the dropdown renders
+        setDropdownPosition({
+          top: rect.top - 5,
+          left: rect.left - 5,
+        });
+
+        // Add class to the parent fileItem to control z-index during dropdown open
+        const parentFileItem = statusColumnRef.current.closest('.fileItem');
+        if (parentFileItem) {
+          parentFileItem.classList.add('status-dropdown-open');
+        }
+      }
+    }, [editStatus, file.id]);
+
+    // State to track if dropdown should open upwards
+    const [openUpwards, setOpenUpwards] = React.useState(false);
+
+    // Second pass: adjust position after the dropdown renders
+    useEffect(() => {
+      if (editStatus === file.id && statusColumnRef.current && statusDropdownRef.current) {
+        // Now that the dropdown is rendered, we can get its actual height
+        const rect = statusColumnRef.current.getBoundingClientRect();
+        const windowHeight = window.innerHeight;
+        const dropdownHeight = statusDropdownRef.current.offsetHeight;
+
+        // Check available space below and above
+        const spaceBelow = windowHeight - rect.bottom;
+        const spaceAbove = rect.top;
+
+        // Determine if dropdown should open upwards
+        // Only open upwards if there's not enough space below AND there's more space above than below
+        const shouldOpenUpwards = spaceBelow < dropdownHeight + 10 && spaceAbove > spaceBelow;
+
+        // Update state to reflect direction
+        setOpenUpwards(shouldOpenUpwards);
+
+        let topPosition;
+        if (shouldOpenUpwards) {
+          // When opening upwards, make sure it doesn't go above the viewport
+          const proposedTopPosition = rect.top - dropdownHeight + 5;
+          topPosition = Math.max(10, proposedTopPosition); // Ensure at least 10px from top of screen
+        } else {
+          topPosition = rect.top - 5;
+        }
+
+        setDropdownPosition({
+          top: topPosition,
+          left: rect.left - 5,
+        });
+      }
+    }, [editStatus, file.id, dropdownPosition.top]);
+
+    // Effect to close dropdown when clicking outside or pressing Escape
+
+    // Effect to close dropdown when clicking outside or pressing Escape
+    useEffect(() => {
+      if (editStatus === file.id) {
+        const handleClickOutside = (event: MouseEvent) => {
+          if (
+            statusDropdownRef.current &&
+            !statusDropdownRef.current.contains(event.target as Node)
+          ) {
+            setEditStatus(null);
+            setOpenUpwards(false); // Reset direction state
+            // Remove the class when dropdown closes
+            const fileItems = document.querySelectorAll('.fileItem');
+            fileItems.forEach((item) => item.classList.remove('status-dropdown-open'));
+          }
+        };
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+          if (event.key === 'Escape') {
+            setEditStatus(null);
+            setOpenUpwards(false); // Reset direction state
+            // Remove the class when dropdown closes
+            const fileItems = document.querySelectorAll('.fileItem');
+            fileItems.forEach((item) => item.classList.remove('status-dropdown-open'));
+          }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+          document.removeEventListener('keydown', handleKeyDown);
+        };
+      }
+    }, [editStatus, file.id, setEditStatus]);
+
+    const handleCancelNote = useCallback(() => {
+      setShowAddNote(null);
+      // Remove the class when note editor closes
+      const fileItems = document.querySelectorAll('.fileItem');
+      fileItems.forEach((item) => item.classList.remove('note-editor-open'));
+    }, [setShowAddNote]);
+
+    // Effect to position note editor when it opens
+    useEffect(() => {
+      if (showAddNote === file.id && fileNoteColumnRef.current) {
+        const rect = fileNoteColumnRef.current.getBoundingClientRect();
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+
+        // Calculate ideal position (centered on the note column)
+        const initialLeft = rect.left + rect.width / 2 - 250; // 500px wide editor centered on column
+
+        // Make sure it doesn't go off-screen horizontally
+        const left = Math.max(20, Math.min(initialLeft, windowWidth - 520));
+
+        // Constants for editor sizing
+        const minEditorHeight = 200; // Minimum usable height for the editor
+        const maxEditorHeight = 350; // Maximum preferred height
+        const editorHeaderFooterHeight = 100; // Approximate height of header + footer + padding
+        const padding = 20; // Padding from screen edges
+
+        // Check available space above and below
+        const spaceBelow = windowHeight - rect.bottom - padding;
+        const spaceAbove = rect.top - padding;
+
+        let top;
+        let maxHeight;
+
+        // Determine if we should position above or below
+        const preferredHeightWithChrome = maxEditorHeight + editorHeaderFooterHeight;
+
+        if (spaceBelow >= preferredHeightWithChrome) {
+          // Enough space below - position below the note column
+          top = rect.bottom + 10;
+          maxHeight = Math.min(maxEditorHeight, spaceBelow - editorHeaderFooterHeight);
+        } else if (spaceAbove >= preferredHeightWithChrome) {
+          // Not enough space below but enough above - position above the note column
+          const editorTotalHeight =
+            Math.min(maxEditorHeight, spaceAbove - editorHeaderFooterHeight) +
+            editorHeaderFooterHeight;
+          top = rect.top - editorTotalHeight - 10;
+          maxHeight = Math.min(maxEditorHeight, spaceAbove - editorHeaderFooterHeight);
+        } else {
+          // Limited space both above and below - choose the side with more space
+          if (spaceBelow > spaceAbove) {
+            // Position below with compressed height
+            top = rect.bottom + 10;
+            maxHeight = Math.max(minEditorHeight, spaceBelow - editorHeaderFooterHeight);
+          } else {
+            // Position above with compressed height
+            const availableHeight = Math.max(
+              minEditorHeight,
+              spaceAbove - editorHeaderFooterHeight
+            );
+            const editorTotalHeight = availableHeight + editorHeaderFooterHeight;
+            top = rect.top - editorTotalHeight - 10;
+            maxHeight = availableHeight;
+          }
+        }
+
+        // Ensure the editor doesn't go off screen vertically
+        top = Math.max(
+          padding,
+          Math.min(top, windowHeight - minEditorHeight - editorHeaderFooterHeight - padding)
+        );
+
+        setNoteEditorPosition({
+          top,
+          left,
+          maxHeight,
+        });
+
+        // Add class to the parent fileItem to control z-index during editor open
+        const parentFileItem = fileNoteColumnRef.current.closest('.fileItem');
+        if (parentFileItem) {
+          parentFileItem.classList.add('note-editor-open');
+        }
+      }
+    }, [showAddNote, file.id]);
+
+    // Effect to close note editor when clicking outside or pressing Escape
+    useEffect(() => {
+      if (showAddNote === file.id) {
+        const handleClickOutside = (event: MouseEvent) => {
+          if (
+            fileNoteEditorRef.current &&
+            !fileNoteEditorRef.current.contains(event.target as Node)
+          ) {
+            handleCancelNote();
+          }
+        };
+
+        const handleKeyDown = (event: KeyboardEvent) => {
+          if (event.key === 'Escape') {
+            handleCancelNote();
+          }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+          document.removeEventListener('keydown', handleKeyDown);
+        };
+      }
+    }, [showAddNote, file.id, handleCancelNote]);
+
     const statusOptions = [
       { id: 'NEW', value: 'New' },
       { id: 'SURVEY', value: 'Survey to be done.' },
@@ -60,8 +282,7 @@ const FileItem: React.FC<FileItemProps> = React.memo(
       { id: 'Closed', value: 'Closed' },
     ];
 
-    const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const newStatus = e.target.value;
+    const handleStatusChange = async (newStatus: string) => {
       const updatedFile: Partial<FileRecord> = {
         id: file.id,
         status: newStatus,
@@ -84,13 +305,12 @@ const FileItem: React.FC<FileItemProps> = React.memo(
       try {
         await updateFile(updatedFile);
         setShowAddNote(null);
+        // Remove the class when note editor closes
+        const fileItems = document.querySelectorAll('.fileItem');
+        fileItems.forEach((item) => item.classList.remove('note-editor-open'));
       } catch (error) {
         showErrorToast('Failed to add note.');
       }
-    };
-
-    const handleCancelNote = () => {
-      setShowAddNote(null);
     };
 
     return (
@@ -109,24 +329,51 @@ const FileItem: React.FC<FileItemProps> = React.memo(
       >
         <div className="FileNumberColumn">{file.id}</div>
         <div className="vertSeperator"></div>
-        <div className="StatusColumn">
-          {editStatus === file.id ? (
-            <select
-              value={file.status || ''}
-              className="actionStatusSelect"
-              onChange={handleStatusChange}
-              onBlur={() => setEditStatus(null)}
-              autoFocus
-            >
-              {statusOptions.map((option) => (
-                <option key={option.id} value={option.id}>
-                  {option.value}
-                </option>
-              ))}
-            </select>
-          ) : (
-            <span onDoubleClick={() => setEditStatus(file.id)}>{file.status}</span>
-          )}
+        <div className="StatusColumn" ref={statusColumnRef}>
+          <span onDoubleClick={() => setEditStatus(file.id)}>{file.status}</span>
+          {editStatus === file.id &&
+            ReactDOM.createPortal(
+              <div
+                className={`custom-status-dropdown ${openUpwards ? 'dropdown-open-up' : 'dropdown-open-down'}`}
+                ref={statusDropdownRef}
+                style={{
+                  top: `${dropdownPosition.top}px`,
+                  left: `${dropdownPosition.left}px`,
+                  maxHeight: openUpwards ? `${Math.min(350, dropdownPosition.top - 10)}px` : '60vh', // Limit height when opening upwards
+                }}
+              >
+                {statusOptions.map((option) => (
+                  <div
+                    key={option.id}
+                    className={`custom-status-option ${file.status === option.id ? 'selected' : ''}`}
+                    onClick={() => handleStatusChange(option.id)}
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        handleStatusChange(option.id);
+                      } else if (e.key === 'Escape') {
+                        setEditStatus(null);
+                      }
+                    }}
+                  >
+                    {option.value}
+                  </div>
+                ))}
+                <div
+                  className="custom-status-option cancel-option"
+                  onClick={() => setEditStatus(null)}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setEditStatus(null);
+                    }
+                  }}
+                >
+                  Cancel
+                </div>
+              </div>,
+              document.body // Mount the dropdown directly to the body to avoid clipping
+            )}
         </div>
         <div className="vertSeperator"></div>
         <div
@@ -156,22 +403,85 @@ const FileItem: React.FC<FileItemProps> = React.memo(
           <span>{convertToLocalDate(file.updated_at || '')}</span>
         </div>
         <div className="vertSeperator"></div>
-        <div className="FileNoteColumn">
-          {showAddNote === file.id ? (
-            <div className="AddNoteContainer">
-              <textarea value={noteText} onChange={(e) => setNoteText(e.target.value)} />
-              <div className="AddNoteButtons">
-                <button className="ConfirmButton" onClick={handleAddNote}>
-                  ✓
-                </button>
-                <button className="CancelButton" onClick={() => handleCancelNote()}>
-                  X
-                </button>
-              </div>
-            </div>
-          ) : (
-            <span onDoubleClick={() => setShowAddNote(file.id)}>{file.file_note}</span>
-          )}
+        <div className="FileNoteColumn" ref={fileNoteColumnRef}>
+          <span
+            onDoubleClick={() => {
+              setNoteText(file.file_note || '');
+              setShowAddNote(file.id);
+            }}
+            onClick={() => {
+              setNoteText(file.file_note || '');
+              setShowAddNote(file.id);
+            }}
+            title={file.file_note || 'Click to add note...'}
+            className="file-note-text"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                setNoteText(file.file_note || '');
+                setShowAddNote(file.id);
+              }
+            }}
+          >
+            {file.file_note || 'Click to add note...'}
+          </span>
+          {showAddNote === file.id &&
+            ReactDOM.createPortal(
+              <div
+                className="file-note-editor"
+                ref={fileNoteEditorRef}
+                style={{
+                  top: `${noteEditorPosition.top}px`,
+                  left: `${noteEditorPosition.left}px`,
+                  minHeight: '200px', // Ensure minimum usable height
+                }}
+              >
+                <div className="file-note-editor-header">
+                  <h3>Edit File Note</h3>
+                </div>
+                <div
+                  className="file-note-editor-content"
+                  style={{
+                    height: `${noteEditorPosition.maxHeight}px`,
+                    display: 'flex',
+                    flexDirection: 'column',
+                  }}
+                >
+                  <textarea
+                    value={noteText}
+                    onChange={(e) => setNoteText(e.target.value)}
+                    placeholder="Enter your file notes here..."
+                    autoFocus
+                    style={{
+                      flex: 1,
+                      resize: 'none',
+                      minHeight: '150px', // Ensure minimum readable height
+                    }}
+                    onKeyDown={(e) => {
+                      // Allow Ctrl+Enter or Cmd+Enter to save
+                      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                        e.preventDefault();
+                        handleAddNote();
+                      }
+                      // Escape key to cancel
+                      else if (e.key === 'Escape') {
+                        e.preventDefault();
+                        handleCancelNote();
+                      }
+                    }}
+                  />
+                </div>
+                <div className="file-note-editor-footer">
+                  <button className="save-note-btn" onClick={handleAddNote}>
+                    Save Note
+                  </button>
+                  <button className="cancel-note-btn" onClick={handleCancelNote}>
+                    Cancel
+                  </button>
+                </div>
+              </div>,
+              document.body // Mount the editor directly to the body to avoid clipping
+            )}
         </div>
         <div className="vertSeperator"></div>
         <div

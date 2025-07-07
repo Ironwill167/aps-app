@@ -1,5 +1,6 @@
 @use 'variables' as *;
 @use 'mixins' as *;
+@use 'Responsive'; // Add responsive utilities
 @use 'ContextMenu';
 @use 'Layout';
 @use 'MainContent';
@@ -18,7 +19,195 @@
 @use 'CauseOfLossData';
 @use 'DocRequest';
 @use 'InvoiceRateData';
+@use 'EmailModal';
 
 * {
   font-family: var(--font-family);
+  box-sizing: border-box; /* Ensure consistent box model */
+}
+
+/* Global desktop-focused improvements */
+html {
+  font-size: clamp(14px, 1vw, 18px); /* Desktop-appropriate base font size */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
+  min-width: 1024px; /* Minimum supported desktop width */
+}
+
+/* Desktop-focused adjustments for 1366x768 resolution (common laptop screens) */
+@media (max-width: 1366px) and (max-height: 768px) {
+  /* Reduce base font size for better content density on smaller desktop screens */
+  html {
+    font-size: clamp(12px, 0.9vw, 16px); /* Reduced from clamp(14px, 1vw, 18px) */
+  }
+
+  /* Modal specific adjustments */
+  .modal-header p,
+  .modal-header h2 {
+    font-size: $large; /* Reduced from $extralarge */
+  }
+
+  .modal-form-group {
+    label {
+      font-size: $smaller; /* Reduced from $small */
+    }
+
+    .inputLarge,
+    .inputMedium,
+    .inputSmall {
+      font-size: $smaller; /* Reduced from $small */
+    }
+
+    select {
+      font-size: $smaller; /* Reduced from $small */
+    }
+
+    textarea {
+      font-size: $smaller; /* Reduced from $small */
+    }
+  }
+
+  .reactSelect,
+  .reactSelectWide {
+    font-size: $smaller; /* Reduced from $small */
+  }
+
+  .modal-submit,
+  .modal-cancel,
+  .editFeeGenerateInvoice {
+    font-size: $small; /* Reduced from $medium */
+    padding: 0.6vi 0.8vi; /* Slightly reduced padding */
+  }
+
+  .close-modal-button {
+    font-size: clamp(20px, 2.5vw, 28px); /* Reduced from clamp(24px, 3vw, 36px) */
+  }
+
+  /* Home/File table adjustments */
+  .actionHeadingsContainer > .actionHeading {
+    font-size: $smaller; /* Reduced from $small */
+  }
+
+  .fileItem {
+    font-size: $smaller; /* Reduced from $small */
+  }
+
+  .actionFileDetailsHeader h2 {
+    font-size: $smaller; /* Reduced from $small */
+  }
+
+  .fileDetailsContents {
+    font-size: $smaller; /* Reduced from $small */
+
+    .fileDetailsItem {
+      p {
+        font-size: $smallest; /* Reduced from $smaller */
+      }
+
+      .fileDetailsLabel,
+      .fileDetailsData {
+        font-size: $smallest; /* Reduced overall */
+      }
+    }
+  }
+
+  /* Sidebar adjustments */
+  .sidebar-button {
+    font-size: $smaller; /* Reduce sidebar button text */
+  }
+
+  .sidebar-header {
+    font-size: $small; /* Reduce sidebar header text */
+  }
+
+  /* Table adjustments */
+  .table-header,
+  .table-cell {
+    font-size: $smaller; /* Reduce table text */
+  }
+
+  /* Button adjustments across the app */
+  button {
+    font-size: $smaller !important; /* Reduce all button text */
+    padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.7vw, 8px) !important; /* Reduce button padding */
+  }
+
+  /* Form elements adjustments */
+  input[type='text'],
+  input[type='email'],
+  input[type='password'],
+  input[type='number'],
+  input[type='date'],
+  select,
+  textarea {
+    font-size: $smaller !important; /* Reduce all form element text */
+  }
+
+  /* Fee management specific adjustments */
+  .fee-table {
+    font-size: $smaller;
+  }
+
+  .fee-management-header {
+    font-size: $small; /* Reduced from $medium */
+  }
+
+  /* Contact/Company management adjustments */
+  .contact-card,
+  .company-card {
+    font-size: $smaller;
+  }
+
+  /* Additional parties container adjustments */
+  .additional-parties-container {
+    .additional-parties-header label {
+      font-size: $smaller; /* Reduced from $small */
+    }
+
+    .additional-party-content {
+      .additional-party-row {
+        .additional-party-name {
+          font-size: $smaller; /* Reduced from $small */
+        }
+
+        label {
+          font-size: $smaller; /* Reduced from $small */
+        }
+
+        .adp_delete-button {
+          font-size: $smaller; /* Reduced from $small */
+        }
+      }
+    }
+  }
+
+  /* Dropdown and select elements */
+  .custom-status-dropdown,
+  .emailDropdownMenu {
+    .custom-status-option,
+    .emailDropdownItem {
+      font-size: $smaller; /* Reduce dropdown item text */
+      padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.7vw, 8px); /* Reduce padding */
+    }
+  }
+
+  /* Document request and reporting adjustments */
+  .document-request-container,
+  .prelim-report-container {
+    font-size: $smaller;
+  }
+
+  /* Invoice and fee invoice adjustments */
+  .invoice-container,
+  .fee-invoice-container {
+    font-size: $smaller;
+
+    .invoice-header {
+      font-size: $small; /* Reduced from $medium */
+    }
+  }
 }

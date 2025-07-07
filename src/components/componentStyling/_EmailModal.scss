@@ -1,0 +1,333 @@
+/* Email Modal Specific Styles - Enhanced Professional Design */
+
+.email-modal-content {
+  width: 92% !important; /* Increased from 87% for better screen utilization */
+  max-width: 1100px !important; /* Increased from 950px */
+  height: 92vh !important; /* Increased from 88vh */
+  max-height: 92vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  border-radius: 10px !important; /* Added consistent border radius */
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3) !important; /* Enhanced shadow */
+}
+
+.email-modal-content .modal-header {
+  padding: 8px 20px 4px 20px; /* Further reduced header height */
+  border-bottom: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 0;
+  flex-shrink: 0; /* Prevent header from shrinking */
+}
+
+.email-modal-content .modal-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.1rem; /* Further reduced for more compact header */
+  font-weight: 600;
+}
+
+.email-modal-body {
+  flex: 1 !important;
+  padding: 14px !important; /* Slightly reduced but maintained adequate spacing */
+  overflow-y: auto !important; /* Added vertical scrolling */
+  overflow-x: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important; /* Important for flexbox scrolling */
+}
+
+.email-form {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.email-field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 18px; /* Slightly reduced for tighter spacing */
+  margin-bottom: 16px; /* Reduced from 20px */
+  padding-bottom: 16px; /* Reduced from 20px */
+  border-bottom: 1px solid #e9ecef;
+}
+
+.email-subject-field {
+  grid-column: 1 / -1; /* Span full width */
+}
+
+.email-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Reduced from 8px */
+}
+
+.email-field label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.email-field label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, #dee2e6 0%, transparent 100%);
+  margin-left: 10px;
+}
+
+.email-field input {
+  padding: 10px 13px; /* Reduced from 12px 15px */
+  border: 2px solid #e9ecef;
+  border-radius: 6px; /* Reduced from 8px */
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  transition: all 0.3s ease;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.email-field input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: #fafbfc;
+}
+
+.email-field input::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.email-body-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Reduced from 8px */
+  min-height: 0; /* Important for flexbox */
+}
+
+.email-body-container label {
+  font-weight: 600;
+  color: #495057;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.email-body-container label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, #dee2e6 0%, transparent 100%);
+  margin-left: 10px;
+}
+
+.email-body-container textarea {
+  flex: 1;
+  padding: 12px; /* Reduced from 15px */
+  border: 2px solid #e9ecef;
+  border-radius: 6px; /* Reduced from 8px */
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5; /* Reduced from 1.6 */
+  transition: all 0.3s ease;
+  background: #fff;
+  resize: none;
+  box-sizing: border-box;
+  min-height: 180px; /* Reduced from 200px */
+}
+
+.email-body-container textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  background: #fafbfc;
+}
+
+.email-body-container textarea::placeholder {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+.email-modal-actions {
+  padding: 10px 18px; /* Further reduced from 12px 20px */
+  border-top: 2px solid #e9ecef;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  gap: 12px; /* Reduced from 15px */
+  justify-content: flex-end;
+  align-items: center;
+  border-radius: 0 0 8px 8px;
+  flex-shrink: 0; /* Prevent footer from shrinking */
+}
+
+.email-modal-actions .modal-submit {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: 8px 18px; /* Reduced from 10px 20px */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.3);
+}
+
+.email-modal-actions .modal-submit:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0056b3 0%, #003d82 100%);
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.email-modal-actions .modal-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 0 2px 4px rgba(0, 123, 255, 0.2);
+}
+
+.email-modal-actions .modal-secondary {
+  background: linear-gradient(135deg, #6c757d 0%, #545b62 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px; /* Reduced from 12px 20px */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.email-modal-actions .modal-secondary:hover {
+  background: linear-gradient(135deg, #545b62 0%, #3a3f44 100%);
+  box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+  transform: translateY(-1px);
+}
+
+.email-modal-actions .modal-cancel {
+  background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+  color: white;
+  border: none;
+  padding: 10px 16px; /* Reduced from 12px 20px */
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(220, 53, 69, 0.3);
+}
+
+.email-modal-actions .modal-cancel:hover {
+  background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+  box-shadow: 0 4px 8px rgba(220, 53, 69, 0.4);
+  transform: translateY(-1px);
+}
+
+/* Loading state animation */
+.modal-submit:disabled::after {
+  content: '';
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+  border: 2px solid transparent;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments for 1366x768 laptop screens */
+@media (max-width: 1366px) and (max-height: 768px) {
+  .email-modal-content {
+    width: 90% !important;
+    max-width: 800px !important;
+    height: 90vh !important;
+    max-height: 90vh !important;
+  }
+
+  .email-modal-content .modal-header {
+    padding: 8px 15px; /* Further reduced for smaller screens */
+  }
+
+  .email-modal-content .modal-header h2 {
+    font-size: 1.2rem; /* Further reduced font size */
+  }
+
+  .email-modal-body {
+    padding: 15px !important;
+  }
+
+  .email-field-grid {
+    gap: 15px 20px; /* Reduced gap */
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+  }
+
+  .email-field label,
+  .email-body-container label {
+    font-size: 13px; /* Reduced label font size */
+  }
+
+  .email-field input,
+  .email-body-container textarea {
+    padding: 10px 12px; /* Reduced padding */
+    font-size: 13px; /* Reduced font size */
+  }
+
+  .email-body-container textarea {
+    min-height: 180px; /* Reduced minimum height */
+  }
+
+  .email-modal-actions {
+    padding: 8px 15px; /* Further reduced footer padding */
+    gap: 12px;
+  }
+
+  .email-modal-actions .modal-submit {
+    padding: 8px 16px; /* Reduced button padding */
+    font-size: 13px;
+  }
+
+  .email-modal-actions .modal-secondary,
+  .email-modal-actions .modal-cancel {
+    padding: 8px 14px; /* Reduced button padding */
+    font-size: 13px;
+  }
+}
+
+/* Large screen optimizations */
+@media (min-width: 1600px) {
+  .email-modal-content {
+    max-width: 1100px !important;
+    width: 85% !important;
+  }
+
+  .email-field-grid {
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 18px 22px;
+  }
+
+  .email-subject-field {
+    grid-column: 1 / -1;
+  }
+}

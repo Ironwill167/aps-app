@@ -2,41 +2,76 @@
 @use 'mixins' as *;
 
 .sidebar-content {
-    @include display-flex($direction: column, $align: center, $justify: space-between);
-    height: 80vh;
-    background-color: $lightest-green;
-    border-radius: 0.2vi;
-    margin-top: 5vh;
+  @include display-flex($direction: column, $align: center, $justify: space-between);
+  height: 80vh;
+  background-color: $lightest-green;
+  border-radius: clamp(4px, 0.3vw, 8px);
+  margin-top: 5vh;
+  padding: clamp(8px, 1vw, 16px);
+
+  .sidebar-link-container {
+    @include display-flex($direction: column, $align: center, $justify: flex-start);
+    width: 100%;
+    margin-top: 1vh;
+    gap: clamp(4px, 0.5vh, 8px);
+
+    .SidebarLink {
+      color: $button-text-color;
+      font-size: $medium;
+      font-weight: bold;
+      width: 90%;
+      height: clamp(40px, 6vh, 60px);
+      min-height: 40px; /* Ensure clickable area */
+      text-align: center;
+      background-color: $button-bg;
+      border: 2px solid $main-color;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 clamp(4px, 0.5vw, 12px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .SidebarLink:hover {
+      background-color: $button-hover-bg;
+      color: $link-hover-color;
+      cursor: pointer;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+  }
+
+  .logo {
+    width: clamp(80px, 8vw, 120px);
+    height: auto;
+    max-width: 100%;
+  }
+}
+
+/* Responsive adjustments for 1366x768 laptop screens */
+@media (max-width: 1366px) and (max-height: 768px) {
+  .sidebar-content {
+    padding: clamp(6px, 0.8vw, 12px) !important;
 
     .sidebar-link-container {
-        @include display-flex($direction: column, $align: center, $justify: flex-start);
-        width: 100%;
-        margin-top: 1vh;
+      gap: clamp(3px, 0.4vh, 6px) !important;
 
-        .SidebarLink {
-            color: $button-text-color;
-            font-size: 1.5vi;
-            font-weight: bold;
-            width: 90%;
-            height: 6vh;
-            text-align: center;
-            background-color: $button-bg;
-            border: 2px solid $main-color;
-            border-radius: 4px;
-            margin: 2px 0;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            transition: background-color 0.3s;
-        }
-
-        .SidebarLink:hover {
-            background-color: $button-hover-bg;
-            color: $link-hover-color;
-            cursor: pointer;
-        }
+      .SidebarLink {
+        font-size: $small !important; /* Reduced from $medium */
+        height: clamp(32px, 5vh, 48px) !important; /* Reduced from 40-60px */
+        min-height: 32px !important;
+        padding: 0 clamp(3px, 0.4vw, 8px) !important;
+      }
     }
 
     .logo {
-        width: 10vw;
-        height: auto;
+      width: clamp(70px, 7vw, 100px) !important; /* Reduced from 80-120px */
+      height: clamp(70px, 7vw, 100px) !important;
     }
+  }
 }

@@ -232,439 +232,446 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
         aria-modal="true"
         aria-labelledby="view-file-modal-title"
       >
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-          <div className="modal-header">
-            <p id="view-file-modal-title">View/Edit File</p>
-            <span
-              className="close-modal-button"
-              onClick={onClose}
-              role="button"
-              aria-label="Close Modal"
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  onClose();
-                }
-              }}
-            >
-              &times;
-            </span>
+        <div className="modal-content view-file-modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-header view-file-modal-header">
+            <div className="header-left">
+              <p id="view-file-modal-title" className="modal-title">
+                View/Edit File
+              </p>
+            </div>
+            <div className="header-right">
+              <button
+                type="submit"
+                form="view-file-form"
+                className="header-save-button"
+                disabled={updateFileMutation.isPending}
+              >
+                {updateFileMutation.isPending ? 'Saving...' : 'Save'}
+              </button>
+              <span
+                className="close-modal-button"
+                onClick={onClose}
+                role="button"
+                aria-label="Close Modal"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    onClose();
+                  }
+                }}
+              >
+                &times;
+              </span>
+            </div>
           </div>
-
-          <div className="modal-body">
-            <form onSubmit={handleUpdate}>
-              {/* File Number */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="fileNumber">File Number</label>
-                  <p id="fileNumber">{formData.id}</p>
-                </div>
-
-                {/* Status */}
-                <div className="modal-form-group">
-                  <label htmlFor="status">Status</label>
-                  <select
-                    id="status"
-                    value={formData.status || ''}
-                    onChange={(event) => {
-                      const selectedValue = event.target.value;
-                      handleSelectChange('status', { value: selectedValue, label: selectedValue });
-                    }}
-                  >
-                    <option value="">Select a status...</option>
-                    {statusOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-
-              {/* Company */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="company_id">Insured</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="insured_id"
-                      className="reactSelectWide"
-                      options={companyOptions}
-                      onChange={(option) => handleSelectChange('insured_id', option)}
-                      placeholder="Select a company..."
-                      isSearchable
-                      value={
-                        companyOptions.find((option) => option.value === formData.insured_id) ||
-                        null
-                      }
-                      required
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddCompanyModal('insured_id')}
-                      aria-label="Add Company"
-                    >
-                      +
-                    </button>
+          <div className="view-file-modal-body">
+            <div className="modal-body">
+              <form id="view-file-form" onSubmit={handleUpdate}>
+                {/* File Number */}
+                <div className="modal-row">
+                  <div className="modal-file-number-container">
+                    <label htmlFor="fileNumber">File Number</label>
+                    <p id="fileNumber">{formData.id}</p>
                   </div>
-                </div>
 
-                {/* Company Contact */}
-
-                <div className="modal-form-group">
-                  <label htmlFor="company_contact_id">Company Contact</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="company_contact_id"
-                      className="reactSelectWide"
-                      options={contactOptionsForCompany(formData.insured_id)}
-                      onChange={(option) => handleSelectChange('insured_contact_id', option)}
-                      placeholder="Select a contact..."
-                      isSearchable
-                      value={
-                        formData.insured_contact_id
-                          ? contactOptionsForCompany(formData.insured_id).find(
-                              (option) => option.value === formData.insured_contact_id
-                            ) || null
-                          : null
-                      }
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddContactModal('insured_contact_id')}
-                      aria-label="Add Contact"
+                  {/* Status */}
+                  <div className="modal-form-group">
+                    <label htmlFor="status">Status</label>
+                    <select
+                      id="status"
+                      value={formData.status || ''}
+                      onChange={(event) => {
+                        const selectedValue = event.target.value;
+                        handleSelectChange('status', {
+                          value: selectedValue,
+                          label: selectedValue,
+                        });
+                      }}
                     >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Principal */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="principal_id">Principal</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="principal_id"
-                      className="reactSelectWide"
-                      options={companyOptions}
-                      onChange={(option) => handleSelectChange('principal_id', option)}
-                      placeholder="Select a principal..."
-                      isSearchable
-                      value={
-                        companyOptions.find((option) => option.value === formData.principal_id) ||
-                        null
-                      }
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddCompanyModal('principal_id')}
-                      aria-label="Add Company"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Principal Contact */}
-
-                <div className="modal-form-group">
-                  <label htmlFor="principal_contact_id">Principal Contact</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="principal_contact_id"
-                      className="reactSelectWide"
-                      options={contactOptionsForCompany(formData.principal_id)}
-                      onChange={(option) => handleSelectChange('principal_contact_id', option)}
-                      placeholder="Select a contact..."
-                      isSearchable
-                      value={
-                        formData.principal_contact_id
-                          ? contactOptionsForCompany(formData.principal_id).find(
-                              (option) => option.value === formData.principal_contact_id
-                            ) || null
-                          : null
-                      }
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddContactModal('principal_contact_id')}
-                      aria-label="Add Contact"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Broker */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="broker_id">Broker</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="broker_id"
-                      className="reactSelectWide"
-                      options={companyOptions}
-                      onChange={(option) => handleSelectChange('broker_id', option)}
-                      placeholder="Select a broker..."
-                      isSearchable
-                      value={
-                        companyOptions.find((option) => option.value === formData.broker_id) || null
-                      }
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddCompanyModal('broker_id')}
-                      aria-label="Add Company"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                {/* Broker Contact */}
-
-                <div className="modal-form-group">
-                  <label htmlFor="broker_contact_id">Broker Contact</label>
-                  <div className="select-company-container">
-                    <Select
-                      id="broker_contact_id"
-                      className="reactSelectWide"
-                      options={contactOptionsForCompany(formData.broker_id)}
-                      onChange={(option) => handleSelectChange('broker_contact_id', option)}
-                      placeholder="Select a contact..."
-                      isSearchable
-                      value={
-                        formData.broker_contact_id
-                          ? contactOptionsForCompany(formData.broker_id).find(
-                              (option) => option.value === formData.broker_contact_id
-                            ) || null
-                          : null
-                      }
-                      filterOption={(option, input) =>
-                        option.label.toLowerCase().includes(input.toLowerCase())
-                      }
-                      menuPlacement="auto"
-                      maxMenuHeight={200}
-                    />
-
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      onClick={() => openAddContactModal('broker_contact_id')}
-                      aria-label="Add Contact"
-                    >
-                      +
-                    </button>
-                  </div>
-                </div>
-              </div>
-
-              {/* Principal Reference */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="principal_ref">Principal Reference</label>
-                  <input
-                    id="principal_ref"
-                    className="inputMedium"
-                    type="text"
-                    name="principal_ref"
-                    value={formData.principal_ref || ''}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                {/* Date of Loss */}
-
-                <div className="modal-form-group">
-                  <label htmlFor="date_of_loss">Date of Loss</label>
-                  <input
-                    id="date_of_loss"
-                    className="inputMedium"
-                    type="date"
-                    name="date_of_loss"
-                    value={formData.date_of_loss ? convertToLocalDate(formData.date_of_loss) : ''}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-
-              {/* Cause of Loss */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="cause_of_loss">Cause of Loss</label>
-                  <select
-                    id="cause_of_loss"
-                    value={formData.cause_of_loss_id ? String(formData.cause_of_loss_id) : ''}
-                    onChange={(event) => {
-                      const selectedValue = event.target.value;
-                      handleSelectChange(
-                        'cause_of_loss_id',
-                        selectedValue
-                          ? {
-                              value: Number(selectedValue),
-                              label:
-                                causesSorted.find((cl) => cl.id === Number(selectedValue))
-                                  ?.col_name || '',
-                            }
-                          : null
-                      );
-                    }}
-                  >
-                    <option value="">Select a cause of loss...</option>
-                    {causesSorted.map((option) => (
-                      <option key={option.id} value={option.id}>
-                        {option.col_name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {/* Estimate of Loss */}
-                <div className="modal-form-group">
-                  <label htmlFor="estimate_of_loss">Estimate of Loss</label>
-                  <CurrencySelect
-                    value={formData.claim_currency || 'ZAR'}
-                    selectClassName="currencySelectViewFile"
-                    onChange={(value) =>
-                      setFormData((prev) => ({ ...prev, claim_currency: value }))
-                    }
-                  />
-                  <input
-                    type="text"
-                    className="inputMedium"
-                    value={estimateLossInput}
-                    onKeyDown={handleNumberInputKeyDown}
-                    onChange={(e) => {
-                      setEstimateLossInput(e.target.value);
-                    }}
-                    onBlur={handleEstimateBlur}
-                  />
-                </div>
-              </div>
-
-              {/* Subject Matter */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="subject_matter">Subject Matter</label>
-                  <input
-                    type="text"
-                    className="inputLarge"
-                    id="subject_matter"
-                    name="subject_matter"
-                    value={formData.subject_matter || ''}
-                    onChange={handleChange}
-                  ></input>
-                </div>
-              </div>
-
-              {/* Additional Parties */}
-              <div className="modal-row">
-                <div className="additional-parties-container">
-                  <div className="additional-parties-header">
-                    <label htmlFor="additional_parties">Additional Parties</label>
-                    <button
-                      type="button"
-                      className="add-company-button"
-                      aria-label="Add Company"
-                      onClick={handleAddAdditionalParty}
-                    >
-                      +
-                    </button>
-                  </div>
-                  {showAdditionalParties &&
-                    additionalParties
-                      .filter((ap) => ap.file_id === formData.id)
-                      .map((ap) => (
-                        <AdditionalPartyDisplay
-                          key={ap.id}
-                          additionalParty={ap}
-                          onUpdated={(updatedParty) => {
-                            updateAdditionalParty({
-                              id: updatedParty.id,
-                              updatedAdditionalParty: updatedParty,
-                            });
-                          }}
-                          onDelete={(id) => {
-                            deleteAdditionalParty(id);
-                          }}
-                          companies={companies}
-                          contacts={contacts}
-                        />
+                      <option value="">Select a status...</option>
+                      {statusOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
                       ))}
+                    </select>
+                  </div>
                 </div>
-              </div>
 
-              {/* Preliminary Findings */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="preliminary_findings">Preliminary Findings</label>
-                  <textarea
-                    id="preliminary_findings"
-                    name="preliminary_findings"
-                    value={formData.preliminary_findings || ''}
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
+                {/* Company */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="company_id">Insured</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="insured_id"
+                        className="reactSelectWide"
+                        options={companyOptions}
+                        onChange={(option) => handleSelectChange('insured_id', option)}
+                        placeholder="Select a company..."
+                        isSearchable
+                        value={
+                          companyOptions.find((option) => option.value === formData.insured_id) ||
+                          null
+                        }
+                        required
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddCompanyModal('insured_id')}
+                        aria-label="Add Company"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
 
-              {/* File Note */}
-              <div className="modal-row">
-                <div className="modal-form-group">
-                  <label htmlFor="file_note">File Note</label>
-                  <textarea
-                    id="file_note"
-                    name="file_note"
-                    value={formData.file_note || ''}
-                    onChange={handleChange}
-                  ></textarea>
-                </div>
-              </div>
+                  {/* Company Contact */}
 
-              {/* Buttons */}
-              <div className="modal-footer">
-                <div className="modal-footer-button-container">
-                  <button type="submit" className="modal-submit">
-                    Save Changes
-                  </button>
-                  <button type="button" onClick={onClose} className="modal-cancel">
-                    Cancel
-                  </button>
+                  <div className="modal-form-group">
+                    <label htmlFor="company_contact_id">Company Contact</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="company_contact_id"
+                        className="reactSelectWide"
+                        options={contactOptionsForCompany(formData.insured_id)}
+                        onChange={(option) => handleSelectChange('insured_contact_id', option)}
+                        placeholder="Select a contact..."
+                        isSearchable
+                        value={
+                          formData.insured_contact_id
+                            ? contactOptionsForCompany(formData.insured_id).find(
+                                (option) => option.value === formData.insured_contact_id
+                              ) || null
+                            : null
+                        }
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddContactModal('insured_contact_id')}
+                        aria-label="Add Contact"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </form>
+
+                {/* Principal */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="principal_id">Principal</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="principal_id"
+                        className="reactSelectWide"
+                        options={companyOptions}
+                        onChange={(option) => handleSelectChange('principal_id', option)}
+                        placeholder="Select a principal..."
+                        isSearchable
+                        value={
+                          companyOptions.find((option) => option.value === formData.principal_id) ||
+                          null
+                        }
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddCompanyModal('principal_id')}
+                        aria-label="Add Company"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Principal Contact */}
+
+                  <div className="modal-form-group">
+                    <label htmlFor="principal_contact_id">Principal Contact</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="principal_contact_id"
+                        className="reactSelectWide"
+                        options={contactOptionsForCompany(formData.principal_id)}
+                        onChange={(option) => handleSelectChange('principal_contact_id', option)}
+                        placeholder="Select a contact..."
+                        isSearchable
+                        value={
+                          formData.principal_contact_id
+                            ? contactOptionsForCompany(formData.principal_id).find(
+                                (option) => option.value === formData.principal_contact_id
+                              ) || null
+                            : null
+                        }
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddContactModal('principal_contact_id')}
+                        aria-label="Add Contact"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Broker */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="broker_id">Broker</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="broker_id"
+                        className="reactSelectWide"
+                        options={companyOptions}
+                        onChange={(option) => handleSelectChange('broker_id', option)}
+                        placeholder="Select a broker..."
+                        isSearchable
+                        value={
+                          companyOptions.find((option) => option.value === formData.broker_id) ||
+                          null
+                        }
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddCompanyModal('broker_id')}
+                        aria-label="Add Company"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Broker Contact */}
+
+                  <div className="modal-form-group">
+                    <label htmlFor="broker_contact_id">Broker Contact</label>
+                    <div className="select-company-container">
+                      <Select
+                        id="broker_contact_id"
+                        className="reactSelectWide"
+                        options={contactOptionsForCompany(formData.broker_id)}
+                        onChange={(option) => handleSelectChange('broker_contact_id', option)}
+                        placeholder="Select a contact..."
+                        isSearchable
+                        value={
+                          formData.broker_contact_id
+                            ? contactOptionsForCompany(formData.broker_id).find(
+                                (option) => option.value === formData.broker_contact_id
+                              ) || null
+                            : null
+                        }
+                        filterOption={(option, input) =>
+                          option.label.toLowerCase().includes(input.toLowerCase())
+                        }
+                        menuPlacement="auto"
+                        maxMenuHeight={200}
+                      />
+
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        onClick={() => openAddContactModal('broker_contact_id')}
+                        aria-label="Add Contact"
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Principal Reference */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="principal_ref">Principal Reference</label>
+                    <input
+                      id="principal_ref"
+                      className="inputMedium"
+                      type="text"
+                      name="principal_ref"
+                      value={formData.principal_ref || ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Date of Loss */}
+
+                  <div className="modal-form-group">
+                    <label htmlFor="date_of_loss">Date of Loss</label>
+                    <input
+                      id="date_of_loss"
+                      className="inputMedium"
+                      type="date"
+                      name="date_of_loss"
+                      value={formData.date_of_loss ? convertToLocalDate(formData.date_of_loss) : ''}
+                      onChange={handleChange}
+                    />
+                  </div>
+                </div>
+
+                {/* Cause of Loss */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="cause_of_loss">Cause of Loss</label>
+                    <select
+                      id="cause_of_loss"
+                      value={formData.cause_of_loss_id ? String(formData.cause_of_loss_id) : ''}
+                      onChange={(event) => {
+                        const selectedValue = event.target.value;
+                        handleSelectChange(
+                          'cause_of_loss_id',
+                          selectedValue
+                            ? {
+                                value: Number(selectedValue),
+                                label:
+                                  causesSorted.find((cl) => cl.id === Number(selectedValue))
+                                    ?.col_name || '',
+                              }
+                            : null
+                        );
+                      }}
+                    >
+                      <option value="">Select a cause of loss...</option>
+                      {causesSorted.map((option) => (
+                        <option key={option.id} value={option.id}>
+                          {option.col_name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Estimate of Loss */}
+                  <div className="modal-form-group">
+                    <label htmlFor="estimate_of_loss">Estimate of Loss</label>
+                    <CurrencySelect
+                      value={formData.claim_currency || 'ZAR'}
+                      selectClassName="currencySelectViewFile"
+                      onChange={(value) =>
+                        setFormData((prev) => ({ ...prev, claim_currency: value }))
+                      }
+                    />
+                    <input
+                      type="text"
+                      className="inputMedium"
+                      value={estimateLossInput}
+                      onKeyDown={handleNumberInputKeyDown}
+                      onChange={(e) => {
+                        setEstimateLossInput(e.target.value);
+                      }}
+                      onBlur={handleEstimateBlur}
+                    />
+                  </div>
+                </div>
+
+                {/* Subject Matter */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="subject_matter">Subject Matter</label>
+                    <input
+                      type="text"
+                      className="inputLarge"
+                      id="subject_matter"
+                      name="subject_matter"
+                      value={formData.subject_matter || ''}
+                      onChange={handleChange}
+                    ></input>
+                  </div>
+                </div>
+
+                {/* Additional Parties */}
+                <div className="modal-row">
+                  <div className="additional-parties-container">
+                    <div className="additional-parties-header">
+                      <label htmlFor="additional_parties">Additional Parties</label>
+                      <button
+                        type="button"
+                        className="add-company-button"
+                        aria-label="Add Company"
+                        onClick={handleAddAdditionalParty}
+                      >
+                        +
+                      </button>
+                    </div>
+                    {showAdditionalParties &&
+                      additionalParties
+                        .filter((ap) => ap.file_id === formData.id)
+                        .map((ap) => (
+                          <AdditionalPartyDisplay
+                            key={ap.id}
+                            additionalParty={ap}
+                            onUpdated={(updatedParty) => {
+                              updateAdditionalParty({
+                                id: updatedParty.id,
+                                updatedAdditionalParty: updatedParty,
+                              });
+                            }}
+                            onDelete={(id) => {
+                              deleteAdditionalParty(id);
+                            }}
+                            companies={companies}
+                            contacts={contacts}
+                          />
+                        ))}
+                  </div>
+                </div>
+
+                {/* Preliminary Findings */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="preliminary_findings">Preliminary Findings</label>
+                    <textarea
+                      id="preliminary_findings"
+                      name="preliminary_findings"
+                      value={formData.preliminary_findings || ''}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+
+                {/* File Note */}
+                <div className="modal-row">
+                  <div className="modal-form-group">
+                    <label htmlFor="file_note">File Note</label>
+                    <textarea
+                      id="file_note"
+                      name="file_note"
+                      value={formData.file_note || ''}
+                      onChange={handleChange}
+                    ></textarea>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, Suspense, lazy, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { useData } from '../hooks/UseData';
 import { FileRecord, Company, FeeRecord, Contact } from '../types';
@@ -14,6 +14,7 @@ const ViewCompanyModal = lazy(() => import('../Modals/ViewCompanyModal'));
 const PrelimReport = lazy(() => import('../Reporting/PrelimRoport'));
 const FeeInvoice = lazy(() => import('../Fees/FeeInvoice'));
 const DocumentRequest = lazy(() => import('../Reporting/DocumentRequest'));
+const EmailModal = lazy(() => import('../Emails/EmailModal'));
 
 const Home: React.FC = () => {
   const {
@@ -36,8 +37,6 @@ const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-  const [statusSortOrder, setStatusSortOrder] = useState<'asc' | 'desc'>('asc');
-
   // View/Edit Modals
   const [showViewContactModal, setShowViewContactModal] = useState(false);
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
@@ -54,6 +53,13 @@ const Home: React.FC = () => {
   const [selectedFee, setSelectedFee] = useState<FeeRecord | null>(null);
 
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
+
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailType, setEmailType] = useState<'acknowledgment' | 'general'>('general');
+  const [showEmailDropdown, setShowEmailDropdown] = useState(false);
+  const [emailDropdownPosition, setEmailDropdownPosition] = useState({ top: 0, left: 0 });
+  const [openEmailDropdownUpwards, setOpenEmailDropdownUpwards] = useState(false);
+  const emailBtnRef = useRef<HTMLButtonElement>(null);
 
   // Handle Right-Click to Show Electron Context Menu
   const handleRightClick = useCallback(
@@ -265,11 +271,6 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  // Handler to toggle sort order
-  const handleStatusSort = useCallback(() => {
-    setStatusSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
-  }, []);
-
   // Handle File Updated
   const handleFileUpdated = useCallback(() => {}, []);
 
@@ -328,7 +329,33 @@ const Home: React.FC = () => {
     [contacts, companies]
   );
 
-  //Listener for electron context-menu-action
+  //Function to handle showing the email dropdown with smart positioning
+  const handleEmailDropdownToggle = () => {
+    if (!showEmailDropdown && emailBtnRef.current) {
+      // Get button dimensions
+      const buttonRect = emailBtnRef.current.getBoundingClientRect();
+
+      // Calculate if there's enough space below
+      const spaceBelow = window.innerHeight - buttonRect.bottom;
+      const spaceNeeded = 100; // Approximate height of dropdown
+      const openUpwards = spaceBelow < spaceNeeded;
+
+      // For absolute positioning, position relative to the button
+      // We want the dropdown's right edge to align with the button's right edge
+      const dropdownWidth = 200; // Fixed dropdown width from CSS
+      const leftPosition = buttonRect.width - dropdownWidth; // Align right edges
+      const topPosition = openUpwards ? -spaceNeeded : buttonRect.height;
+
+      setEmailDropdownPosition({
+        top: topPosition,
+        left: leftPosition,
+      });
+      setOpenEmailDropdownUpwards(openUpwards);
+    }
+    setShowEmailDropdown(!showEmailDropdown);
+  };
+
+  // Listener for electron context-menu-action
   const handleContextMenuAction = useCallback(
     async (action: string, contextType: string, contextId: number) => {
       if (contextType === 'file') {
@@ -354,7 +381,7 @@ const Home: React.FC = () => {
 
           case 'editNote': {
             const fileNote = files.find((f) => f.id === contextId)?.file_note;
-            setNoteText(fileNote || 'Add note here...');
+            setNoteText(fileNote || '');
             setShowAddNote(contextId);
             break;
           }
@@ -419,6 +446,21 @@ const Home: React.FC = () => {
     };
   }, [handleContextMenuAction]);
 
+  // Close email dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.emailDropdownContainer') && showEmailDropdown) {
+        setShowEmailDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showEmailDropdown]);
+
   return (
     <div className="main-content-contents">
       <div className="mainContentHeader">
@@ -436,7 +478,7 @@ const Home: React.FC = () => {
       <div className="mainContentSubject">
         <div className="actionCenterContainer">
           <div className="actionFilesContainer">
-            <Header onStatusSort={handleStatusSort} sortOrder={statusSortOrder} />
+            <Header />
             {groupOrder.map(
               (groupName) =>
                 groupedFiles[groupName] &&
@@ -472,152 +514,241 @@ const Home: React.FC = () => {
                 <div className="actionFileDetailsHeader">
                   <h2>File Details</h2>
                   <div className="actionFileDetailsHeaderActions">
-                    <button
-                      className="actionFileDetailsEditButton"
-                      onClick={() => setShowViewFileModal(true)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      className="actionFileDetailsFeeButton"
-                      onClick={() => setShowPrelimReport(true)}
-                    >
-                      Prelim
-                    </button>
-                    <button
-                      className="actionFileDetailsFeeButton"
-                      onClick={() => {
-                        const fee = fees.find((f) => f.id === selectedFile.id);
-                        setSelectedFee(fee || null); // pass the correct fee record
-                        setShowFeeInvoice(true);
-                      }}
-                    >
-                      Invoice
-                    </button>
-                    <button
-                      className="actionFileDetailsFeeButton"
-                      onClick={() => setShowDocumentRequest(true)}
-                    >
-                      Docs
-                    </button>
+                    <div className="actionFileDetailsHeaderLeft">
+                      <button
+                        className="actionFileDetailsEditButton"
+                        onClick={() => setShowViewFileModal(true)}
+                      >
+                        Edit
+                      </button>
+                    </div>
+                    <div className="actionFileDetailsHeaderRight">
+                      {' '}
+                      <div className="emailDropdownContainer">
+                        <button
+                          className="actionFileDetailsFeeButton"
+                          onClick={handleEmailDropdownToggle}
+                          ref={emailBtnRef}
+                        >
+                          Emails
+                        </button>
+                        {showEmailDropdown && (
+                          <div
+                            className={`emailDropdownMenu ${openEmailDropdownUpwards ? 'dropdown-open-up' : 'dropdown-open-down'}`}
+                            style={{
+                              top: emailDropdownPosition.top,
+                              left: emailDropdownPosition.left,
+                            }}
+                            onKeyDown={(e) => {
+                              // Handle keyboard navigation
+                              if (e.key === 'Escape') {
+                                setShowEmailDropdown(false);
+                              } else if (e.key === 'ArrowDown') {
+                                // Focus next item
+                                const currentEl = document.activeElement;
+                                const items = Array.from(
+                                  document.querySelectorAll('.emailDropdownItem')
+                                );
+                                const currentIndex = items.indexOf(currentEl as Element);
+                                const nextItem = items[(currentIndex + 1) % items.length];
+                                if (nextItem) (nextItem as HTMLElement).focus();
+                              } else if (e.key === 'ArrowUp') {
+                                // Focus previous item
+                                const currentEl = document.activeElement;
+                                const items = Array.from(
+                                  document.querySelectorAll('.emailDropdownItem')
+                                );
+                                const currentIndex = items.indexOf(currentEl as Element);
+                                const prevIndex =
+                                  currentIndex > 0 ? currentIndex - 1 : items.length - 1;
+                                const prevItem = items[prevIndex];
+                                if (prevItem) (prevItem as HTMLElement).focus();
+                              }
+                            }}
+                          >
+                            <div
+                              className="emailDropdownItem"
+                              onClick={() => {
+                                setEmailType('general');
+                                setShowEmailModal(true);
+                                setShowEmailDropdown(false);
+                              }}
+                              tabIndex={0}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  setEmailType('general');
+                                  setShowEmailModal(true);
+                                  setShowEmailDropdown(false);
+                                }
+                              }}
+                            >
+                              Basic Email
+                            </div>
+                            <div
+                              className="emailDropdownItem"
+                              onClick={() => {
+                                setEmailType('acknowledgment');
+                                setShowEmailModal(true);
+                                setShowEmailDropdown(false);
+                              }}
+                              tabIndex={0}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                  setEmailType('acknowledgment');
+                                  setShowEmailModal(true);
+                                  setShowEmailDropdown(false);
+                                }
+                              }}
+                            >
+                              Acknowledgement
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        className="actionFileDetailsFeeButton"
+                        onClick={() => setShowDocumentRequest(true)}
+                      >
+                        Docs
+                      </button>
+                      <button
+                        className="actionFileDetailsFeeButton"
+                        onClick={() => setShowPrelimReport(true)}
+                      >
+                        Prelim
+                      </button>
+                      <button
+                        className="actionFileDetailsFeeButton"
+                        onClick={() => {
+                          const fee = fees.find((f) => f.id === selectedFile.id);
+                          setSelectedFee(fee || null); // pass the correct fee record
+                          setShowFeeInvoice(true);
+                        }}
+                      >
+                        Invoice
+                      </button>
+                    </div>
                   </div>
                 </div>
+                <div className="fileDetailsContents">
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem fileDetailsLeftItem">
+                      <p className="fileDetailsLabel">ID:</p>
+                      <p className="fileDetailsData">{selectedFile.id}</p>
+                    </div>
+                    <div className="fileDetailsItem fileDetailsRightItem">
+                      <p className="fileDetailsLabel">Status:</p>
+                      <p className="fileDetailsData">{selectedFile.status}</p>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Insured:</p>
+                      <div
+                        className="fileDetailsDataCompany"
+                        onClick={(e) => handleClickView(e, 'company', selectedFile.insured_id || 0)}
+                      >
+                        {getCompanyName(selectedFile.insured_id)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Insured Contact:</p>
+                      <div
+                        className="fileDetailsDataContact"
+                        onClick={(e) =>
+                          handleClickView(e, 'contact', selectedFile.insured_contact_id || 0)
+                        }
+                      >
+                        {getContactName(selectedFile.insured_contact_id)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Broker:</p>
+                      <div
+                        className="fileDetailsDataCompany"
+                        onClick={(e) => handleClickView(e, 'company', selectedFile.broker_id || 0)}
+                      >
+                        {getCompanyName(selectedFile.broker_id)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Broker Contact:</p>
+                      <div
+                        className="fileDetailsDataContact"
+                        onClick={(e) =>
+                          handleClickView(e, 'contact', selectedFile.broker_contact_id || 0)
+                        }
+                      >
+                        {getContactName(selectedFile.broker_contact_id)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Principal:</p>
+                      <div
+                        className="fileDetailsDataCompany"
+                        onClick={(e) =>
+                          handleClickView(e, 'company', selectedFile.principal_id || 0)
+                        }
+                      >
+                        {getCompanyName(selectedFile.principal_id)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Principal Contact:</p>
 
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem fileDetailsLeftItem">
-                    <p className="fileDetailsLabel">ID:</p>
-                    <p className="fileDetailsData">{selectedFile.id}</p>
-                  </div>
-                  <div className="fileDetailsItem fileDetailsRightItem">
-                    <p className="fileDetailsLabel">Status:</p>
-                    <p className="fileDetailsData">{selectedFile.status}</p>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Insured:</p>
-                    <div
-                      className="fileDetailsDataCompany"
-                      onClick={(e) => handleClickView(e, 'company', selectedFile.insured_id || 0)}
-                    >
-                      {getCompanyName(selectedFile.insured_id)}
+                      <div
+                        className="fileDetailsDataContact"
+                        onClick={(e) =>
+                          handleClickView(e, 'contact', selectedFile.principal_contact_id || 0)
+                        }
+                      >
+                        {getContactName(selectedFile.principal_contact_id)}
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Insured Contact:</p>
-                    <div
-                      className="fileDetailsDataContact"
-                      onClick={(e) =>
-                        handleClickView(e, 'contact', selectedFile.insured_contact_id || 0)
-                      }
-                    >
-                      {getContactName(selectedFile.insured_contact_id)}
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Principal Ref:</p>
+                      <p className="fileDetailsData">{selectedFile.principal_ref}</p>
                     </div>
                   </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Broker:</p>
-                    <div
-                      className="fileDetailsDataCompany"
-                      onClick={(e) => handleClickView(e, 'company', selectedFile.broker_id || 0)}
-                    >
-                      {getCompanyName(selectedFile.broker_id)}
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Date of Loss:</p>
+                      <p className="fileDetailsData">
+                        {selectedFile.date_of_loss
+                          ? convertToLocalDate(selectedFile.date_of_loss)
+                          : ''}
+                      </p>
                     </div>
                   </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Broker Contact:</p>
-                    <div
-                      className="fileDetailsDataContact"
-                      onClick={(e) =>
-                        handleClickView(e, 'contact', selectedFile.broker_contact_id || 0)
-                      }
-                    >
-                      {getContactName(selectedFile.broker_contact_id)}
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Subject Matter:</p>
+                      <p className="fileDetailsData">{selectedFile.subject_matter}</p>
                     </div>
                   </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Principal:</p>
-                    <div
-                      className="fileDetailsDataCompany"
-                      onClick={(e) => handleClickView(e, 'company', selectedFile.principal_id || 0)}
-                    >
-                      {getCompanyName(selectedFile.principal_id)}
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">Fee:</p>
+                      <p className="fileDetailsData">{getTotalFee(selectedFile.id)}</p>
                     </div>
                   </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Principal Contact:</p>
-
-                    <div
-                      className="fileDetailsDataContact"
-                      onClick={(e) =>
-                        handleClickView(e, 'contact', selectedFile.principal_contact_id || 0)
-                      }
-                    >
-                      {getContactName(selectedFile.principal_contact_id)}
+                  <div className="fileDetailsRow">
+                    <div className="fileDetailsItem">
+                      <p className="fileDetailsLabel">File Note:</p>
+                      <p className="fileDetailsNoteText">{selectedFile.file_note}</p>
                     </div>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Principal Ref:</p>
-                    <p className="fileDetailsData">{selectedFile.principal_ref}</p>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Date of Loss:</p>
-                    <p className="fileDetailsData">
-                      {selectedFile.date_of_loss
-                        ? convertToLocalDate(selectedFile.date_of_loss)
-                        : ''}
-                    </p>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Subject Matter:</p>
-                    <p className="fileDetailsData">{selectedFile.subject_matter}</p>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">Fee:</p>
-                    <p className="fileDetailsData">{getTotalFee(selectedFile.id)}</p>
-                  </div>
-                </div>
-                <div className="fileDetailsRow">
-                  <div className="fileDetailsItem">
-                    <p className="fileDetailsLabel">File Note:</p>
-                    <p>{selectedFile.file_note}</p>
                   </div>
                 </div>
               </div>
@@ -630,7 +761,6 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
-
       {/* View Contact Modal */}
       {showViewContactModal && selectedContact && (
         <Suspense fallback={<div>Loading...</div>}>
@@ -644,7 +774,6 @@ const Home: React.FC = () => {
           />
         </Suspense>
       )}
-
       {/* View Company Modal */}
       {showViewCompanyModal && selectedCompany && (
         <Suspense fallback={<div>Loading...</div>}>
@@ -657,7 +786,6 @@ const Home: React.FC = () => {
           />
         </Suspense>
       )}
-
       {/* View/Edit File Modal */}
       {showViewFileModal && selectedFile && (
         <Suspense fallback={<div>Loading...</div>}>
@@ -670,7 +798,6 @@ const Home: React.FC = () => {
           />
         </Suspense>
       )}
-
       {/* Preliminary Report */}
       {showPrelimReport && selectedFile && (
         <Suspense fallback={<div>Loading...</div>}>
@@ -682,7 +809,6 @@ const Home: React.FC = () => {
           />
         </Suspense>
       )}
-
       {/* Fee Invoice */}
       {showFeeInvoice && selectedFile && selectedFee && (
         <Suspense fallback={<div>Loading...</div>}>
@@ -696,13 +822,27 @@ const Home: React.FC = () => {
           />
         </Suspense>
       )}
-
       {/* Document Request */}
       {showDocumentRequest && selectedFile && (
         <Suspense fallback={<div>Loading...</div>}>
           <DocumentRequest
             filerecord={selectedFile}
             onClose={() => setShowDocumentRequest(false)}
+          />
+        </Suspense>
+      )}{' '}
+      {/* Email Modal */}
+      {showEmailModal && selectedFile && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <EmailModal
+            onClose={() => {
+              setShowEmailModal(false);
+              setShowEmailDropdown(false);
+            }}
+            file={selectedFile}
+            contacts={contacts}
+            companies={companies}
+            emailType={emailType}
           />
         </Suspense>
       )}

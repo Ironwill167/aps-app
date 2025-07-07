@@ -39,13 +39,14 @@ $light-text-color: $main-color-hover;
 $link-color: $light-green;
 $link-hover-color: $darker-blue;
 
-// Font Sizes
-$superlarge: 2.7vi;
-$extralarge: 1.8vi;
-$large: 1.4vi;
-$medium: 1.15vi;
-$small: 0.8vi;
-$smaller: 0.7vi;
+// Font Sizes - Responsive for desktop screens
+$superlarge: clamp(24px, 2.5vw, 36px);
+$extralarge: clamp(18px, 1.8vw, 28px);
+$large: clamp(16px, 1.4vw, 24px);
+$medium: clamp(14px, 1.2vw, 20px);
+$small: clamp(12px, 1vw, 16px);
+$smaller: clamp(10px, 0.8vw, 14px);
+$smallest: clamp(8px, 0.7vw, 12px);
 
 // Button Colors
 $button-bg: $dark-blue;

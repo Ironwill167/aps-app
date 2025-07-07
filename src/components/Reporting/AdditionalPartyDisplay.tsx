@@ -73,6 +73,7 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
           <label>Additional Party:</label>
           <input
             type="text"
+            placeholder="How is this party involved?"
             value={partyName}
             onChange={handleNameChange}
             onBlur={handleNameBlur}
@@ -139,6 +140,7 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
             type="button"
             className="adp_delete-button"
             onClick={() => onDelete(additionalParty.id)}
+            title="Delete this additional party."
           >
             X
           </button>
