@@ -1,6 +1,40 @@
 // src/types.ts
 export type ItemType = 'contact' | 'company' | 'file';
 
+// Email-related types
+export interface EmailAccount {
+  email: string;
+  name: string;
+  displayName: string;
+}
+
+export interface EmailSendRequest {
+  from?: string;
+  to: string;
+  cc?: string;
+  bcc?: string;
+  subject: string;
+  body: string;
+  fileId?: string;
+  emailType?: string;
+}
+
+export interface EmailSendResponse {
+  success: boolean;
+  messageId?: string;
+  message?: string;
+  sentFrom?: string;
+  error?: string;
+  details?: string;
+}
+
+export interface EmailAccountsResponse {
+  success: boolean;
+  accounts?: EmailAccount[];
+  error?: string;
+  details?: string;
+}
+
 export interface Company {
   id: number;
   name: string;

@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { BaseUrl } from '../config';
+import { BaseUrl, AppConfig } from '../config';
 import {
   Company,
   Contact,
@@ -10,6 +10,9 @@ import {
   AdditionalParty,
   FeeRecord,
   InvoiceRates,
+  EmailSendRequest,
+  EmailSendResponse,
+  EmailAccountsResponse,
 } from '../types';
 
 interface APIResponse<T> {
@@ -453,5 +456,106 @@ export const deleteRate = async (id: number): Promise<APIResponse<string>> => {
     return { data: `Invoice Rate deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
+  }
+};
+
+// -------------------- Email API --------------------
+
+// Create email API instance using AppConfig for email endpoints
+const emailApi = axios.create({
+  baseURL: AppConfig.emailApiUrl,
+  headers: {
+    'Content-Type': 'application/json',
+    'x-electron-app-secret': 'apskeytoconnectelectron',
+  },
+});
+
+// Fetch available email accounts
+export const fetchEmailAccounts = async (): Promise<EmailAccountsResponse> => {
+  try {
+    console.log('Fetching email accounts from:', `${AppConfig.emailApiUrl}/email/accounts`);
+    const response: AxiosResponse<EmailAccountsResponse> = await emailApi.get('/email/accounts');
+    console.log('Email accounts response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching email accounts:', error);
+
+    // If the backend doesn't have the endpoint, return predefined accounts
+    console.log('Backend endpoint not available, using predefined email accounts');
+    return {
+      success: true,
+      accounts: [
+        {
+          email: 'aps@agprospec.co.za',
+          name: 'APS',
+          displayName: 'APS (aps@agprospec.co.za)',
+        },
+        {
+          email: 'mannie@agprospec.co.za',
+          name: 'Mannie',
+          displayName: 'Mannie (mannie@agprospec.co.za)',
+        },
+        {
+          email: 'willie@agprospec.co.za',
+          name: 'Willie',
+          displayName: 'Willie (willie@agprospec.co.za)',
+        },
+        {
+          email: 'elize@agprospec.co.za',
+          name: 'Elize',
+          displayName: 'Elize (elize@agprospec.co.za)',
+        },
+      ],
+    };
+  }
+};
+
+// Send email
+export const sendEmail = async (emailData: EmailSendRequest): Promise<EmailSendResponse> => {
+  try {
+    console.log('Sending email with data:', emailData);
+    const response: AxiosResponse<EmailSendResponse> = await emailApi.post(
+      '/email/send',
+      emailData
+    );
+    console.log('Email send response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error sending email:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        success: false,
+        error: error.response.data?.error || 'Failed to send email',
+        details: error.response.data?.details || error.message,
+      };
+    }
+    return {
+      success: false,
+      error: 'Failed to send email',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    };
+  }
+};
+
+// Test email connection
+export const testEmailConnection = async (from?: string): Promise<EmailSendResponse> => {
+  try {
+    const url = from ? `/email/test?from=${encodeURIComponent(from)}` : '/email/test';
+    const response: AxiosResponse<EmailSendResponse> = await emailApi.get(url);
+    return response.data;
+  } catch (error) {
+    console.error('Error testing email connection:', error);
+    if (axios.isAxiosError(error) && error.response) {
+      return {
+        success: false,
+        error: error.response.data?.error || 'Email connection test failed',
+        details: error.response.data?.details || error.message,
+      };
+    }
+    return {
+      success: false,
+      error: 'Email connection test failed',
+      details: error instanceof Error ? error.message : 'Unknown error',
+    };
   }
 };

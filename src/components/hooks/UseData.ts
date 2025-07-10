@@ -9,6 +9,7 @@ import {
   fetchAdditionalParties,
   fetchFees,
   fetchRates,
+  fetchEmailAccounts,
 } from './ApiServices';
 import {
   useAddContact,
@@ -38,6 +39,7 @@ import {
   useAddInvoiceRate,
   useUpdateInvoiceRate,
   useDeleteInvoiceRate,
+  useSendEmail,
 } from './UseMutations';
 
 export const useData = () => {
@@ -219,10 +221,26 @@ export const useData = () => {
     refetchInterval,
   });
 
+  /* -------------------- Email Accounts -------------------- */
+  const {
+    data: emailAccountsData,
+    isLoading: emailAccountsLoading,
+    error: emailAccountsError,
+  } = useQuery({
+    queryKey: ['emailAccounts'],
+    queryFn: async () => {
+      const res = await fetchEmailAccounts();
+      return res.success ? res.accounts || [] : [];
+    },
+    initialData: [],
+    refetchInterval: 5 * 60 * 1000, // Refresh every 5 minutes
+  });
+
   // Mutations
   const addRate = useAddInvoiceRate();
   const updateRate = useUpdateInvoiceRate();
   const deleteRate = useDeleteInvoiceRate();
+  const sendEmailMutation = useSendEmail();
 
   return {
     // Contacts
@@ -297,5 +315,11 @@ export const useData = () => {
     addRate: addRate.mutateAsync,
     updateRate: updateRate.mutateAsync,
     deleteRate: deleteRate.mutateAsync,
+
+    // Email Accounts
+    emailAccounts: emailAccountsData,
+    emailAccountsLoading,
+    emailAccountsError,
+    sendEmail: sendEmailMutation.mutateAsync,
   };
 };

@@ -28,6 +28,7 @@ import {
   addRate,
   updateRate,
   deleteRate,
+  sendEmail,
 } from './ApiServices';
 import {
   Contact,
@@ -39,6 +40,7 @@ import {
   OutstandingDocument,
   FileDocument,
   InvoiceRates,
+  EmailSendRequest,
 } from '../types';
 
 /* -------------------- Contacts -------------------- */
@@ -585,6 +587,25 @@ export const useDeleteInvoiceRate = () => {
     },
     onError: (error: Error) => {
       console.error('Delete Invoice Rate Error:', error);
+    },
+  });
+};
+
+/* -------------------- Email -------------------- */
+export const useSendEmail = () => {
+  const { socket } = useSocket();
+
+  return useMutation({
+    mutationFn: async (emailData: EmailSendRequest) => {
+      const res = await sendEmail(emailData);
+      return res;
+    },
+    onSuccess: () => {
+      // Optionally invalidate email-related queries if needed
+      socket?.emit('dataChanged', { type: 'email' });
+    },
+    onError: (error: Error) => {
+      console.error('Send Email Error:', error);
     },
   });
 };

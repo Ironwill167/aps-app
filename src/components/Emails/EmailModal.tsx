@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileRecord, Contact, Company } from '../types';
-import { AppConfig } from '../config';
+import { useData } from '../hooks/UseData';
 
 interface EmailModalProps {
   file: FileRecord;
@@ -17,6 +17,8 @@ const EmailModal: React.FC<EmailModalProps> = ({
   emailType,
   onClose,
 }) => {
+  const { emailAccounts, sendEmail } = useData();
+  const [selectedFrom, setSelectedFrom] = useState('');
   const [emailData, setEmailData] = useState({
     to: '',
     cc: '',
@@ -26,6 +28,13 @@ const EmailModal: React.FC<EmailModalProps> = ({
   });
 
   const [isLoading, setIsLoading] = useState(false);
+
+  // Set default selected email account when emailAccounts are loaded
+  useEffect(() => {
+    if (emailAccounts && emailAccounts.length > 0 && !selectedFrom) {
+      setSelectedFrom(emailAccounts[0].email);
+    }
+  }, [emailAccounts, selectedFrom]);
 
   // Get contact and company names
   const getPrincipalContactName = useCallback(() => {
@@ -68,7 +77,7 @@ DISCLAIMER: This e-mail and any attachments are confidential, may be privileged 
     const signature = getSignature();
 
     if (emailType === 'acknowledgment') {
-      const subject = `APS File: ${file.id} - ${file.subject_matter || 'Insurance Claim'} - Acknowledgment`;
+      const subject = `APS Ref: ${file.id} - ${file.subject_matter || 'Insurance Claim'} - Acknowledgment`;
 
       const body = `Hi ${principalContactName},
 
@@ -92,7 +101,7 @@ ${signature}`;
       }));
     } else if (emailType === 'general') {
       // Basic email with just signature
-      const subject = `APS File Ref: ${file.id} - Insurer Ref: ${file.principal_ref}`;
+      const subject = `APS Ref: ${file.id} - Insurer Ref: ${file.principal_ref}`;
 
       const body = `Hi ,
 
@@ -123,44 +132,35 @@ ${signature}`;
     }));
   };
   const handleSend = async () => {
-    if (!emailData.to || !emailData.subject || !emailData.body) {
-      alert('Please fill in all required fields (To, Subject, and Message).');
+    if (!selectedFrom || !emailData.to || !emailData.subject || !emailData.body) {
+      alert('Please fill in all required fields (From, To, Subject, and Message).');
       return;
     }
 
     setIsLoading(true);
     try {
-      // Use the environment-based email API URL with correct endpoint
-      const response = await fetch(`${AppConfig.emailApiUrl}/email/send`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-electron-app-secret': 'apskeytoconnectelectron', // lowercase header as in your example
-        },
-        body: JSON.stringify({
-          to: emailData.to,
-          cc: emailData.cc || null,
-          bcc: emailData.bcc || null,
-          subject: emailData.subject,
-          body: emailData.body,
-          fileId: file.id,
-          emailType: emailType,
-        }),
-      });
-      if (response.ok) {
-        const result = await response.json();
-        if (result.success) {
-          alert(`Email sent successfully! Message ID: ${result.messageId}`);
-          console.log('Email sent successfully:', result.messageId);
-          onClose();
-        } else {
-          console.error('Email sending failed:', result.error);
-          alert(`Failed to send email: ${result.error}`);
-        }
+      const emailRequest = {
+        from: selectedFrom,
+        to: emailData.to,
+        cc: emailData.cc || undefined,
+        bcc: emailData.bcc || undefined,
+        subject: emailData.subject,
+        body: emailData.body,
+        fileId: file.id.toString(),
+        emailType: emailType,
+      };
+
+      const result = await sendEmail(emailRequest);
+
+      if (result.success) {
+        alert(
+          `Email sent successfully from ${result.sentFrom || selectedFrom}! Message ID: ${result.messageId}`
+        );
+        console.log('Email sent successfully:', result.messageId);
+        onClose();
       } else {
-        const error = await response.json();
-        console.error('Email sending failed:', error);
-        alert(`Failed to send email: ${error.error || error.details || 'Unknown error'}`);
+        console.error('Email sending failed:', result.error);
+        alert(`Failed to send email: ${result.error || result.details || 'Unknown error'}`);
       }
     } catch (error) {
       console.error('Error sending email:', error);
@@ -171,7 +171,8 @@ ${signature}`;
   };
 
   const handleCopyToClipboard = () => {
-    const emailContent = `To: ${emailData.to}
+    const emailContent = `From: ${selectedFrom}
+To: ${emailData.to}
 CC: ${emailData.cc}
 BCC: ${emailData.bcc}
 Subject: ${emailData.subject}
@@ -200,6 +201,26 @@ ${emailData.body}`;
         <div className="modal-body email-modal-body">
           <form className="email-form" onSubmit={(e) => e.preventDefault()}>
             <div className="email-field-grid">
+              <div className="email-field">
+                <label htmlFor="email-from">Send From: *</label>
+                <select
+                  id="email-from"
+                  value={selectedFrom}
+                  onChange={(e) => setSelectedFrom(e.target.value)}
+                  required
+                >
+                  {emailAccounts && emailAccounts.length > 0 ? (
+                    emailAccounts.map((account) => (
+                      <option key={account.email} value={account.email}>
+                        {account.displayName}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">Loading email accounts...</option>
+                  )}
+                </select>
+              </div>
+
               <div className="email-field">
                 <label htmlFor="email-to">To: *</label>
                 <input
