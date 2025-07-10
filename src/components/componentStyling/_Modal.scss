@@ -1006,7 +1006,8 @@
   }
 }
 
-/* Hide footer for ViewFile modal */
-.modal-content.view-file-modal-content .modal-footer {
+/* Hide footer for ViewFile modal only, not nested modals */
+.modal-content.view-file-modal-content > .modal-body > form > .modal-footer,
+.modal-content.view-file-modal-content > .modal-footer {
   display: none !important;
 }

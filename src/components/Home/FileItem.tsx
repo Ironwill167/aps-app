@@ -50,6 +50,15 @@ const FileItem: React.FC<FileItemProps> = React.memo(
     const statusColumnRef = useRef<HTMLDivElement>(null);
     const fileNoteColumnRef = useRef<HTMLDivElement>(null);
     const fileNoteEditorRef = useRef<HTMLDivElement>(null);
+    const isMountedRef = useRef<boolean>(true);
+
+    // Cleanup on unmount
+    useEffect(() => {
+      isMountedRef.current = true;
+      return () => {
+        isMountedRef.current = false;
+      };
+    }, []);
 
     // State to track dropdown and note editor positions
     const [dropdownPosition, setDropdownPosition] = React.useState({ top: 0, left: 0 });
@@ -59,63 +68,72 @@ const FileItem: React.FC<FileItemProps> = React.memo(
       maxHeight: 350,
     });
 
-    // Initial positioning of the dropdown when it opens
+    // State to track if dropdown should open upwards
+    const [openUpwards, setOpenUpwards] = React.useState(false);
+
+    // Positioning effect for the dropdown
     useEffect(() => {
       if (editStatus === file.id && statusColumnRef.current) {
         const rect = statusColumnRef.current.getBoundingClientRect();
-
-        // Initial positioning - assume default height
-        // We'll adjust this in the next effect after the dropdown renders
-        setDropdownPosition({
-          top: rect.top - 5,
-          left: rect.left - 5,
-        });
 
         // Add class to the parent fileItem to control z-index during dropdown open
         const parentFileItem = statusColumnRef.current.closest('.fileItem');
         if (parentFileItem) {
           parentFileItem.classList.add('status-dropdown-open');
         }
-      }
-    }, [editStatus, file.id]);
 
-    // State to track if dropdown should open upwards
-    const [openUpwards, setOpenUpwards] = React.useState(false);
+        // Function to calculate and set the final position
+        const calculatePosition = () => {
+          if (!isMountedRef.current) return; // Prevent state updates on unmounted components
 
-    // Second pass: adjust position after the dropdown renders
-    useEffect(() => {
-      if (editStatus === file.id && statusColumnRef.current && statusDropdownRef.current) {
-        // Now that the dropdown is rendered, we can get its actual height
-        const rect = statusColumnRef.current.getBoundingClientRect();
-        const windowHeight = window.innerHeight;
-        const dropdownHeight = statusDropdownRef.current.offsetHeight;
+          if (statusDropdownRef.current && statusColumnRef.current) {
+            const currentRect = statusColumnRef.current.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            const dropdownHeight = statusDropdownRef.current.offsetHeight;
 
-        // Check available space below and above
-        const spaceBelow = windowHeight - rect.bottom;
-        const spaceAbove = rect.top;
+            // Check available space below and above
+            const spaceBelow = windowHeight - currentRect.bottom;
+            const spaceAbove = currentRect.top;
 
-        // Determine if dropdown should open upwards
-        // Only open upwards if there's not enough space below AND there's more space above than below
-        const shouldOpenUpwards = spaceBelow < dropdownHeight + 10 && spaceAbove > spaceBelow;
+            // Determine if dropdown should open upwards
+            // Only open upwards if there's not enough space below AND there's more space above than below
+            const shouldOpenUpwards = spaceBelow < dropdownHeight + 10 && spaceAbove > spaceBelow;
 
-        // Update state to reflect direction
-        setOpenUpwards(shouldOpenUpwards);
+            // Update state to reflect direction (with mount check)
+            if (isMountedRef.current) {
+              setOpenUpwards(shouldOpenUpwards);
 
-        let topPosition;
-        if (shouldOpenUpwards) {
-          // When opening upwards, make sure it doesn't go above the viewport
-          const proposedTopPosition = rect.top - dropdownHeight + 5;
-          topPosition = Math.max(10, proposedTopPosition); // Ensure at least 10px from top of screen
-        } else {
-          topPosition = rect.top - 5;
-        }
+              let topPosition;
+              if (shouldOpenUpwards) {
+                // When opening upwards, make sure it doesn't go above the viewport
+                const proposedTopPosition = currentRect.top - dropdownHeight + 5;
+                topPosition = Math.max(10, proposedTopPosition); // Ensure at least 10px from top of screen
+              } else {
+                topPosition = currentRect.top - 5;
+              }
 
+              setDropdownPosition({
+                top: topPosition,
+                left: currentRect.left - 5,
+              });
+            }
+          }
+        };
+
+        // Set initial position immediately
         setDropdownPosition({
-          top: topPosition,
+          top: rect.top - 5,
           left: rect.left - 5,
         });
+
+        // Calculate final position after a small delay to ensure dropdown is rendered
+        const positionTimeout = setTimeout(calculatePosition, 10);
+
+        return () => {
+          clearTimeout(positionTimeout);
+        };
       }
-    }, [editStatus, file.id, dropdownPosition.top]);
+    }, [editStatus, file.id]);
 
     // Effect to close dropdown when clicking outside or pressing Escape
 

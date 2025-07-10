@@ -149,13 +149,22 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
 
       <Suspense fallback={<div>Loading...</div>}>
         {showAddCompanyModal && (
-          <AddCompanyModal
-            onClose={() => setShowAddCompanyModal(false)}
-            onCompanyAdded={(company) => {
-              onUpdated({ ...additionalParty, adp_company_id: company.id });
-              setShowAddCompanyModal(false);
+          <div
+            className="nested-modal-container"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
             }}
-          />
+            style={{ position: 'relative', zIndex: 1000 }}
+          >
+            <AddCompanyModal
+              onClose={() => setShowAddCompanyModal(false)}
+              onCompanyAdded={(company) => {
+                onUpdated({ ...additionalParty, adp_company_id: company.id });
+                setShowAddCompanyModal(false);
+              }}
+            />
+          </div>
         )}
       </Suspense>
 
