@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileRecord, Contact, Company } from '../types';
 import { useData } from '../hooks/UseData';
+import RichTextEditor from '../Shared/RichTextEditor';
+import { htmlToPlainText, hasTextContent } from '../utils/textUtils';
+import '../Shared/RichTextEditor.scss';
 
 interface EmailModalProps {
   file: FileRecord;
@@ -57,16 +60,16 @@ const EmailModal: React.FC<EmailModalProps> = ({
 
   // Get signature
   const getSignature = useCallback(() => {
-    return `Look forward to hearing from you.
-Thank you and kind regards.
-Mannie Botha
-Senior Assessor
-Agprospec (Pty) Ltd.
-Reg No: 2022/548907/07
+    return `<p style="font-family: 'Times New Roman', serif;">Look forward to hearing from you.<br>
+Thank you and kind regards.<br>
+<strong>Mannie Botha</strong><br>
+Senior Assessor<br>
+<strong>Agprospec (Pty) Ltd.</strong><br>
+Reg No: 2022/548907/07</p>
 
-Office: 079 433 7830 (Elize) Cell: 081 077 0602 (Willie) / 071 169 9914 (Mannie)
+<p style="font-family: 'Times New Roman', serif;">Office: 079 433 7830 (Elize) Cell: 081 077 0602 (Willie) / 071 169 9914 (Mannie)</p>
 
-DISCLAIMER: This e-mail and any attachments are confidential, may be privileged and intended solely for the use of the named recipient/s. If you are not the intended recipient/s, please notify the sender and erase this e-mail immediately. Any unauthorised use, alteration or dissemination is prohibited without confirmation by the sender. Agprospec (Pty) Ltd accepts no liability for loss, nor consequence, arising from this e-mail.`;
+<p style="font-family: 'Times New Roman', serif;"><em>DISCLAIMER: This e-mail and any attachments are confidential, may be privileged and intended solely for the use of the named recipient/s. If you are not the intended recipient/s, please notify the sender and erase this e-mail immediately. Any unauthorised use, alteration or dissemination is prohibited without confirmation by the sender. Agprospec (Pty) Ltd accepts no liability for loss, nor consequence, arising from this e-mail.</em></p>`;
   }, []);
 
   // Initialize email content based on type
@@ -79,17 +82,17 @@ DISCLAIMER: This e-mail and any attachments are confidential, may be privileged 
     if (emailType === 'acknowledgment') {
       const subject = `APS Ref: ${file.id} - ${file.subject_matter || 'Insurance Claim'} - Acknowledgment`;
 
-      const body = `Hi ${principalContactName},
+      const body = `<p style="font-family: 'Times New Roman', serif;">Hi ${principalContactName},</p>
 
-I hereby acknowledge receipt of and thank you for your instructions of even date.
+<p style="font-family: 'Times New Roman', serif;">I hereby acknowledge receipt of and thank you for your instructions of even date.</p>
 
-Please note and quote my "APS" file reference number above in the "Subject" line on all future correspondence.
+<p style="font-family: 'Times New Roman', serif;">Please note and quote my "APS" file reference number above in the "Subject" line on all future correspondence.</p>
 
-Kindly note that I will contact the Insured ${insuredName} to make the necessary survey arrangement, collection of documentation and to report back to you shortly.
+<p style="font-family: 'Times New Roman', serif;">Kindly note that I will contact the Insured ${insuredName} to make the necessary survey arrangement, collection of documentation and to report back to you shortly.</p>
 
-// Kindly note that the survey arrangement is preliminary booked for (Insert Date If Applicable), we will proceed with the collection of documentation and to report back to you shortly
+<p style="font-family: 'Times New Roman', serif;"><em>// Kindly note that the survey arrangement is preliminary booked for (Insert Date If Applicable), we will proceed with the collection of documentation and to report back to you shortly</em></p>
 
-I confirm that you will be kept fully updated on developments.
+<p style="font-family: 'Times New Roman', serif;">I confirm that you will be kept fully updated on developments.</p>
 
 ${signature}`;
 
@@ -103,7 +106,7 @@ ${signature}`;
       // Basic email with just signature
       const subject = `APS Ref: ${file.id} - Insurer Ref: ${file.principal_ref}`;
 
-      const body = `Hi ,
+      const body = `<p style="font-family: 'Times New Roman', serif;">Hi ,</p>
 
 ${signature}`;
 
@@ -132,7 +135,8 @@ ${signature}`;
     }));
   };
   const handleSend = async () => {
-    if (!selectedFrom || !emailData.to || !emailData.subject || !emailData.body) {
+    // Check if body has actual content using utility function
+    if (!selectedFrom || !emailData.to || !emailData.subject || !hasTextContent(emailData.body)) {
       alert('Please fill in all required fields (From, To, Subject, and Message).');
       return;
     }
@@ -171,13 +175,16 @@ ${signature}`;
   };
 
   const handleCopyToClipboard = () => {
+    // Convert HTML to plain text for clipboard using utility function
+    const bodyText = htmlToPlainText(emailData.body);
+
     const emailContent = `From: ${selectedFrom}
 To: ${emailData.to}
 CC: ${emailData.cc}
 BCC: ${emailData.bcc}
 Subject: ${emailData.subject}
 
-${emailData.body}`;
+${bodyText}`;
 
     navigator.clipboard.writeText(emailContent);
     alert('Email content copied to clipboard!');
@@ -270,12 +277,13 @@ ${emailData.body}`;
 
             <div className="email-body-container">
               <label htmlFor="email-body">Message: *</label>
-              <textarea
+              <RichTextEditor
                 id="email-body"
                 value={emailData.body}
-                onChange={(e) => handleInputChange('body', e.target.value)}
+                onChange={(value) => handleInputChange('body', value)}
                 placeholder="Email content..."
-                required
+                className="email-editor"
+                height="350px"
               />
             </div>
           </form>
