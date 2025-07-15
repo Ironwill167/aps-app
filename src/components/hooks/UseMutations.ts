@@ -29,6 +29,9 @@ import {
   updateRate,
   deleteRate,
   sendEmail,
+  addFileNote,
+  updateFileNote,
+  deleteFileNote,
 } from './ApiServices';
 import {
   Contact,
@@ -41,6 +44,7 @@ import {
   FileDocument,
   InvoiceRates,
   EmailSendRequest,
+  FileNote,
 } from '../types';
 
 /* -------------------- Contacts -------------------- */
@@ -347,6 +351,67 @@ export const useDeleteFileDocument = () => {
     },
     onError: (error: Error) => {
       console.error('Delete File Document Error:', error);
+    },
+  });
+};
+
+/* -------------------- File Notes -------------------- */
+export const useAddFileNote = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (fileNote: Partial<FileNote>) => {
+      const res = await addFileNote(fileNote);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileNotes'] });
+      socket?.emit('dataChanged', { type: 'fileNotes' });
+    },
+    onError: (error: Error) => {
+      console.error('Add File Note Error:', error);
+    },
+  });
+};
+
+export const useUpdateFileNote = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async ({
+      id,
+      updatedFileNote,
+    }: {
+      id: number;
+      updatedFileNote: Partial<FileNote>;
+    }) => {
+      const res = await updateFileNote(id, updatedFileNote);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileNotes'] });
+      socket?.emit('dataChanged', { type: 'fileNotes' });
+    },
+    onError: (error: Error) => {
+      console.error('Update File Note Error:', error);
+    },
+  });
+};
+
+export const useDeleteFileNote = () => {
+  const queryClient = useQueryClient();
+  const { socket } = useSocket();
+  return useMutation({
+    mutationFn: async (id: number) => {
+      const res = await deleteFileNote(id);
+      return res.data; // string
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['fileNotes'] });
+      socket?.emit('dataChanged', { type: 'fileNotes' });
+    },
+    onError: (error: Error) => {
+      console.error('Delete File Note Error:', error);
     },
   });
 };

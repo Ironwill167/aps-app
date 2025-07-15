@@ -13,6 +13,7 @@ import {
   EmailSendRequest,
   EmailSendResponse,
   EmailAccountsResponse,
+  FileNote,
 } from '../types';
 
 interface APIResponse<T> {
@@ -557,5 +558,60 @@ export const testEmailConnection = async (from?: string): Promise<EmailSendRespo
       error: 'Email connection test failed',
       details: error instanceof Error ? error.message : 'Unknown error',
     };
+  }
+};
+
+// -------------------- File Notes API --------------------
+
+// Fetch all file notes
+export const fetchFileNotes = async (): Promise<APIResponse<FileNote[]>> => {
+  try {
+    const response: AxiosResponse<FileNote[]> = await api.get('/api/file_notes');
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Fetch file notes for a specific file
+export const fetchFileNotesByFileId = async (fileId: number): Promise<APIResponse<FileNote[]>> => {
+  try {
+    const response: AxiosResponse<FileNote[]> = await api.get(`/api/file_notes/file/${fileId}`);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Add a new file note
+export const addFileNote = async (fileNote: Partial<FileNote>): Promise<APIResponse<FileNote>> => {
+  try {
+    const response: AxiosResponse<FileNote> = await api.post('/api/file_notes', fileNote);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Update an existing file note
+export const updateFileNote = async (
+  id: number,
+  fileNote: Partial<FileNote>
+): Promise<APIResponse<FileNote>> => {
+  try {
+    const response: AxiosResponse<FileNote> = await api.put(`/api/file_notes/${id}`, fileNote);
+    return { data: response.data };
+  } catch (error) {
+    return handleError(error);
+  }
+};
+
+// Delete a file note
+export const deleteFileNote = async (id: number): Promise<APIResponse<string>> => {
+  try {
+    await api.delete(`/api/file_notes/${id}`);
+    return { data: `File note deleted with ID: ${id}` };
+  } catch (error) {
+    return handleError(error);
   }
 };

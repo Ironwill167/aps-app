@@ -1,0 +1,356 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+/* ===========================================
+   EMAIL MODAL SPECIFIC STYLES
+   =========================================== */
+
+/* Email Modal Body */
+.email-modal-body {
+  padding: clamp(16px, 2vw, 24px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 250, 250, 0.9) 100%);
+  backdrop-filter: blur(10px);
+}
+
+.email-body-container textarea {
+  min-height: 140px;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border: 2px solid rgba($border-color, 0.3) !important;
+  border-radius: 8px !important;
+  padding: clamp(12px, 1.5vw, 16px) !important;
+  font-size: clamp(14px, 1.2vw, 16px) !important;
+  line-height: 1.6 !important;
+  transition: all 0.3s ease !important;
+
+  &:focus {
+    border-color: $main-color-hover !important;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+    outline: none !important;
+  }
+}
+
+/* Email Modal Content Size */
+.email-modal-content {
+  max-width: 1200px;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(15px);
+  background: rgba(255, 255, 255, 0.95);
+}
+
+/* Email Form Enhancements */
+.email-form {
+  .email-header {
+    background: linear-gradient(
+      135deg,
+      rgba($main-color-hover, 0.95) 0%,
+      rgba($main-color-hover, 0.9) 100%
+    ) !important;
+    color: white;
+    padding: clamp(12px, 1.5vw, 18px);
+    border-radius: 8px 8px 0 0;
+    margin-bottom: clamp(16px, 2vw, 24px);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 15;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+
+    h3 {
+      margin: 0;
+      font-size: clamp(16px, 1.4vw, 18px);
+      font-weight: 700;
+    }
+  }
+
+  .email-recipient-section {
+    margin-bottom: clamp(16px, 2vw, 24px);
+
+    .recipient-input {
+      position: relative;
+
+      input {
+        width: 100% !important;
+        padding: clamp(10px, 1.2vw, 14px) clamp(40px, 3vw, 48px) clamp(10px, 1.2vw, 14px)
+          clamp(12px, 1.5vw, 16px) !important;
+        border: 2px solid rgba($border-color, 0.3) !important;
+        border-radius: 8px !important;
+        font-size: clamp(14px, 1.2vw, 16px) !important;
+        transition: all 0.3s ease !important;
+        background: rgba(255, 255, 255, 0.9) !important;
+
+        &:focus {
+          border-color: $main-color-hover !important;
+          box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+          outline: none !important;
+        }
+      }
+
+      .recipient-icon {
+        position: absolute;
+        right: clamp(10px, 1.2vw, 14px);
+        top: 50%;
+        transform: translateY(-50%);
+        color: rgba($text-color, 0.5);
+        font-size: clamp(16px, 1.4vw, 18px);
+        pointer-events: none;
+      }
+    }
+  }
+
+  .email-subject-section {
+    margin-bottom: clamp(16px, 2vw, 24px);
+
+    input {
+      width: 100% !important;
+      padding: clamp(10px, 1.2vw, 14px) !important;
+      border: 2px solid rgba($border-color, 0.3) !important;
+      border-radius: 8px !important;
+      font-size: clamp(14px, 1.2vw, 16px) !important;
+      font-weight: 600 !important;
+      transition: all 0.3s ease !important;
+      background: rgba(255, 255, 255, 0.9) !important;
+
+      &:focus {
+        border-color: $main-color-hover !important;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+        outline: none !important;
+      }
+    }
+  }
+}
+
+/* Email Action Buttons */
+.email-action-buttons {
+  display: flex;
+  gap: clamp(8px, 1vw, 12px);
+  justify-content: flex-end;
+  margin-top: clamp(16px, 2vw, 24px);
+  padding-top: clamp(12px, 1.5vw, 18px);
+  border-top: 1px solid rgba($border-color, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba($lighter-green, 0.98) 0%,
+    rgba($lighter-green, 0.95) 100%
+  ) !important;
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 0 0 8px 8px;
+
+  .email-action-btn {
+    padding: clamp(10px, 1.2vw, 14px) clamp(16px, 2vw, 24px);
+    font-size: clamp(13px, 1.1vw, 15px);
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      transition:
+        width 0.6s,
+        height 0.6s;
+    }
+
+    &:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    &.save-draft-btn {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+      }
+    }
+
+    &.send-btn {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+      }
+    }
+
+    &.cancel-btn {
+      background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+      }
+    }
+  }
+}
+
+/* Email Attachment Section */
+.email-attachments-section {
+  margin-bottom: clamp(16px, 2vw, 24px);
+
+  .attachments-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: clamp(8px, 1vw, 12px);
+
+    h4 {
+      margin: 0;
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 600;
+      color: $text-color;
+    }
+
+    .add-attachment-btn {
+      background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+      color: white;
+      border: none;
+      padding: clamp(6px, 0.8vw, 8px) clamp(10px, 1.2vw, 14px);
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(40, 167, 69, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #1e7e34 0%, #155724 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+      }
+    }
+  }
+
+  .attachments-list {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(6px, 0.8vw, 10px);
+
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(8px, 1vw, 12px);
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba($border-color, 0.3);
+      border-radius: 6px;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: rgba($main-color-hover, 0.05);
+        border-color: rgba($main-color-hover, 0.3);
+      }
+
+      .attachment-info {
+        display: flex;
+        align-items: center;
+        gap: clamp(8px, 1vw, 12px);
+
+        .attachment-icon {
+          font-size: clamp(16px, 1.4vw, 18px);
+          color: rgba($text-color, 0.6);
+        }
+
+        .attachment-name {
+          font-weight: 600;
+          color: $text-color;
+          font-size: clamp(13px, 1.1vw, 15px);
+        }
+
+        .attachment-size {
+          font-size: clamp(11px, 0.9vw, 13px);
+          color: rgba($text-color, 0.6);
+        }
+      }
+
+      .remove-attachment-btn {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        color: white;
+        border: none;
+        padding: clamp(4px, 0.5vw, 6px) clamp(6px, 0.8vw, 8px);
+        font-size: clamp(11px, 0.9vw, 13px);
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+          background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+          transform: translateY(-1px);
+        }
+      }
+    }
+  }
+}
+
+/* Email Preview Section */
+.email-preview {
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba($border-color, 0.3);
+  border-radius: 8px;
+  margin-top: clamp(16px, 2vw, 24px);
+  overflow: hidden;
+
+  .preview-header {
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.9) 0%, rgba(233, 236, 239, 0.7) 100%);
+    padding: clamp(12px, 1.5vw, 18px);
+    border-bottom: 1px solid rgba($border-color, 0.3);
+
+    h4 {
+      margin: 0;
+      font-size: clamp(14px, 1.2vw, 16px);
+      font-weight: 600;
+      color: $text-color;
+    }
+  }
+
+  .preview-content {
+    padding: clamp(12px, 1.5vw, 18px);
+    font-family: inherit;
+    font-size: clamp(14px, 1.2vw, 16px);
+    line-height: 1.6;
+    color: $text-color;
+
+    .preview-field {
+      margin-bottom: clamp(8px, 1vw, 12px);
+
+      .field-label {
+        font-weight: 600;
+        color: rgba($text-color, 0.8);
+        margin-bottom: clamp(3px, 0.4vw, 5px);
+      }
+
+      .field-value {
+        color: $text-color;
+        padding: clamp(6px, 0.8vw, 10px);
+        background: rgba(248, 249, 250, 0.5);
+        border-radius: 4px;
+      }
+    }
+  }
+}

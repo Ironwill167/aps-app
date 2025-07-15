@@ -1,0 +1,273 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+/* ===========================================
+   FEE MODAL SPECIFIC STYLES
+   =========================================== */
+
+/* Fee Generate Invoice Button */
+.editFeeGenerateInvoice {
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+  color: white;
+  border: none;
+  padding: clamp(10px, 1.2vw, 16px) clamp(16px, 2vw, 24px);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  margin-right: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow:
+    0 4px 12px rgba(0, 123, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transition:
+      width 0.6s,
+      height 0.6s;
+  }
+
+  &:active::before {
+    width: 300px;
+    height: 300px;
+  }
+}
+
+.editFeeGenerateInvoice:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(0, 123, 255, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Fee Management Table Enhancements */
+.fee-table {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+
+  .fee-table-header {
+    background: linear-gradient(
+      135deg,
+      rgba($main-color-hover, 0.9) 0%,
+      rgba($main-color-hover, 0.7) 100%
+    );
+    color: white;
+    font-weight: 600;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .fee-table-row {
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: rgba($main-color-hover, 0.1);
+      transform: translateY(-1px);
+    }
+
+    &:nth-child(even) {
+      background: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .fee-amount {
+    font-weight: 600;
+    color: $main-color-hover;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  .fee-status {
+    padding: clamp(3px, 0.4vw, 5px) clamp(6px, 0.8vw, 10px);
+    border-radius: 4px;
+    font-size: clamp(10px, 0.9vw, 12px);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.status-paid {
+      background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(76, 175, 80, 0.3);
+    }
+
+    &.status-pending {
+      background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(255, 152, 0, 0.3);
+    }
+
+    &.status-overdue {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+      box-shadow: 0 2px 6px rgba(244, 67, 54, 0.3);
+    }
+  }
+}
+
+/* Fee Modal Form Enhancements */
+.fee-modal-form {
+  .fee-amount-input {
+    input {
+      font-size: clamp(14px, 1.2vw, 16px) !important;
+      font-weight: 600 !important;
+      color: $main-color-hover !important;
+      text-align: right !important;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+      }
+    }
+  }
+
+  .fee-description-input {
+    textarea {
+      min-height: 80px !important;
+      font-family: inherit !important;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+      }
+    }
+  }
+
+  .fee-date-input {
+    input[type='date'] {
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+      }
+    }
+  }
+}
+
+/* Fee Summary Card */
+.fee-summary-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+  border-radius: 10px;
+  padding: clamp(16px, 2vw, 24px);
+  margin-bottom: clamp(16px, 2vw, 24px);
+  border: 1px solid rgba($border-color, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .summary-header {
+    font-size: clamp(16px, 1.4vw, 18px);
+    font-weight: 700;
+    color: $text-color;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    margin-bottom: clamp(12px, 1.5vw, 18px);
+    padding-bottom: clamp(6px, 0.8vw, 10px);
+    border-bottom: 2px solid rgba($main-color-hover, 0.3);
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: clamp(8px, 1vw, 12px);
+    padding: clamp(6px, 0.8vw, 10px);
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 6px;
+
+    .summary-label {
+      font-weight: 600;
+      color: rgba($text-color, 0.8);
+    }
+
+    .summary-value {
+      font-weight: 700;
+      color: $main-color-hover;
+      font-size: clamp(14px, 1.2vw, 16px);
+    }
+  }
+
+  .summary-total {
+    border-top: 2px solid rgba($main-color-hover, 0.3);
+    padding-top: clamp(8px, 1vw, 12px);
+    margin-top: clamp(8px, 1vw, 12px);
+
+    .summary-value {
+      font-size: clamp(16px, 1.4vw, 18px);
+      color: $main-color-hover;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+  }
+}
+
+/* Fee Action Buttons */
+.fee-action-buttons {
+  display: flex;
+  gap: clamp(8px, 1vw, 12px);
+  justify-content: flex-end;
+  margin-top: clamp(12px, 1.5vw, 18px);
+  padding-top: clamp(12px, 1.5vw, 16px);
+  border-top: 1px solid rgba($border-color, 0.3);
+  background: linear-gradient(
+    135deg,
+    rgba($lighter-green, 0.98) 0%,
+    rgba($lighter-green, 0.95) 100%
+  ) !important;
+  position: sticky;
+  bottom: 0;
+  z-index: 15;
+  backdrop-filter: blur(10px) !important;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+  border-radius: 0 0 8px 8px;
+
+  .fee-action-btn {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    border: none;
+    padding: clamp(6px, 0.8vw, 10px) clamp(12px, 1.5vw, 16px);
+    font-size: clamp(11px, 0.9vw, 13px);
+    font-weight: 600;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 6px rgba(108, 117, 125, 0.3);
+
+    &:hover {
+      background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+    }
+
+    &.edit-btn {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+      }
+    }
+
+    &.delete-btn {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      box-shadow: 0 2px 6px rgba(244, 67, 54, 0.3);
+
+      &:hover {
+        background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+        box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+      }
+    }
+  }
+}

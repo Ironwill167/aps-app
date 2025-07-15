@@ -1,0 +1,318 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+/* ===========================================
+   VIEW FILE MODAL SPECIFIC STYLES
+   =========================================== */
+
+/* ViewFile Modal Specific Styling */
+.modal .modal-content.view-file-modal-content {
+  @include display-flex($direction: column, $align: stretch, $justify: space-between);
+  height: clamp(550px, 88vh, 1000px) !important;
+  width: clamp(700px, 90vw, 1400px) !important;
+  max-width: 96vw !important;
+  max-height: 96vh !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  position: relative !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  align-content: stretch !important;
+  background: linear-gradient(135deg, #{$lighter-green} 0%, #{rgba($lighter-green, 0.95)} 100%);
+  border: 2px solid rgba($border-color, 0.8);
+  border-radius: 16px;
+  box-shadow:
+    0 25px 70px rgba(0, 0, 0, 0.35),
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  animation: viewFileModalSlideIn 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes viewFileModalSlideIn {
+  from {
+    transform: translateY(-60px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Modal Header */
+.view-file-modal-header {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 25 !important;
+  width: 100% !important;
+  background: linear-gradient(
+    135deg,
+    rgba($lighter-green, 0.98) 0%,
+    rgba($lighter-green, 0.95) 100%
+  ) !important;
+  border-bottom: 2px solid rgba($border-color, 0.6) !important;
+  padding: clamp(12px, 1.5vw, 20px) clamp(16px, 2vw, 24px) !important;
+  margin: 0 !important;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  flex-shrink: 0 !important;
+  order: 1 !important;
+  border-radius: 14px 14px 0 0 !important;
+  backdrop-filter: blur(10px) !important;
+  pointer-events: auto !important;
+
+  .header-left {
+    @include display-flex($direction: row, $align: center, $justify: flex-start);
+    flex: 1;
+    gap: clamp(12px, 1.5vw, 20px);
+
+    .modal-title {
+      margin: 0;
+      font-size: clamp(16px, 1.8vw, 20px);
+      font-weight: 600;
+      color: $text-color;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-status {
+      padding: clamp(4px, 0.5vw, 6px) clamp(8px, 1vw, 12px);
+      border-radius: 6px;
+      font-size: clamp(11px, 0.9vw, 13px);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+
+      &.status-open {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      }
+
+      &.status-closed {
+        background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(244, 67, 54, 0.3);
+      }
+
+      &.status-pending {
+        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+        color: white;
+        box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+      }
+    }
+  }
+
+  .header-right {
+    @include display-flex($direction: row, $align: center, $justify: flex-end);
+    gap: clamp(8px, 1vw, 12px);
+    position: relative;
+    z-index: 10;
+
+    .header-notes-button {
+      background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+      color: white;
+      border: none;
+      padding: clamp(6px, 0.8vw, 10px) clamp(12px, 1.5vw, 16px);
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+      position: relative;
+      z-index: 15;
+      pointer-events: auto;
+
+      &:hover {
+        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 123, 255, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(0, 123, 255, 0.3);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+      }
+    }
+
+    .header-save-button {
+      background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%);
+      color: white;
+      border: none;
+      padding: clamp(6px, 0.8vw, 10px) clamp(12px, 1.5vw, 16px);
+      font-size: clamp(12px, 1vw, 14px);
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      position: relative;
+      z-index: 15;
+      pointer-events: auto;
+
+      &:hover {
+        background: linear-gradient(135deg, #388e3c 0%, #2e7d32 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+      }
+    }
+
+    .close-modal-button {
+      font-size: clamp(18px, 2.2vw, 28px);
+      font-weight: 700;
+      color: rgba($text-color, 0.6);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: clamp(4px, 0.6vw, 8px);
+      border-radius: 50%;
+      width: clamp(28px, 3.5vw, 40px);
+      height: clamp(28px, 3.5vw, 40px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      z-index: 15;
+      pointer-events: auto;
+      border: none;
+      background: transparent;
+
+      &:hover,
+      &:focus {
+        color: #d32f2f;
+        transform: scale(1.1);
+        background: rgba(211, 47, 47, 0.1);
+      }
+
+      &:active {
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+/* Modal Body */
+.modal .modal-content.view-file-modal-content .view-file-modal-body {
+  padding: clamp(12px, 1.5vw, 20px) !important;
+  width: 100% !important;
+  order: 2 !important;
+  flex: 1 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 0 0 14px 14px;
+
+  &::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    margin: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(
+      135deg,
+      rgba($main-color-hover, 0.4) 0%,
+      rgba($main-color-hover, 0.6) 100%
+    );
+    border-radius: 5px;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+
+    &:hover {
+      background: linear-gradient(
+        135deg,
+        rgba($main-color-hover, 0.6) 0%,
+        rgba($main-color-hover, 0.8) 100%
+      );
+    }
+  }
+}
+
+/* Content sections within the modal */
+.view-file-content-section {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+  padding: clamp(12px, 1.5vw, 18px);
+  margin-bottom: clamp(12px, 1.5vw, 18px);
+  border: 1px solid rgba($border-color, 0.3);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .section-header {
+    font-size: clamp(14px, 1.3vw, 16px);
+    font-weight: 600;
+    margin-bottom: clamp(8px, 1vw, 12px);
+    color: $text-color;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    padding-bottom: clamp(4px, 0.5vw, 6px);
+    border-bottom: 1px solid rgba($border-color, 0.3);
+  }
+
+  .section-content {
+    font-size: clamp(13px, 1.1vw, 15px);
+    line-height: 1.6;
+    color: rgba($text-color, 0.8);
+  }
+}
+
+/* Focus management for accessibility */
+.view-file-modal-header button:focus,
+.view-file-modal-body button:focus {
+  outline: 2px solid $main-color-hover;
+  outline-offset: 2px;
+}
+
+/* Ensure all buttons in view file modal are clickable */
+.view-file-modal-header button,
+.view-file-modal-body button {
+  pointer-events: auto !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  position: relative !important;
+  z-index: 10 !important;
+}
+
+/* Prevent any overlay issues */
+.view-file-modal-header * {
+  pointer-events: auto !important;
+}
+
+/* Quick fix for button interaction issues */
+.header-notes-button,
+.header-save-button,
+.close-modal-button {
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  -khtml-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+  outline: none !important;
+}

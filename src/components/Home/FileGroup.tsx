@@ -8,6 +8,8 @@ interface FileGroupProps {
   getCompanyName: (id: number | null) => string;
   getContactName: (id: number | null) => string;
   getTotalFee: (id: number | null) => string;
+  getLatestNote: (fileId: number) => string;
+  addFileNote: (fileId: number, noteText: string) => Promise<void>;
   editStatus: number | null;
   setEditStatus: (id: number | null) => void;
   showAddNote: number | null;
@@ -30,6 +32,8 @@ const FileGroup: React.FC<FileGroupProps> = ({
   getCompanyName,
   getContactName,
   getTotalFee,
+  getLatestNote,
+  addFileNote,
   editStatus,
   setEditStatus,
   showAddNote,
@@ -58,6 +62,8 @@ const FileGroup: React.FC<FileGroupProps> = ({
             getCompanyName={getCompanyName}
             getContactName={getContactName}
             getTotalFee={getTotalFee}
+            getLatestNote={getLatestNote}
+            addFileNote={addFileNote}
             editStatus={editStatus}
             setEditStatus={setEditStatus}
             showAddNote={showAddNote}

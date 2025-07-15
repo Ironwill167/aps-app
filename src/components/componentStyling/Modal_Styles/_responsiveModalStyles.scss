@@ -1,0 +1,455 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+/* ===========================================
+   RESPONSIVE STYLES FOR ALL MODALS
+   =========================================== */
+
+/* Enhanced Responsive adjustments for 1366x768 laptop screens */
+@media (max-width: 1366px) and (max-height: 768px) {
+  .modal-content {
+    padding: clamp(16px, 2vw, 28px) !important;
+    height: clamp(480px, 88vh, 900px) !important;
+    width: clamp(650px, 88vw, 1300px) !important;
+    max-height: 96vh !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    border-radius: 10px !important;
+    box-shadow:
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      0 10px 20px rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(15px) !important;
+    background: linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.95) 0%,
+      rgba(248, 249, 250, 0.9) 100%
+    ) !important;
+  }
+
+  .modal-header {
+    padding-bottom: clamp(6px, 0.8vw, 10px) !important;
+    margin-bottom: clamp(12px, 1.5vw, 18px) !important;
+    border-bottom: 2px solid rgba($border-color, 0.3) !important;
+    position: relative !important;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 50px;
+      height: 2px;
+      background: linear-gradient(135deg, $main-color-hover, rgba($main-color-hover, 0.7));
+      border-radius: 2px;
+    }
+  }
+
+  .modal-header p,
+  .modal-header h2 {
+    font-size: clamp(16px, 1.4vw, 18px) !important;
+    font-weight: 700 !important;
+    margin: 0 !important;
+    color: $text-color !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .close-modal-button {
+    font-size: clamp(22px, 2.8vw, 32px) !important;
+    padding: clamp(4px, 0.5vw, 8px) !important;
+    background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 6px !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 6px rgba(244, 67, 54, 0.3) !important;
+
+    &:hover {
+      background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%) !important;
+      transform: translateY(-1px) !important;
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4) !important;
+    }
+  }
+
+  .file-number-container {
+    min-width: clamp(120px, 15vw, 180px) !important;
+    background: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 8px !important;
+    padding: clamp(8px, 1vw, 12px) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .modal-form-group {
+    min-height: clamp(40px, 5vh, 56px) !important;
+    margin: clamp(4px, 0.5vw, 8px) clamp(2px, 0.3vw, 6px) !important;
+    padding: clamp(8px, 1vw, 12px) !important;
+    border-radius: 8px !important;
+    background: rgba(255, 255, 255, 0.8) !important;
+    border: 1px solid rgba($border-color, 0.3) !important;
+    transition: all 0.3s ease !important;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.9) !important;
+      border-color: rgba($main-color-hover, 0.3) !important;
+    }
+  }
+
+  .modal-form-group label {
+    margin-left: clamp(6px, 0.8vw, 10px) !important;
+    font-size: clamp(13px, 1.1vw, 15px) !important;
+    font-weight: 600 !important;
+    color: $text-color !important;
+  }
+
+  .modal-form-group .inputLarge,
+  .modal-form-group .inputMedium,
+  .modal-form-group .inputSmall {
+    height: clamp(28px, 3.5vh, 40px) !important; /* Reduced from clamp(32px, 4vh, 48px) */
+    font-size: $smaller !important; /* Reduced from $small */
+    padding: clamp(4px, 0.5vw, 8px) !important; /* Added padding for better usability */
+  }
+
+  .modal-form-group select {
+    font-size: $smaller !important; /* Reduced from $small */
+    padding: clamp(4px, 0.5vw, 8px) !important; /* Reduced from 0.5rem */
+    height: clamp(28px, 3.5vh, 40px) !important; /* Added consistent height */
+  }
+
+  .modal-form-group textarea {
+    font-size: $smaller !important; /* Reduced from $small */
+    padding: clamp(4px, 0.5vw, 8px) !important; /* Reduced from 0.5rem */
+    min-height: clamp(60px, 8vh, 100px) !important; /* Added minimum height */
+  }
+
+  .modal-form-group p {
+    font-size: $smaller !important; /* Reduced text size */
+  }
+
+  /* React Select Components */
+  .reactSelect,
+  .reactSelectWide {
+    font-size: $smaller !important; /* Reduced from $small */
+  }
+
+  .react-select-container {
+    width: 65% !important; /* Slightly increased from 60% to utilize space better */
+  }
+
+  .select-company-container {
+    width: 75% !important; /* Increased from 70% */
+  }
+
+  /* Modal Footer */
+  .modal-footer {
+    margin-top: clamp(12px, 1.5vw, 20px) !important; /* Reduced from 20px */
+  }
+
+  .modal-footer-button-container {
+    width: clamp(120px, 12vw, 180px) !important; /* Reduced from 15vw */
+    height: clamp(45px, 5.5vh, 60px) !important; /* Reduced from 7vh */
+  }
+
+  /* Modal Buttons */
+  .modal-submit,
+  .modal-cancel,
+  .editFeeGenerateInvoice {
+    font-size: $small !important; /* Reduced from $medium */
+    padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1vw, 14px) !important; /* Reduced padding */
+    margin-right: 8px !important; /* Reduced from 10px */
+  }
+
+  .add-company-button {
+    padding: 6px 10px !important; /* Reduced from 8px 12px */
+    margin-left: 6px !important; /* Reduced from 8px */
+    font-size: $smaller !important;
+  }
+
+  /* Additional Parties Container - Match Standard Design */
+  .additional-parties-container {
+    .additional-parties-header {
+      min-height: clamp(
+        32px,
+        3.8vh,
+        50px
+      ) !important; /* Slightly smaller for responsive but match proportion */
+      margin: clamp(1px, 0.2vw, 2px) clamp(1px, 0.2vw, 3px) !important; /* Match standard margins */
+      border: 2px solid $border-color !important; /* Match standard border */
+      border-radius: 6px !important; /* Match standard border radius */
+      padding: clamp(3px, 0.4vw, 6px) !important; /* Match standard padding */
+
+      label {
+        margin-left: clamp(4px, 0.6vw, 10px) !important; /* Match standard label margins */
+        font-size: $small !important; /* Keep consistent with standard sizing */
+        color: $text-color !important; /* Match standard label color */
+      }
+    }
+
+    .additional-party-content {
+      width: 100% !important; /* Match standard modal form groups */
+      min-height: clamp(32px, 3.8vh, 50px) !important; /* Slightly smaller for responsive */
+      margin: clamp(1px, 0.2vw, 2px) clamp(1px, 0.2vw, 3px) !important; /* Match standard margins */
+      border: 2px solid $border-color !important; /* Match standard border */
+      border-radius: 6px !important; /* Match standard border radius */
+      padding: clamp(3px, 0.4vw, 6px) !important; /* Match standard padding */
+
+      &:focus-within {
+        border-color: $main-color-hover !important;
+        box-shadow: 0 0 0 3px rgba(122, 173, 13, 0.2) !important;
+      }
+
+      .additional-party-row {
+        width: 100% !important; /* Use full width of container */
+
+        .additional-party-name {
+          font-size: $small !important; /* Match standard responsive size */
+          margin-left: clamp(4px, 0.6vw, 10px) !important; /* Match standard label margins */
+
+          input {
+            height: clamp(28px, 3.5vh, 40px) !important; /* Slightly smaller for responsive */
+            font-size: $small !important; /* Match standard input size */
+            padding: clamp(4px, 0.5vw, 8px) !important; /* Match standard padding */
+            border: 2px solid $border-color !important; /* Match standard border */
+          }
+        }
+
+        label {
+          font-size: $small !important; /* Match standard responsive label size */
+          margin-bottom: clamp(3px, 0.4vw, 6px) !important;
+          color: $text-color !important; /* Match standard label color */
+          font-weight: bold !important;
+        }
+
+        .adp-company-form-group,
+        .adp-contact-form-group {
+          min-height: clamp(30px, 3.8vh, 44px) !important; /* Match standard input height */
+          margin: clamp(2px, 0.3vw, 4px) clamp(1px, 0.1vw, 2px) !important;
+        }
+
+        .adp_delete-button {
+          width: clamp(24px, 2.4vw, 32px) !important; /* Slightly larger for better visibility */
+          height: clamp(30px, 3.2vh, 38px) !important; /* Match input height better */
+          font-size: $small !important; /* Match standard font size */
+          margin-right: clamp(4px, 0.6vw, 10px) !important; /* Match standard margins */
+        }
+      }
+    }
+  }
+
+  /* Improve space utilization for form groups */
+  .modal-form-group .inputLarge {
+    width: 82% !important; /* Increased from 80% */
+  }
+
+  .modal-form-group .inputMedium {
+    width: 65% !important; /* Increased from 60% */
+  }
+
+  .modal-form-group .inputSmall {
+    width: 25% !important; /* Increased from 20% */
+  }
+
+  .modal-form-group textarea {
+    width: 82% !important; /* Increased from 80% */
+  }
+
+  .modal-form-group select {
+    width: 65% !important; /* Increased from 62% */
+  }
+
+  /* Currency select styling */
+  .currencySelectViewFile {
+    width: 15% !important; /* Increased from 12% */
+    font-size: $smaller !important;
+    height: clamp(28px, 3.5vh, 40px) !important;
+  }
+
+  /* Modal body spacing */
+  .modal-body {
+    gap: clamp(6px, 0.8vw, 12px) !important; /* Add consistent gap between elements */
+  }
+
+  .modal-row {
+    gap: clamp(8px, 1vw, 16px) !important; /* Add gap for better spacing */
+    margin-bottom: clamp(6px, 0.8vw, 12px) !important; /* Add bottom margin */
+  }
+
+  /* Enhanced form element spacing and sizes */
+  .modal-content {
+    border-radius: 8px !important; /* Reduced from default 12px */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important; /* Slightly reduced shadow */
+  }
+
+  /* Enhanced table styling within modals */
+  .modal-content table {
+    font-size: $small;
+
+    th,
+    td {
+      padding: clamp(4px, 0.5vw, 8px) clamp(6px, 0.8vw, 10px);
+      border-width: 1px;
+    }
+
+    th {
+      font-size: $small;
+      font-weight: 600;
+    }
+  }
+
+  /* Checkbox and radio button optimization */
+  .modal-form-group input[type='checkbox'],
+  .modal-form-group input[type='radio'] {
+    width: clamp(14px, 1.8vw, 18px);
+    height: clamp(14px, 1.8vw, 18px);
+    margin: clamp(2px, 0.3vw, 4px);
+  }
+
+  /* Modal footer improvements */
+  .modal-footer {
+    flex-wrap: wrap; /* Allow wrapping on small spaces */
+    gap: clamp(6px, 0.8vw, 10px); /* Consistent gap between buttons */
+  }
+
+  /* React Select component improvements */
+  .react-select__control {
+    min-height: clamp(30px, 3.8vh, 44px) !important;
+    border-radius: 4px !important;
+    border-width: 1px !important;
+  }
+
+  .react-select__value-container {
+    padding: clamp(2px, 0.3vw, 4px) clamp(6px, 0.8vw, 8px) !important;
+  }
+
+  .react-select__indicators {
+    padding: clamp(2px, 0.3vw, 4px) !important;
+  }
+
+  .react-select__indicator-separator {
+    margin: clamp(2px, 0.3vw, 4px) 0 !important;
+  }
+
+  .react-select__dropdown-indicator,
+  .react-select__clear-indicator {
+    padding: clamp(2px, 0.3vw, 4px) !important;
+  }
+}
+
+/* Enhanced responsive behavior for very compact screens */
+@media (max-height: 700px) {
+  .modal-content {
+    max-height: 95vh !important; /* Use more of the available height */
+    padding: clamp(8px, 1vw, 16px) !important; /* Further reduced padding */
+  }
+
+  .modal-form-group {
+    min-height: clamp(28px, 3.5vh, 36px) !important; /* Even more compact */
+    margin: clamp(2px, 0.3vw, 4px) clamp(1px, 0.2vw, 3px) !important;
+  }
+
+  .modal-header {
+    padding-bottom: clamp(4px, 0.6vw, 8px) !important;
+    margin-bottom: clamp(6px, 0.8vw, 12px) !important;
+  }
+
+  .modal-footer {
+    margin-top: clamp(8px, 1vw, 16px) !important;
+  }
+
+  .modal-form-group {
+    min-height: clamp(26px, 4vh, 35px);
+    margin: clamp(1px, 0.2vw, 3px);
+  }
+
+  .modal-footer {
+    margin-top: clamp(6px, 1vw, 12px);
+  }
+
+  .email-modal-body {
+    padding: 12px;
+  }
+
+  .email-body-container textarea {
+    min-height: 120px;
+  }
+}
+
+/* Enhanced width utilization for very wide but short screens */
+@media (min-width: 1200px) and (max-height: 768px) {
+  .modal-content {
+    width: clamp(600px, 80vw, 1200px) !important; /* Use more width when available */
+  }
+
+  .additional-party-content {
+    width: 100% !important; /* Match standard modal form groups */
+    min-height: clamp(32px, 3.8vh, 50px) !important; /* Match responsive sizing */
+    border: 2px solid $border-color !important; /* Match standard border */
+    border-radius: 6px !important; /* Match standard border radius */
+  }
+
+  /* Better layout for wide forms */
+  .modal-row {
+    flex-wrap: wrap !important;
+    justify-content: space-between !important;
+  }
+
+  .modal-form-group {
+    flex: 1 1 calc(50% - 8px) !important; /* Two-column layout when space allows */
+    min-width: 280px !important; /* Minimum width for usability */
+  }
+
+  /* Override for fields that should remain full width */
+  .modal-form-group.full-width,
+  .modal-form-group:has(textarea),
+  .modal-form-group:has(.reactSelectWide) {
+    flex: 1 1 100% !important;
+  }
+}
+
+/* Very large screen optimizations (large desktops, ultrawide monitors) */
+@media (min-width: 1600px) {
+  .modal-content {
+    max-width: 1300px;
+    width: clamp(800px, 65vw, 1300px);
+  }
+
+  .email-modal-content {
+    max-width: 1100px;
+  }
+
+  .modal-form-group {
+    /* Enable two-column layout for large screens */
+    &.can-split {
+      width: calc(50% - 8px);
+      margin-right: 16px;
+    }
+  }
+}
+
+/* Height-specific optimizations for very short screens */
+@media (max-height: 600px) {
+  .modal-content {
+    height: 95vh;
+    padding: clamp(6px, 1vw, 12px);
+  }
+
+  .modal-header {
+    padding-bottom: clamp(3px, 0.5vw, 6px);
+    margin-bottom: clamp(4px, 0.8vw, 8px);
+  }
+
+  .modal-form-group {
+    min-height: clamp(26px, 4vh, 35px);
+    margin: clamp(1px, 0.2vw, 3px);
+  }
+
+  .modal-footer {
+    margin-top: clamp(6px, 1vw, 12px);
+  }
+
+  .email-modal-body {
+    padding: 12px;
+  }
+
+  .email-body-container textarea {
+    min-height: 120px;
+  }
+}

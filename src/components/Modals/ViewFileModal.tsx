@@ -15,6 +15,7 @@ import AdditionalPartyDisplay from '../Reporting/AdditionalPartyDisplay';
 
 const AddContactModal = lazy(() => import('./AddContactModal'));
 const AddCompanyModal = lazy(() => import('./AddCompanyModal'));
+const FileNotesModal = lazy(() => import('./FileNotesModal'));
 
 interface ViewFileModalProps {
   file: FileRecord;
@@ -75,6 +76,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
 
   const [showAddContactModal, setShowAddContactModal] = useState(false);
   const [showAddCompanyModal, setShowAddCompanyModal] = useState(false);
+  const [showFileNotesModal, setShowFileNotesModal] = useState(false);
   const [currentField, setCurrentField] = useState<string | null>(null);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
@@ -253,6 +255,13 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
               </p>
             </div>
             <div className="header-right">
+              <button
+                type="button"
+                className="header-notes-button"
+                onClick={() => setShowFileNotesModal(true)}
+              >
+                Notes
+              </button>
               <button
                 type="submit"
                 form="view-file-form"
@@ -707,6 +716,17 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
           <AddCompanyModal
             onClose={() => setShowAddCompanyModal(false)}
             onCompanyAdded={handleCompanyAddedLocal}
+          />
+        </Suspense>
+      )}
+
+      {/* File Notes Modal */}
+      {showFileNotesModal && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <FileNotesModal
+            file={file}
+            onClose={() => setShowFileNotesModal(false)}
+            onNotesUpdated={onFileUpdated}
           />
         </Suspense>
       )}

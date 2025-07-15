@@ -9,6 +9,8 @@ interface FileItemProps {
   getCompanyName: (id: number | null) => string;
   getContactName: (id: number | null) => string;
   getTotalFee: (id: number | null) => string;
+  getLatestNote: (fileId: number) => string;
+  addFileNote: (fileId: number, noteText: string) => Promise<void>;
   editStatus: number | null;
   setEditStatus: (id: number | null) => void;
   showAddNote: number | null;
@@ -31,6 +33,8 @@ const FileItem: React.FC<FileItemProps> = React.memo(
     getCompanyName,
     getContactName,
     getTotalFee,
+    getLatestNote,
+    addFileNote,
     editStatus,
     setEditStatus,
     showAddNote,
@@ -315,14 +319,15 @@ const FileItem: React.FC<FileItemProps> = React.memo(
     };
 
     const handleAddNote = async () => {
-      const updatedFile: Partial<FileRecord> = {
-        id: file.id,
-        file_note: noteText,
-        updated_at: new Date().toISOString(),
-      };
+      if (!noteText.trim()) {
+        showErrorToast('Please enter a note');
+        return;
+      }
+
       try {
-        await updateFile(updatedFile);
+        await addFileNote(file.id, noteText.trim());
         setShowAddNote(null);
+        setNoteText('');
         // Remove the class when note editor closes
         const fileItems = document.querySelectorAll('.fileItem');
         fileItems.forEach((item) => item.classList.remove('note-editor-open'));
@@ -424,24 +429,24 @@ const FileItem: React.FC<FileItemProps> = React.memo(
         <div className="FileNoteColumn" ref={fileNoteColumnRef}>
           <span
             onDoubleClick={() => {
-              setNoteText(file.file_note || '');
+              setNoteText('');
               setShowAddNote(file.id);
             }}
             onClick={() => {
-              setNoteText(file.file_note || '');
+              setNoteText('');
               setShowAddNote(file.id);
             }}
-            title={file.file_note || 'Click to add note...'}
+            title={getLatestNote(file.id) || 'Click to add note...'}
             className="file-note-text"
             tabIndex={0}
             onKeyDown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
-                setNoteText(file.file_note || '');
+                setNoteText('');
                 setShowAddNote(file.id);
               }
             }}
           >
-            {file.file_note || 'Click to add note...'}
+            {getLatestNote(file.id) || 'Click to add note...'}
           </span>
           {showAddNote === file.id &&
             ReactDOM.createPortal(

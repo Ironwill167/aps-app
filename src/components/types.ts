@@ -82,6 +82,13 @@ export interface FileRecord {
   claim_currency: string;
 }
 
+export interface FileNote {
+  id: number;
+  file_id: number;
+  note_date: string;
+  note_text: string;
+}
+
 export interface CauseOfLoss {
   id: number;
   col_name: string;

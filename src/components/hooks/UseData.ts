@@ -10,6 +10,7 @@ import {
   fetchFees,
   fetchRates,
   fetchEmailAccounts,
+  fetchFileNotes,
 } from './ApiServices';
 import {
   useAddContact,
@@ -40,6 +41,9 @@ import {
   useUpdateInvoiceRate,
   useDeleteInvoiceRate,
   useSendEmail,
+  useAddFileNote,
+  useUpdateFileNote,
+  useDeleteFileNote,
 } from './UseMutations';
 
 export const useData = () => {
@@ -145,6 +149,26 @@ export const useData = () => {
   const addFileDocument = useAddFileDocument();
   const updateFileDocument = useUpdateFileDocument();
   const deleteFileDocument = useDeleteFileDocument();
+
+  /* -------------------- File Notes -------------------- */
+  const {
+    data: fileNotes = [],
+    isLoading: fileNotesLoading,
+    error: fileNotesError,
+  } = useQuery({
+    queryKey: ['fileNotes'],
+    queryFn: async () => {
+      const res = await fetchFileNotes();
+      return res.data; // FileNote[]
+    },
+    initialData: [],
+    refetchInterval,
+  });
+
+  // Mutations
+  const addFileNote = useAddFileNote();
+  const updateFileNote = useUpdateFileNote();
+  const deleteFileNote = useDeleteFileNote();
 
   /* -------------------- Causes of Loss -------------------- */
   const {
@@ -283,6 +307,14 @@ export const useData = () => {
     addFileDocument: addFileDocument.mutateAsync,
     updateFileDocument: updateFileDocument.mutateAsync,
     deleteFileDocument: deleteFileDocument.mutateAsync,
+
+    // File Notes
+    fileNotes,
+    fileNotesLoading,
+    fileNotesError,
+    addFileNote: addFileNote.mutateAsync,
+    updateFileNote: updateFileNote.mutateAsync,
+    deleteFileNote: deleteFileNote.mutateAsync,
 
     // Causes of Loss
     causesOfLoss,

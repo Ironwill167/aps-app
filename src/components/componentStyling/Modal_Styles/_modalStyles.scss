@@ -1,0 +1,19 @@
+// ===========================================
+// MODAL STYLES - MASTER FILE
+// ===========================================
+// This file imports all modal-specific styles in the correct order
+// Shared styles first, then specific modal styles, then responsive styles
+
+// 1. Main shared modal styles (base styles used by all modals)
+@use 'mainModalStyles';
+
+// 2. Specific modal styles (individual modal customizations)
+@use 'viewFileModal';
+@use 'fileNotesModal';
+@use 'entityModal';
+@use 'feeModal';
+@use 'emailModal';
+@use 'dataModals';
+
+// 3. Responsive styles (must be last to override other styles)
+@use 'responsiveModalStyles';

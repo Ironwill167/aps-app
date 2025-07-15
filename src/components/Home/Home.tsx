@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback, Suspense, lazy, useRef } from 'react';
 import debounce from 'lodash.debounce';
 import { useData } from '../hooks/UseData';
-import { FileRecord, Company, FeeRecord, Contact } from '../types';
+import { FileRecord, Company, FeeRecord, Contact, FileNote } from '../types';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
 import { convertToLocalDate } from '../utils/DateUtils';
 import Header from './Header';
@@ -15,6 +15,7 @@ const PrelimReport = lazy(() => import('../Reporting/PrelimRoport'));
 const FeeInvoice = lazy(() => import('../Fees/FeeInvoice'));
 const DocumentRequest = lazy(() => import('../Reporting/DocumentRequest'));
 const EmailModal = lazy(() => import('../Emails/EmailModal'));
+const FileNotesModal = lazy(() => import('../Modals/FileNotesModal'));
 
 const Home: React.FC = () => {
   const {
@@ -22,8 +23,10 @@ const Home: React.FC = () => {
     companies = [] as Company[],
     files = [] as FileRecord[],
     fees = [] as FeeRecord[],
+    fileNotes = [] as FileNote[],
     updateFile,
     refetchFiles,
+    addFileNote,
   } = useData();
 
   // Edit Status Dropdown
@@ -32,6 +35,7 @@ const Home: React.FC = () => {
   // File note state
   const [showAddNote, setShowAddNote] = useState<number | null>(null);
   const [noteText, setNoteText] = useState<string>('');
+  const [latestNotes, setLatestNotes] = useState<Record<number, string>>({});
 
   // Search state
   const [searchTerm, setSearchTerm] = useState('');
@@ -60,6 +64,9 @@ const Home: React.FC = () => {
   const [emailDropdownPosition, setEmailDropdownPosition] = useState({ top: 0, left: 0 });
   const [openEmailDropdownUpwards, setOpenEmailDropdownUpwards] = useState(false);
   const emailBtnRef = useRef<HTMLButtonElement>(null);
+
+  // File Notes Modal
+  const [showFileNotesModal, setShowFileNotesModal] = useState(false);
 
   // Handle Right-Click to Show Electron Context Menu
   const handleRightClick = useCallback(
@@ -96,6 +103,81 @@ const Home: React.FC = () => {
       return fee ? fee.total_fee.toString() : 'Unknown';
     },
     [fees]
+  );
+
+  // Process file notes to get latest note for each file
+  useEffect(() => {
+    const latestNotesMap: Record<number, { note_text: string; note_date: string }> = {};
+    fileNotes.forEach((note: FileNote) => {
+      const noteDate = new Date(note.note_date);
+
+      // Skip invalid dates
+      if (isNaN(noteDate.getTime())) {
+        console.warn('Invalid note date:', note.note_date, 'for note:', note.id);
+        return;
+      }
+
+      if (
+        !latestNotesMap[note.file_id] ||
+        noteDate > new Date(latestNotesMap[note.file_id].note_date)
+      ) {
+        latestNotesMap[note.file_id] = {
+          note_text: note.note_text,
+          note_date: note.note_date,
+        };
+      }
+    });
+
+    // Convert to simple string map for compatibility
+    const simpleLatestNotes: Record<number, string> = {};
+    Object.entries(latestNotesMap).forEach(([fileId, noteData]) => {
+      simpleLatestNotes[parseInt(fileId)] = noteData.note_text;
+    });
+
+    setLatestNotes(simpleLatestNotes);
+  }, [fileNotes]);
+
+  // Get latest note for a file
+  const getLatestNote = useCallback(
+    (fileId: number): string => {
+      return latestNotes[fileId] || '';
+    },
+    [latestNotes]
+  );
+
+  // Handle File Updated
+  const handleFileUpdated = useCallback(async () => {
+    // Refetch the files to get the latest data
+    await refetchFiles();
+  }, [refetchFiles]);
+
+  // Update the selected file when files data changes
+  useEffect(() => {
+    if (selectedFile) {
+      const updatedFile = files.find((f) => f.id === selectedFile.id);
+      if (updatedFile) {
+        setSelectedFile(updatedFile);
+      }
+    }
+  }, [files, selectedFile]);
+
+  // Add a new file note using the API service
+  const handleAddFileNote = useCallback(
+    async (fileId: number, noteText: string) => {
+      try {
+        await addFileNote({
+          file_id: fileId,
+          note_text: noteText,
+        });
+        showSuccessToast('Note added successfully');
+        // handleFileUpdated is called via the mutation success callback
+      } catch (error) {
+        console.error('Error adding note:', error);
+        showErrorToast('Failed to add note');
+        throw error;
+      }
+    },
+    [addFileNote]
   );
 
   // Debounce search input
@@ -271,9 +353,6 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  // Handle File Updated
-  const handleFileUpdated = useCallback(() => {}, []);
-
   const debouncedMarkImportant = useMemo(
     () =>
       debounce(async (file: FileRecord) => {
@@ -285,6 +364,7 @@ const Home: React.FC = () => {
         try {
           await updateFile({ id: file.id, updatedFile });
           setEditStatus(null);
+          // handleFileUpdated is called via the mutation success callback
         } catch (error) {
           showErrorToast('Failed to update importance.');
         }
@@ -306,12 +386,12 @@ const Home: React.FC = () => {
         if (file.id !== undefined) {
           await updateFile({ id: file.id, updatedFile: file });
         }
-        handleFileUpdated();
+        // handleFileUpdated is called via the mutation success callback
       } catch (error) {
         showErrorToast('Failed to update file.');
       }
     },
-    [updateFile, handleFileUpdated]
+    [updateFile]
   );
 
   const handleClickView = useCallback(
@@ -490,6 +570,8 @@ const Home: React.FC = () => {
                     getCompanyName={getCompanyName}
                     getContactName={getContactName}
                     getTotalFee={getTotalFee}
+                    getLatestNote={getLatestNote}
+                    addFileNote={handleAddFileNote}
                     editStatus={editStatus}
                     setEditStatus={setEditStatus}
                     showAddNote={showAddNote}
@@ -520,6 +602,12 @@ const Home: React.FC = () => {
                         onClick={() => setShowViewFileModal(true)}
                       >
                         Edit
+                      </button>
+                      <button
+                        className="actionFileDetailsEditButton"
+                        onClick={() => setShowFileNotesModal(true)}
+                      >
+                        Notes
                       </button>
                     </div>
                     <div className="actionFileDetailsHeaderRight">
@@ -746,8 +834,8 @@ const Home: React.FC = () => {
                   </div>
                   <div className="fileDetailsRow">
                     <div className="fileDetailsItem">
-                      <p className="fileDetailsLabel">File Note:</p>
-                      <p className="fileDetailsNoteText">{selectedFile.file_note}</p>
+                      <p className="fileDetailsLabel">Latest Note:</p>
+                      <p className="fileDetailsNoteText">{getLatestNote(selectedFile.id)}</p>
                     </div>
                   </div>
                 </div>
@@ -843,6 +931,16 @@ const Home: React.FC = () => {
             contacts={contacts}
             companies={companies}
             emailType={emailType}
+          />
+        </Suspense>
+      )}
+      {/* File Notes Modal */}
+      {showFileNotesModal && selectedFile && (
+        <Suspense fallback={<div>Loading...</div>}>
+          <FileNotesModal
+            file={selectedFile}
+            onClose={() => setShowFileNotesModal(false)}
+            onNotesUpdated={handleFileUpdated}
           />
         </Suspense>
       )}

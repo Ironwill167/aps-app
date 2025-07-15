@@ -1,0 +1,395 @@
+@use '../variables' as *;
+@use '../mixins' as *;
+
+/* ===========================================
+   FILE NOTES MODAL SPECIFIC STYLES
+   =========================================== */
+
+/* File Notes Modal Size Adjustment */
+.modal .modal-content.file-notes-modal-content {
+  width: clamp(700px, 80vw, 1200px) !important;
+  max-width: 95vw !important;
+  height: auto !important;
+  max-height: 90vh !important;
+  min-height: 500px !important;
+
+  .modal-body {
+    padding: clamp(10px, 1.2vw, 16px) !important;
+    gap: clamp(16px, 2vw, 24px) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+
+    .modal-row {
+      width: 100%;
+      margin-bottom: clamp(8px, 1vw, 12px);
+
+      .modal-form-group {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* Notes History Section */
+.notes-history-section {
+  @include display-flex($direction: column, $align: stretch, $justify: flex-start);
+  width: 100% !important;
+  margin-bottom: clamp(10px, 1vw, 16px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 12px;
+  padding: clamp(2px, 0.25vw, 4px);
+  border: 1px solid rgba($border-color, 0.3);
+  box-sizing: border-box;
+  flex-shrink: 0;
+
+  h4 {
+    margin-bottom: clamp(12px, 1.5vw, 18px);
+    color: $text-color;
+    font-size: clamp(16px, 1.4vw, 18px);
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, $main-color-hover, transparent);
+    }
+  }
+
+  .no-notes {
+    padding: clamp(24px, 3vw, 36px);
+    text-align: center;
+    color: rgba($text-color, 0.6);
+    font-style: italic;
+    font-size: clamp(14px, 1.2vw, 16px);
+    background: linear-gradient(135deg, rgba(248, 249, 250, 0.8) 0%, rgba(248, 249, 250, 0.4) 100%);
+    border-radius: 8px;
+    width: 100%;
+    border: 1px dashed rgba($border-color, 0.5);
+    backdrop-filter: blur(10px);
+  }
+
+  .notes-list {
+    width: 100%;
+    max-height: 400px;
+    overflow-y: auto;
+    border-radius: 8px;
+    background: rgba(250, 250, 250, 0.3);
+    backdrop-filter: blur(10px);
+    padding: clamp(12px, 1.5vw, 18px);
+    box-sizing: border-box;
+
+    &::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 4px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba($main-color-hover, 0.4);
+      border-radius: 4px;
+
+      &:hover {
+        background: rgba($main-color-hover, 0.6);
+      }
+    }
+
+    .note-item {
+      @include display-flex($direction: column, $align: stretch, $justify: flex-start);
+      width: 100%;
+      margin-bottom: clamp(16px, 2vw, 24px);
+      padding: clamp(8px, 1vw, 12px);
+      border-radius: 10px;
+      border: 1px solid rgba($main-color-hover, 0.3);
+      background: linear-gradient(
+        135deg,
+        rgba($lightest-green, 0.9) 0%,
+        rgba($lightest-green, 0.7) 100%
+      );
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        background: linear-gradient(180deg, $main-color-hover, rgba($main-color-hover, 0.5));
+      }
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+        border-color: $main-color-hover;
+      }
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .note-header {
+        @include display-flex($direction: row, $align: center, $justify: space-between);
+
+        padding-bottom: clamp(6px, 0.8vw, 10px);
+        border-bottom: 1px solid rgba($border-color, 0.3);
+        height: 3vh;
+
+        .note-date {
+          font-size: clamp(12px, 1vw, 14px);
+          color: rgba($text-color, 0.7);
+          font-weight: 500;
+          background: rgba(255, 255, 255, 0.6);
+          padding: clamp(4px, 0.5vw, 6px) clamp(8px, 1vw, 12px);
+          border-radius: 6px;
+          backdrop-filter: blur(10px);
+        }
+
+        .delete-note-btn {
+          background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+          color: white;
+          border: none;
+          cursor: pointer;
+          font-size: clamp(14px, 1.2vw, 16px);
+          padding: clamp(3px, 0.4vw, 5px);
+          border-radius: 6px;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          flex-shrink: 0;
+          box-shadow: 0 2px 8px rgba(255, 68, 68, 0.3);
+
+          &:hover {
+            background: linear-gradient(135deg, #cc0000 0%, #aa0000 100%);
+            transform: scale(1.05);
+            box-shadow: 0 4px 16px rgba(255, 68, 68, 0.4);
+          }
+        }
+      }
+
+      .note-text {
+        width: 100%;
+        font-size: clamp(14px, 1.2vw, 16px);
+        line-height: 1.6;
+        color: $text-color;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        padding: clamp(12px, 1.5vw, 18px);
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 6px;
+        backdrop-filter: blur(10px);
+        box-sizing: border-box;
+        min-height: 60px;
+      }
+    }
+  }
+}
+
+/* Add Note Section */
+.add-note-section {
+  width: 100% !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  border-radius: 12px;
+  padding: clamp(20px, 2.5vw, 32px);
+  border: 1px solid rgba($border-color, 0.3);
+  backdrop-filter: blur(10px);
+  box-sizing: border-box;
+  flex-shrink: 0;
+  margin-bottom: 0;
+
+  h4 {
+    margin-bottom: clamp(12px, 1.5vw, 18px);
+    color: $text-color;
+    font-size: clamp(16px, 1.4vw, 18px);
+    font-weight: 700;
+    text-align: center;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, $main-color-hover, transparent);
+    }
+  }
+
+  .modal-form-group {
+    width: 100%;
+    margin-bottom: clamp(16px, 2vw, 24px);
+    box-sizing: border-box;
+
+    textarea {
+      width: 100% !important;
+      min-height: 140px !important;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.6;
+      background: rgba(255, 255, 255, 0.9);
+      border: 2px solid rgba($border-color, 0.6);
+      border-radius: 8px;
+      padding: clamp(16px, 2vw, 24px);
+      font-size: clamp(14px, 1.2vw, 16px);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-sizing: border-box;
+
+      &:focus {
+        outline: none;
+        border-color: $main-color-hover;
+        box-shadow: 0 0 0 4px rgba(122, 173, 13, 0.2);
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-1px);
+      }
+
+      &::placeholder {
+        color: rgba($text-color, 0.5);
+        font-style: italic;
+      }
+    }
+  }
+
+  .add-note-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: clamp(16px, 2vw, 24px);
+    padding: clamp(16px, 2vw, 24px);
+    border-top: 1px solid rgba($border-color, 0.3);
+    background: linear-gradient(
+      135deg,
+      rgba($lighter-green, 0.98) 0%,
+      rgba($lighter-green, 0.95) 100%
+    ) !important;
+    position: sticky;
+    bottom: 0;
+    z-index: 15;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1) !important;
+    border-radius: 0 0 8px 8px;
+    box-sizing: border-box;
+
+    .keyboard-hint {
+      font-size: clamp(11px, 0.9vw, 13px);
+      color: rgba($text-color, 0.6);
+      font-style: italic;
+      background: rgba(255, 255, 255, 0.6);
+      padding: clamp(4px, 0.5vw, 6px) clamp(8px, 1vw, 12px);
+      border-radius: 6px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba($border-color, 0.2);
+    }
+
+    .add-note-button {
+      background: linear-gradient(135deg, $main-color-hover 0%, rgba($main-color-hover, 0.8) 100%);
+      color: white;
+      border: none;
+      padding: clamp(8px, 1vw, 12px) clamp(16px, 2vw, 24px);
+      font-size: clamp(13px, 1.1vw, 15px);
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 12px rgba(122, 173, 13, 0.3);
+
+      /* Remove any spinner or loading animations */
+      animation: none !important;
+
+      &::before,
+      &::after {
+        display: none !important;
+      }
+
+      &:hover {
+        background: linear-gradient(
+          135deg,
+          rgba($main-color-hover, 0.8) 0%,
+          rgba($main-color-hover, 0.6) 100%
+        );
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(122, 173, 13, 0.4);
+      }
+
+      &:disabled {
+        background: linear-gradient(135deg, #cccccc 0%, #999999 100%) !important;
+        color: rgba(255, 255, 255, 0.7) !important;
+        cursor: not-allowed !important;
+        transform: none !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+
+        /* Ensure no spinner on disabled state */
+        animation: none !important;
+
+        &::before,
+        &::after {
+          display: none !important;
+        }
+      }
+    }
+  }
+}
+
+/* Modal Submit Button in File Notes Modal */
+.file-notes-modal-content .modal-submit {
+  background: linear-gradient(135deg, $main-color-hover 0%, rgba($main-color-hover, 0.8) 100%);
+  color: white;
+  border: none;
+  padding: clamp(10px, 1.2vw, 16px) clamp(16px, 2vw, 24px);
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  margin-right: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(122, 173, 13, 0.3);
+
+  /* Remove any spinner or loading animations */
+  animation: none !important;
+
+  &::before,
+  &::after {
+    display: none !important;
+  }
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      rgba($main-color-hover, 0.8) 0%,
+      rgba($main-color-hover, 0.6) 100%
+    );
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(122, 173, 13, 0.4);
+  }
+
+  &:disabled {
+    background: linear-gradient(135deg, #cccccc 0%, #999999 100%) !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1) !important;
+
+    /* Ensure no spinner on disabled state */
+    animation: none !important;
+
+    &::before,
+    &::after {
+      display: none !important;
+    }
+  }
+}
