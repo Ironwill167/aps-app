@@ -1,4 +1,5 @@
 import React, { lazy, Suspense, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { AdditionalParty, Contact, Company } from '../types';
 import Select from 'react-select';
 
@@ -147,16 +148,9 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
         </div>
       </div>
 
-      <Suspense fallback={<div>Loading...</div>}>
-        {showAddCompanyModal && (
-          <div
-            className="nested-modal-container"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            style={{ position: 'relative', zIndex: 1000 }}
-          >
+      {showAddCompanyModal &&
+        createPortal(
+          <Suspense fallback={<div>Loading...</div>}>
             <AddCompanyModal
               onClose={() => setShowAddCompanyModal(false)}
               onCompanyAdded={(company) => {
@@ -164,20 +158,13 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
                 setShowAddCompanyModal(false);
               }}
             />
-          </div>
+          </Suspense>,
+          document.body
         )}
-      </Suspense>
 
-      <Suspense fallback={<div>Loading...</div>}>
-        {showAddContactModal && (
-          <div
-            className="nested-modal-container"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-            }}
-            style={{ position: 'relative', zIndex: 1000 }}
-          >
+      {showAddContactModal &&
+        createPortal(
+          <Suspense fallback={<div>Loading...</div>}>
             <AddContactModal
               onClose={(e) => {
                 console.log('Contact modal close requested');
@@ -195,9 +182,9 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
                 setShowAddContactModal(false);
               }}
             />
-          </div>
+          </Suspense>,
+          document.body
         )}
-      </Suspense>
     </div>
   );
 };
