@@ -24,6 +24,19 @@ declare global {
         callback: (data: { fileDetails: FileRecord; feeDetails: FeeRecord }) => void
       ) => void;
       sendInvoiceRendered: () => void;
+
+      // Auto-update API
+      checkForUpdates: () => Promise<void>;
+      quitAndInstall: () => Promise<void>;
+      onUpdateStatus: (
+        callback: (status: {
+          status: string;
+          version?: string;
+          error?: string;
+          progress?: number;
+        }) => void
+      ) => void;
+
       // Add other API methods if necessary
     };
   }

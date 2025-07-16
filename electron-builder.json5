@@ -1,13 +1,18 @@
 // @see - https://www.electron.build/configuration/configuration
 {
   $schema: 'https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json',
-  appId: 'YourAppID',
+  appId: 'com.yourcompany.aps-app',
   asar: true,
   productName: 'aps-app',
   directories: {
     output: 'release/${version}',
   },
   files: ['dist', 'dist-electron'],
+  publish: {
+    provider: 'github',
+    owner: 'Ironwill167',
+    repo: 'aps-app',
+  },
   mac: {
     target: ['dmg'],
     artifactName: '${productName}-Mac-${version}-Installer.${ext}',

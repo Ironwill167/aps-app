@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
 import { FileRecord, FeeRecord } from '../src/components/types';
+import { AppUpdater } from './updater';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,7 @@ process.env.VITE_PUBLIC = VITE_DEV_SERVER_URL
   : RENDERER_DIST;
 
 let win: BrowserWindow | null;
+let appUpdater: AppUpdater | null = null;
 
 function createWindow() {
   win = new BrowserWindow({
@@ -37,6 +39,9 @@ function createWindow() {
     autoHideMenuBar: true,
   });
   win.maximize();
+
+  // Initialize auto-updater after window is created
+  appUpdater = new AppUpdater(win);
 
   // Test active push message to Renderer-process.
   win.webContents.on('did-finish-load', () => {
@@ -144,6 +149,15 @@ function createWindow() {
     }
   );
   //invoice code ends here
+
+  // Update-related IPC handlers
+  ipcMain.handle('check-for-updates', () => {
+    appUpdater?.checkForUpdates();
+  });
+
+  ipcMain.handle('quit-and-install', () => {
+    appUpdater?.quitAndInstall();
+  });
 
   ipcMain.on('show-context-menu', (event, contextType: string, contextId: number) => {
     const template: MenuItemConstructorOptions[] = [

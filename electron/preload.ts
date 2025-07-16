@@ -1,4 +1,4 @@
-import { ipcRenderer, contextBridge } from 'electron'
+import { ipcRenderer, contextBridge } from 'electron';
 import { FileRecord, FeeRecord } from '../src/components/types';
 
 // Exposing ipcRenderer
@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
   off: (...args: Parameters<typeof ipcRenderer.off>) => ipcRenderer.off(...args),
   send: (...args: Parameters<typeof ipcRenderer.send>) => ipcRenderer.send(...args),
   invoke: (...args: Parameters<typeof ipcRenderer.invoke>) => ipcRenderer.invoke(...args),
-})
+});
 
 // Exposing electronAPI
 contextBridge.exposeInMainWorld('electronAPI', {
@@ -18,10 +18,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onContextMenuAction: (
     callback: (action: string, contextType: string, contextId: number) => void
   ) => {
-    ipcRenderer.on('context-menu-action', (event, action: string, contextType: string, contextId: number) => {
-      callback(action, contextType, contextId);
-      console.log(`${event} sent back.`);
-    });
+    ipcRenderer.on(
+      'context-menu-action',
+      (event, action: string, contextType: string, contextId: number) => {
+        callback(action, contextType, contextId);
+        console.log(`${event} sent back.`);
+      }
+    );
   },
 
   offContextMenuAction: (
@@ -42,6 +45,24 @@ contextBridge.exposeInMainWorld('electronAPI', {
   sendInvoiceRendered: () => {
     ipcRenderer.send('invoice-rendered');
   },
-  
+
+  // Auto-update API
+  checkForUpdates: () => {
+    return ipcRenderer.invoke('check-for-updates');
+  },
+  quitAndInstall: () => {
+    return ipcRenderer.invoke('quit-and-install');
+  },
+  onUpdateStatus: (
+    callback: (status: {
+      status: string;
+      version?: string;
+      error?: string;
+      progress?: number;
+    }) => void
+  ) => {
+    ipcRenderer.on('update-status', (_event, status) => callback(status));
+  },
+
   // ... other API methods
 });
