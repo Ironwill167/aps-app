@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder",
+    "build": "tsc && vite build && electron-builder --publish=always",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "dist": "npm run build",
+    "dist": "tsc && vite build && electron-builder --publish=never",
     "dist-local": "tsc && vite build && electron-builder --publish=never",
     "release": "tsc && vite build && electron-builder --publish=always",
     "test-build": "npm run dist-local"

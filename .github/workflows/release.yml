@@ -22,13 +22,22 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build and release
+      - name: Build and publish to GitHub releases
         run: npm run release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifacts
+      - name: List release directory (for debugging)
+        run: |
+          if (Test-Path "release") {
+            Get-ChildItem -Path "release" -Recurse | Format-Table Name, Length, FullName
+          } else {
+            Write-Host "Release directory not found"
+          }
+
+      - name: Upload release artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: release-artifacts
           path: release/**/*
