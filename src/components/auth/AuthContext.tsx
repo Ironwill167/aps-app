@@ -1,6 +1,6 @@
 import React, { useReducer, useEffect, ReactNode } from 'react';
 import { authService } from './authService';
-import { AuthContext, authReducer, initialState } from './authContext';
+import { AuthContext, authReducer, initialState } from './authTypes';
 
 interface AuthProviderProps {
   children: ReactNode;
