@@ -16,21 +16,17 @@ export const UpdateNotification: React.FC = () => {
     if (window.electronAPI?.onUpdateStatus) {
       window.electronAPI.onUpdateStatus((info: UpdateInfo) => {
         setUpdateInfo(info);
-        setIsVisible(true);
 
-        // Auto-hide after 5 seconds for non-critical statuses
+        // Only show notifications for meaningful status updates
+        // Hide notifications for background checking and no updates available
         if (info.status === 'checking' || info.status === 'not-available') {
-          setTimeout(() => setIsVisible(false), 5000);
+          setIsVisible(false);
+        } else {
+          setIsVisible(true);
         }
       });
     }
   }, []);
-
-  const handleCheckForUpdates = () => {
-    if (window.electronAPI?.checkForUpdates) {
-      window.electronAPI.checkForUpdates();
-    }
-  };
 
   const handleInstallUpdate = () => {
     if (window.electronAPI?.quitAndInstall) {
@@ -97,12 +93,6 @@ export const UpdateNotification: React.FC = () => {
           {updateInfo.status === 'ready' && (
             <button onClick={handleInstallUpdate} className="btn-primary">
               Install & Restart
-            </button>
-          )}
-
-          {updateInfo.status === 'not-available' && (
-            <button onClick={handleCheckForUpdates} className="btn-secondary">
-              Check Again
             </button>
           )}
 
