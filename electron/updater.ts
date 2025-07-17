@@ -11,6 +11,20 @@ export class AppUpdater {
 
   constructor(mainWindow: BrowserWindow) {
     this.mainWindow = mainWindow;
+
+    // Configure the update server URL explicitly
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'Ironwill167',
+      repo: 'aps-app',
+      private: false,
+    });
+
+    // Debug logging
+    log.info('Auto-updater initialized');
+    log.info('Repository: https://github.com/Ironwill167/aps-app');
+    log.info('Feed URL configured for public repository');
+
     this.setupEventHandlers();
 
     // Check for updates 10 seconds after app starts
@@ -45,7 +59,22 @@ export class AppUpdater {
 
     autoUpdater.on('error', (err) => {
       log.error('Error in auto-updater:', err);
-      this.sendUpdateStatus('error', undefined, err.message);
+
+      // Don't show network/auth errors to users
+      if (
+        err.message.includes('404') ||
+        err.message.includes('401') ||
+        err.message.includes('403') ||
+        err.message.includes('unauthorized') ||
+        err.message.includes('authentication')
+      ) {
+        log.info('Network/auth error - this is normal in some cases');
+        this.sendUpdateStatus('not-available');
+        return;
+      }
+
+      // Only show critical errors
+      this.sendUpdateStatus('error', undefined, 'Unable to check for updates');
     });
 
     autoUpdater.on('download-progress', (progressObj) => {

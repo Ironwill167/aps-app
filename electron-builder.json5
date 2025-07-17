@@ -12,6 +12,8 @@
     provider: 'github',
     owner: 'Ironwill167',
     repo: 'aps-app',
+    private: false,
+    releaseType: 'release',
   },
   mac: {
     target: ['dmg'],
