@@ -6,8 +6,13 @@ on:
       - 'v*'
 
 jobs:
-  release:
+  build-and-release:
     runs-on: windows-latest
+
+    # Add these permissions
+    permissions:
+      contents: write
+      packages: write
 
     steps:
       - name: Checkout code
@@ -16,7 +21,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
@@ -26,18 +31,3 @@ jobs:
         run: npm run release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: List release directory (for debugging)
-        run: |
-          if (Test-Path "release") {
-            Get-ChildItem -Path "release" -Recurse | Format-Table Name, Length, FullName
-          } else {
-            Write-Host "Release directory not found"
-          }
-
-      - name: Upload release artifacts
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: release-artifacts
-          path: release/**/*
