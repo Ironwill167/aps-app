@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
 import { AppConfig } from '../config';
+import logo from '../../assets/logotpbg.png';
 import './Login.scss';
 
 interface QuickLoginUser {
@@ -97,7 +98,7 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="login-box">
         <div className="login-header">
-          <img src="/src/assets/logotpbg.png" alt="APS Logo" className="login-logo" />
+          <img src={logo} alt="APS Logo" className="login-logo" />
           <h1>Welcome to APS</h1>
           <p>Please sign in to continue</p>
         </div>
