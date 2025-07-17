@@ -9,7 +9,6 @@ jobs:
   build-and-release:
     runs-on: windows-latest
 
-    # Add these permissions
     permissions:
       contents: write
       packages: write
@@ -31,3 +30,10 @@ jobs:
         run: npm run release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Add environment variables from secrets
+          VITE_REACT_APP_API_SECRET: ${{ secrets.VITE_REACT_APP_API_SECRET }}
+          VITE_REACT_APP_DEV_API_URL: ${{ secrets.VITE_REACT_APP_DEV_API_URL }}
+          VITE_REACT_APP_DEV_EMAIL_URL: ${{ secrets.VITE_REACT_APP_DEV_EMAIL_URL }}
+          VITE_REACT_APP_PROD_API_URL: ${{ secrets.VITE_REACT_APP_PROD_API_URL }}
+          VITE_REACT_APP_PROD_EMAIL_URL: ${{ secrets.VITE_REACT_APP_PROD_EMAIL_URL }}
+          VITE_REACT_APP_ENVIRONMENT: ${{ secrets.VITE_REACT_APP_ENVIRONMENT }}
