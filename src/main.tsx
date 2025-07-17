@@ -4,6 +4,7 @@ import App from './App';
 import { Provider } from 'react-redux';
 import store from './store';
 import { SocketProvider } from './components/utils/SocketContext';
+import { AuthProvider } from './components/auth/AuthContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ToastContainer } from 'react-toastify';
@@ -18,14 +19,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-        <SocketProvider>
-          <HashRouter>
-            <Routes>
-              <Route path="/" element={<App />} />
-              <Route path="/invoice" element={<InvoicePage />} />
-            </Routes>
-          </HashRouter>
-        </SocketProvider>
+        <AuthProvider>
+          <SocketProvider>
+            <HashRouter>
+              <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="/invoice" element={<InvoicePage />} />
+              </Routes>
+            </HashRouter>
+          </SocketProvider>
+        </AuthProvider>
         <ToastContainer
           position="top-right"
           autoClose={5000}

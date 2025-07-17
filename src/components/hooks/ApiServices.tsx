@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
-import { BaseUrl, AppConfig } from '../config';
+import { AppConfig } from '../config';
+import apiClient from '../auth/apiClient';
 import {
   Company,
   Contact,
@@ -19,14 +20,6 @@ import {
 interface APIResponse<T> {
   data: T;
 }
-
-const api = axios.create({
-  baseURL: BaseUrl,
-  headers: {
-    'Content-Type': 'application/json',
-    'X-Electron-App-Secret': import.meta.env.VITE_REACT_APP_API_SECRET || 'development-key',
-  },
-});
 
 // Error handling for API calls
 const handleError = (error: unknown): never => {
@@ -51,7 +44,7 @@ const handleError = (error: unknown): never => {
 // Fetch all contacts
 export const fetchContacts = async (): Promise<APIResponse<Contact[]>> => {
   try {
-    const response: AxiosResponse<Contact[]> = await api.get('/api/people');
+    const response: AxiosResponse<Contact[]> = await apiClient.get('/api/people');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -61,7 +54,7 @@ export const fetchContacts = async (): Promise<APIResponse<Contact[]>> => {
 // Add a new contact
 export const addContact = async (contact: Partial<Contact>): Promise<APIResponse<Contact>> => {
   try {
-    const response: AxiosResponse<Contact> = await api.post('/api/people', contact);
+    const response: AxiosResponse<Contact> = await apiClient.post('/api/people', contact);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -71,7 +64,7 @@ export const addContact = async (contact: Partial<Contact>): Promise<APIResponse
 // Update an existing contact
 export const updateContact = async (id: number, contact: Partial<Contact>): Promise<Contact> => {
   try {
-    const response: AxiosResponse<Contact> = await api.put(`/api/people/${id}`, contact);
+    const response: AxiosResponse<Contact> = await apiClient.put(`/api/people/${id}`, contact);
     return response.data;
   } catch (error) {
     throw handleError(error);
@@ -81,7 +74,7 @@ export const updateContact = async (id: number, contact: Partial<Contact>): Prom
 // Delete a contact
 export const deleteContact = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/people/${id}`);
+    await apiClient.delete(`/api/people/${id}`);
     return { data: `Contact deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -93,7 +86,7 @@ export const deleteContact = async (id: number): Promise<APIResponse<string>> =>
 // Fetch all companies
 export const fetchCompanies = async (): Promise<APIResponse<Company[]>> => {
   try {
-    const response: AxiosResponse<Company[]> = await api.get('/api/companies');
+    const response: AxiosResponse<Company[]> = await apiClient.get('/api/companies');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -103,7 +96,7 @@ export const fetchCompanies = async (): Promise<APIResponse<Company[]>> => {
 // Add a new company
 export const addCompany = async (company: Partial<Company>): Promise<APIResponse<Company>> => {
   try {
-    const response: AxiosResponse<Company> = await api.post('/api/companies', company);
+    const response: AxiosResponse<Company> = await apiClient.post('/api/companies', company);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -116,7 +109,7 @@ export const updateCompany = async (
   company: Partial<Company>
 ): Promise<APIResponse<Company>> => {
   try {
-    const response: AxiosResponse<Company> = await api.put(`/api/companies/${id}`, company);
+    const response: AxiosResponse<Company> = await apiClient.put(`/api/companies/${id}`, company);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -126,7 +119,7 @@ export const updateCompany = async (
 // Delete a company
 export const deleteCompany = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/companies/${id}`);
+    await apiClient.delete(`/api/companies/${id}`);
     return { data: `Company deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -138,7 +131,7 @@ export const deleteCompany = async (id: number): Promise<APIResponse<string>> =>
 // Fetch all files with related data
 export const fetchFiles = async (): Promise<APIResponse<FileRecord[]>> => {
   try {
-    const response: AxiosResponse<FileRecord[]> = await api.get('/api/files');
+    const response: AxiosResponse<FileRecord[]> = await apiClient.get('/api/files');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -148,7 +141,7 @@ export const fetchFiles = async (): Promise<APIResponse<FileRecord[]>> => {
 // Create a new file
 export const createFile = async (): Promise<APIResponse<FileRecord>> => {
   try {
-    const response: AxiosResponse<FileRecord> = await api.post('/api/files', {
+    const response: AxiosResponse<FileRecord> = await apiClient.post('/api/files', {
       status: 'NEW', // Set default status or any required fields
       // Add other minimal fields if necessary
     });
@@ -164,7 +157,7 @@ export const updateFile = async (
   file: Partial<FileRecord>
 ): Promise<APIResponse<FileRecord>> => {
   try {
-    const response = await api.put(`/api/files/${id}`, file);
+    const response = await apiClient.put(`/api/files/${id}`, file);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -174,7 +167,7 @@ export const updateFile = async (
 // Delete a file
 export const deleteFile = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/files/${id}`);
+    await apiClient.delete(`/api/files/${id}`);
     return { data: `File deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -185,7 +178,7 @@ export const deleteFile = async (id: number): Promise<APIResponse<string>> => {
 // Fetch all documents
 export const fetchFileDocuments = async (): Promise<APIResponse<FileDocument[]>> => {
   try {
-    const response = await api.get('/api/file_documents');
+    const response = await apiClient.get('/api/file_documents');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -197,7 +190,7 @@ export const addFileDocument = async (
   document: Partial<FileDocument>
 ): Promise<APIResponse<FileDocument>> => {
   try {
-    const response = await api.post('/api/file_documents', document);
+    const response = await apiClient.post('/api/file_documents', document);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -210,7 +203,7 @@ export const updateFileDocument = async (
   document: Partial<FileDocument>
 ): Promise<APIResponse<FileDocument>> => {
   try {
-    const response = await api.put(`/api/file_documents/${id}`, document);
+    const response = await apiClient.put(`/api/file_documents/${id}`, document);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -220,7 +213,7 @@ export const updateFileDocument = async (
 // Delete a document
 export const deleteFileDocument = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/file_documents/${id}`);
+    await apiClient.delete(`/api/file_documents/${id}`);
     return { data: `Document deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -231,7 +224,7 @@ export const deleteFileDocument = async (id: number): Promise<APIResponse<string
 // Fetch outstanding documents for file
 export const fetchOutstandingDocuments = async (): Promise<APIResponse<OutstandingDocument[]>> => {
   try {
-    const response = await api.get(`/api/outstanding_docs`);
+    const response = await apiClient.get(`/api/outstanding_docs`);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -243,7 +236,7 @@ export const addOutstandingDocument = async (
   document: Partial<OutstandingDocument>
 ): Promise<APIResponse<OutstandingDocument>> => {
   try {
-    const response = await api.post('/api/outstanding_docs', document);
+    const response = await apiClient.post('/api/outstanding_docs', document);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -257,7 +250,7 @@ export const updateOutstandingDocument = async (
   document: Partial<OutstandingDocument>
 ): Promise<APIResponse<OutstandingDocument>> => {
   try {
-    const response = await api.put(`/api/outstanding_docs/${file_id}/${doc_id}`, document);
+    const response = await apiClient.put(`/api/outstanding_docs/${file_id}/${doc_id}`, document);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -270,7 +263,7 @@ export const deleteOutstandingDocument = async (
   doc_id: number
 ): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/outstanding_docs/${file_id}/${doc_id}`);
+    await apiClient.delete(`/api/outstanding_docs/${file_id}/${doc_id}`);
     return { data: `Outstanding document deleted with ID: ${file_id}/${doc_id}` };
   } catch (error) {
     return handleError(error);
@@ -281,7 +274,7 @@ export const deleteOutstandingDocument = async (
 // Fetch all causes of loss
 export const fetchCausesOfLoss = async (): Promise<APIResponse<CauseOfLoss[]>> => {
   try {
-    const response = await api.get('/api/cause_of_loss');
+    const response = await apiClient.get('/api/cause_of_loss');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -293,7 +286,7 @@ export const addCauseOfLoss = async (
   cause: Partial<CauseOfLoss>
 ): Promise<APIResponse<CauseOfLoss>> => {
   try {
-    const response = await api.post('/api/cause_of_loss', cause);
+    const response = await apiClient.post('/api/cause_of_loss', cause);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -306,7 +299,7 @@ export const updateCauseOfLoss = async (
   cause: Partial<CauseOfLoss>
 ): Promise<APIResponse<CauseOfLoss>> => {
   try {
-    const response = await api.put(`/api/cause_of_loss/${id}`, cause);
+    const response = await apiClient.put(`/api/cause_of_loss/${id}`, cause);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -316,7 +309,7 @@ export const updateCauseOfLoss = async (
 // Delete a cause of loss
 export const deleteCauseOfLoss = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/cause_of_loss/${id}`);
+    await apiClient.delete(`/api/cause_of_loss/${id}`);
     return { data: `Cause of loss deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -328,7 +321,7 @@ export const deleteCauseOfLoss = async (id: number): Promise<APIResponse<string>
 // Fetch additional parties for a file
 export const fetchAdditionalParties = async (): Promise<APIResponse<AdditionalParty[]>> => {
   try {
-    const response = await api.get(`/api/additional_party`);
+    const response = await apiClient.get(`/api/additional_party`);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -340,7 +333,7 @@ export const addAdditionalParty = async (
   file_id: number
 ): Promise<APIResponse<AdditionalParty>> => {
   try {
-    const response: AxiosResponse<AdditionalParty> = await api.post('/api/additional_party', {
+    const response: AxiosResponse<AdditionalParty> = await apiClient.post('/api/additional_party', {
       file_id,
     });
     return { data: response.data };
@@ -355,7 +348,7 @@ export const updateAdditionalParty = async (
   additionalParty: Partial<AdditionalParty>
 ): Promise<APIResponse<AdditionalParty>> => {
   try {
-    const response = await api.put(`/api/additional_party/${id}`, additionalParty);
+    const response = await apiClient.put(`/api/additional_party/${id}`, additionalParty);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -365,7 +358,7 @@ export const updateAdditionalParty = async (
 // Delete an additional party
 export const deleteAdditionalParty = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/additional_party/${id}`);
+    await apiClient.delete(`/api/additional_party/${id}`);
     return { data: `Additional party deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -377,7 +370,7 @@ export const deleteAdditionalParty = async (id: number): Promise<APIResponse<str
 // Fetch all fees
 export const fetchFees = async (): Promise<APIResponse<FeeRecord[]>> => {
   try {
-    const response: AxiosResponse<FeeRecord[]> = await api.get('/api/fees');
+    const response: AxiosResponse<FeeRecord[]> = await apiClient.get('/api/fees');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -387,7 +380,7 @@ export const fetchFees = async (): Promise<APIResponse<FeeRecord[]>> => {
 // Add a new fee
 export const addFee = async (fee: Partial<FeeRecord>): Promise<APIResponse<FeeRecord>> => {
   try {
-    const response: AxiosResponse<FeeRecord> = await api.post('/api/fees', fee);
+    const response: AxiosResponse<FeeRecord> = await apiClient.post('/api/fees', fee);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -400,7 +393,7 @@ export const updateFee = async (
   fee: Partial<FeeRecord>
 ): Promise<APIResponse<FeeRecord>> => {
   try {
-    const response: AxiosResponse<FeeRecord> = await api.put(`/api/fees/${id}`, fee);
+    const response: AxiosResponse<FeeRecord> = await apiClient.put(`/api/fees/${id}`, fee);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -410,7 +403,7 @@ export const updateFee = async (
 // Delete a fee
 export const deleteFee = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/fees/${id}`);
+    await apiClient.delete(`/api/fees/${id}`);
     return { data: `Fee deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -420,7 +413,7 @@ export const deleteFee = async (id: number): Promise<APIResponse<string>> => {
 // Fetch Invoice Rates from backend
 export const fetchRates = async (): Promise<APIResponse<InvoiceRates[]>> => {
   try {
-    const response: AxiosResponse<InvoiceRates[]> = await api.get('/api/invoice_rates');
+    const response: AxiosResponse<InvoiceRates[]> = await apiClient.get('/api/invoice_rates');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -430,7 +423,7 @@ export const fetchRates = async (): Promise<APIResponse<InvoiceRates[]>> => {
 // Add new Invoice Rates Preset
 export const addRate = async (rate: Partial<InvoiceRates>): Promise<APIResponse<InvoiceRates>> => {
   try {
-    const response: AxiosResponse<InvoiceRates> = await api.post('/api/invoice_rates', rate);
+    const response: AxiosResponse<InvoiceRates> = await apiClient.post('/api/invoice_rates', rate);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -443,7 +436,10 @@ export const updateRate = async (
   rate: Partial<InvoiceRates>
 ): Promise<APIResponse<InvoiceRates>> => {
   try {
-    const response: AxiosResponse<InvoiceRates> = await api.put(`/api/invoice_rates/${id}`, rate);
+    const response: AxiosResponse<InvoiceRates> = await apiClient.put(
+      `/api/invoice_rates/${id}`,
+      rate
+    );
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -453,7 +449,7 @@ export const updateRate = async (
 // Delete Invoice Rates Preset
 export const deleteRate = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/invoice_rates/${id}`);
+    await apiClient.delete(`/api/invoice_rates/${id}`);
     return { data: `Invoice Rate deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);
@@ -566,7 +562,7 @@ export const testEmailConnection = async (from?: string): Promise<EmailSendRespo
 // Fetch all file notes
 export const fetchFileNotes = async (): Promise<APIResponse<FileNote[]>> => {
   try {
-    const response: AxiosResponse<FileNote[]> = await api.get('/api/file_notes');
+    const response: AxiosResponse<FileNote[]> = await apiClient.get('/api/file_notes');
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -576,7 +572,9 @@ export const fetchFileNotes = async (): Promise<APIResponse<FileNote[]>> => {
 // Fetch file notes for a specific file
 export const fetchFileNotesByFileId = async (fileId: number): Promise<APIResponse<FileNote[]>> => {
   try {
-    const response: AxiosResponse<FileNote[]> = await api.get(`/api/file_notes/file/${fileId}`);
+    const response: AxiosResponse<FileNote[]> = await apiClient.get(
+      `/api/file_notes/file/${fileId}`
+    );
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -586,7 +584,7 @@ export const fetchFileNotesByFileId = async (fileId: number): Promise<APIRespons
 // Add a new file note
 export const addFileNote = async (fileNote: Partial<FileNote>): Promise<APIResponse<FileNote>> => {
   try {
-    const response: AxiosResponse<FileNote> = await api.post('/api/file_notes', fileNote);
+    const response: AxiosResponse<FileNote> = await apiClient.post('/api/file_notes', fileNote);
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -599,7 +597,10 @@ export const updateFileNote = async (
   fileNote: Partial<FileNote>
 ): Promise<APIResponse<FileNote>> => {
   try {
-    const response: AxiosResponse<FileNote> = await api.put(`/api/file_notes/${id}`, fileNote);
+    const response: AxiosResponse<FileNote> = await apiClient.put(
+      `/api/file_notes/${id}`,
+      fileNote
+    );
     return { data: response.data };
   } catch (error) {
     return handleError(error);
@@ -609,7 +610,7 @@ export const updateFileNote = async (
 // Delete a file note
 export const deleteFileNote = async (id: number): Promise<APIResponse<string>> => {
   try {
-    await api.delete(`/api/file_notes/${id}`);
+    await apiClient.delete(`/api/file_notes/${id}`);
     return { data: `File note deleted with ID: ${id}` };
   } catch (error) {
     return handleError(error);

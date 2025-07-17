@@ -1,13 +1,21 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
 import { setView } from '../store';
+import { useAuth } from './auth/useAuth';
 import logo from '../assets/logotpbg.png';
 
 const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
+  const { logout } = useAuth();
 
   const handleNavigation = (view: string) => {
     dispatch(setView(view));
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('Are you sure you want to sign out?')) {
+      logout();
+    }
   };
 
   return (
@@ -32,6 +40,14 @@ const Sidebar: React.FC = () => {
           Data
         </button>
       </div>
+
+      {/* User info and logout section */}
+      <div className="sidebar-user-section">
+        <button onClick={handleLogout} className="logout-button" title="Sign Out">
+          Sign Out
+        </button>
+      </div>
+
       <img src={logo} alt="APS Logo" className="logo" />
     </div>
   );

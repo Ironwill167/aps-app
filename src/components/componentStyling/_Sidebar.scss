@@ -51,6 +51,41 @@
     height: auto;
     max-width: 100%;
   }
+
+  /* User section and logout */
+  .sidebar-user-section {
+    @include display-flex($direction: column, $align: center, $justify: center);
+    width: 100%;
+    padding: clamp(8px, 1vh, 16px);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin-top: auto;
+    margin-bottom: clamp(8px, 1vh, 16px);
+    gap: clamp(4px, 0.5vh, 8px);
+
+    .logout-button {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: clamp(6px, 0.8vh, 12px) clamp(12px, 1.5vw, 20px);
+      font-size: $small;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+      width: 90%;
+
+      &:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
 }
 
 /* Responsive adjustments for 1366x768 laptop screens */
@@ -72,6 +107,26 @@
     .logo {
       width: clamp(70px, 7vw, 100px) !important; /* Reduced from 80-120px */
       height: clamp(70px, 7vw, 100px) !important;
+    }
+
+    .sidebar-user-section {
+      padding: clamp(6px, 0.8vh, 12px) !important;
+      margin-bottom: clamp(6px, 0.8vh, 12px) !important;
+
+      .user-info {
+        .user-name {
+          font-size: $smaller !important;
+        }
+
+        .user-email {
+          font-size: 10px !important;
+        }
+      }
+
+      .logout-button {
+        font-size: $smaller !important;
+        padding: clamp(4px, 0.6vh, 8px) clamp(8px, 1vw, 16px) !important;
+      }
     }
   }
 }
