@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './useAuth';
+import { AppConfig } from '../config';
 import './Login.scss';
+
+interface QuickLoginUser {
+  email: string;
+  name: string;
+}
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -64,16 +70,27 @@ const Login: React.FC = () => {
     }
   };
 
-  const quickLoginButtons = [
-    { email: 'aps@agprospec.co.za', name: 'APS' },
-    { email: 'mannie@agprospec.co.za', name: 'Mannie' },
-    { email: 'willie@agprospec.co.za', name: 'Willie' },
-    { email: 'elize@agprospec.co.za', name: 'Elize' },
-  ];
+  // Get quick login data from environment variables (development only)
+  const getQuickLoginData = (): { users: QuickLoginUser[]; password: string } => {
+    if (AppConfig.environment !== 'development') return { users: [], password: '' };
+
+    const users = import.meta.env.VITE_DEV_QUICK_LOGIN_USERS?.split(',') || [];
+    const names = import.meta.env.VITE_DEV_QUICK_LOGIN_NAMES?.split(',') || [];
+    const password = import.meta.env.VITE_DEV_QUICK_LOGIN_PASSWORD || '';
+
+    const quickLoginButtons: QuickLoginUser[] = users.map((email: string, index: number) => ({
+      email: email.trim(),
+      name: names[index]?.trim() || `User ${index + 1}`,
+    }));
+
+    return { users: quickLoginButtons, password };
+  };
+
+  const { users: quickLoginButtons, password: defaultPassword } = getQuickLoginData();
 
   const handleQuickLogin = (userEmail: string) => {
     setEmail(userEmail);
-    setPassword('APS@2025'); // Default password from JWT implementation
+    setPassword(defaultPassword); // Use password from environment variables
   };
 
   return (
@@ -132,23 +149,26 @@ const Login: React.FC = () => {
           </button>
         </form>
 
-        <div className="quick-login-section">
-          <p className="quick-login-title">Quick Login (Development)</p>
-          <div className="quick-login-buttons">
-            {quickLoginButtons.map((user) => (
-              <button
-                key={user.email}
-                type="button"
-                className="quick-login-btn"
-                onClick={() => handleQuickLogin(user.email)}
-                disabled={isLoading}
-              >
-                {user.name}
-              </button>
-            ))}
+        {/* Quick login section - only show in development */}
+        {AppConfig.environment === 'development' && (
+          <div className="quick-login-section">
+            <p className="quick-login-title">Quick Login (Development)</p>
+            <div className="quick-login-buttons">
+              {quickLoginButtons.map((user: QuickLoginUser) => (
+                <button
+                  key={user.email}
+                  type="button"
+                  className="quick-login-btn"
+                  onClick={() => handleQuickLogin(user.email)}
+                  disabled={isLoading}
+                >
+                  {user.name}
+                </button>
+              ))}
+            </div>
+            <p className="quick-login-note">Default password: {defaultPassword}</p>
           </div>
-          <p className="quick-login-note">Default password: APS@2025</p>
-        </div>
+        )}
       </div>
     </div>
   );
