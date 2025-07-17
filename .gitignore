@@ -24,3 +24,15 @@ dist-ssr
 *.sw?
 
 release/
+
+# Sensitive files
+ENVIRONMENT_SETUP.md
+*.env
+*.env.local
+*.env.production
+*.env.development
+config.local.*
+
+# Ensure .env files are never committed (critical security)
+.env*
+!.env.example

@@ -1,1 +1,48 @@
-"use strict";const n=require("electron");n.contextBridge.exposeInMainWorld("ipcRenderer",{on:(...e)=>n.ipcRenderer.on(...e),off:(...e)=>n.ipcRenderer.off(...e),send:(...e)=>n.ipcRenderer.send(...e),invoke:(...e)=>n.ipcRenderer.invoke(...e)});n.contextBridge.exposeInMainWorld("electronAPI",{showContextMenu:(e,o)=>{n.ipcRenderer.send("show-context-menu",e,o)},onContextMenuAction:e=>{n.ipcRenderer.on("context-menu-action",(o,r,t,i)=>{e(r,t,i),console.log(`${o} sent back.`)})},offContextMenuAction:e=>{n.ipcRenderer.removeListener("context-menu-action",(o,r,t,i)=>{e(r,t,i),console.log(`${o} sent back.`)})},generateInvoicePdf:e=>n.ipcRenderer.invoke("generate-invoice-pdf",e),onInvoiceData:e=>{n.ipcRenderer.on("invoice-data",(o,r)=>e(r))},sendInvoiceRendered:()=>{n.ipcRenderer.send("invoice-rendered")},checkForUpdates:()=>n.ipcRenderer.invoke("check-for-updates"),quitAndInstall:()=>n.ipcRenderer.invoke("quit-and-install"),onUpdateStatus:e=>{n.ipcRenderer.on("update-status",(o,r)=>e(r))}});
+"use strict";
+const electron = require("electron");
+electron.contextBridge.exposeInMainWorld("ipcRenderer", {
+  on: (...args) => electron.ipcRenderer.on(...args),
+  off: (...args) => electron.ipcRenderer.off(...args),
+  send: (...args) => electron.ipcRenderer.send(...args),
+  invoke: (...args) => electron.ipcRenderer.invoke(...args)
+});
+electron.contextBridge.exposeInMainWorld("electronAPI", {
+  showContextMenu: (contextType, contextId) => {
+    electron.ipcRenderer.send("show-context-menu", contextType, contextId);
+  },
+  onContextMenuAction: (callback) => {
+    electron.ipcRenderer.on(
+      "context-menu-action",
+      (event, action, contextType, contextId) => {
+        callback(action, contextType, contextId);
+        console.log(`${event} sent back.`);
+      }
+    );
+  },
+  offContextMenuAction: (callback) => {
+    electron.ipcRenderer.removeListener("context-menu-action", (event, action, contextType, contextId) => {
+      callback(action, contextType, contextId);
+      console.log(`${event} sent back.`);
+    });
+  },
+  generateInvoicePdf: (invoiceData) => {
+    return electron.ipcRenderer.invoke("generate-invoice-pdf", invoiceData);
+  },
+  onInvoiceData: (callback) => {
+    electron.ipcRenderer.on("invoice-data", (_event, data) => callback(data));
+  },
+  sendInvoiceRendered: () => {
+    electron.ipcRenderer.send("invoice-rendered");
+  },
+  // Auto-update API
+  checkForUpdates: () => {
+    return electron.ipcRenderer.invoke("check-for-updates");
+  },
+  quitAndInstall: () => {
+    return electron.ipcRenderer.invoke("quit-and-install");
+  },
+  onUpdateStatus: (callback) => {
+    electron.ipcRenderer.on("update-status", (_event, status) => callback(status));
+  }
+  // ... other API methods
+});

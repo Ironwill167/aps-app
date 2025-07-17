@@ -24,7 +24,7 @@ const api = axios.create({
   baseURL: BaseUrl,
   headers: {
     'Content-Type': 'application/json',
-    'X-Electron-App-Secret': 'apskeytoconnectelectron',
+    'X-Electron-App-Secret': import.meta.env.VITE_REACT_APP_API_SECRET || 'development-key',
   },
 });
 
@@ -467,7 +467,7 @@ const emailApi = axios.create({
   baseURL: AppConfig.emailApiUrl,
   headers: {
     'Content-Type': 'application/json',
-    'x-electron-app-secret': 'apskeytoconnectelectron',
+    'x-electron-app-secret': import.meta.env.VITE_REACT_APP_API_SECRET || 'development-key',
   },
 });
 
