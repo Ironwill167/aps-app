@@ -61,15 +61,17 @@ function createWindow() {
     async (event, invoiceData: { fileDetails: FileRecord; feeDetails: FeeRecord }) => {
       console.log(`${event} Received generate-invoice-pdf request:`, invoiceData);
       return new Promise<string>((resolve, reject) => {
-        // Create a hidden BrowserWindow to load the InvoicePage
+        // Create a hidden BrowserWindow to load the InvoicePage for PDF generation
         const printWindow = new BrowserWindow({
-          width: 1200,
-          height: 1080,
-          show: false,
+          width: 794, // A4 width in pixels at 96 DPI (210mm)
+          height: 1123, // A4 height in pixels at 96 DPI (297mm)
+          show: false, // Hide window during PDF generation
           webPreferences: {
             preload: path.join(__dirname, 'preload.mjs'),
             nodeIntegration: false,
             contextIsolation: true,
+            zoomFactor: 1.0, // Ensure no zoom scaling
+            webSecurity: false, // Disable web security for development
           },
         });
 
@@ -77,17 +79,36 @@ function createWindow() {
         const invoiceUrl = VITE_DEV_SERVER_URL
           ? `${VITE_DEV_SERVER_URL}#/invoice`
           : `file://${path.join(RENDERER_DIST, 'index.html')}#/invoice`;
+
+        console.log('Loading invoice URL:', invoiceUrl);
         printWindow.loadURL(invoiceUrl);
 
+        // Add debugging for the window
+        printWindow.webContents.on('console-message', (_event, _level, message) => {
+          console.log(`PDF Window Console: ${message}`);
+        });
+
+        printWindow.webContents.on(
+          'did-fail-load',
+          (_event, _errorCode, errorDescription, validatedURL) => {
+            console.error('PDF Window failed to load:', errorDescription, 'URL:', validatedURL);
+          }
+        );
+
         // Once the InvoicePage is loaded, send the invoice data
+        let dataSent = false;
         printWindow.webContents.on('did-finish-load', () => {
-          console.log('Sending invoice data to InvoicePage');
-          printWindow.webContents.send('invoice-data', invoiceData);
+          if (!dataSent) {
+            console.log('Sending invoice data to InvoicePage');
+            printWindow.webContents.send('invoice-data', invoiceData);
+            dataSent = true;
+          }
         });
 
         // Listen for 'invoice-rendered' event
         ipcMain.once('invoice-rendered', async () => {
-          console.log('Received invoice-rendered event');
+          console.log('Received invoice-rendered event - starting PDF generation');
+
           try {
             const pdf = await printWindow.webContents.printToPDF({
               margins: { top: 0, right: 0, bottom: 0, left: 0 },
@@ -95,6 +116,8 @@ function createWindow() {
               preferCSSPageSize: true,
               pageSize: 'A4',
               printBackground: true,
+              landscape: false,
+              displayHeaderFooter: false,
             });
 
             // Prompt user to save the PDF
@@ -139,12 +162,27 @@ function createWindow() {
         });
 
         // Set a timeout to prevent hanging
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+          console.log('PDF generation timed out after 30 seconds');
           reject(new Error('PDF generation timed out.'));
           if (!printWindow.isDestroyed()) {
             printWindow.close();
           }
-        }, 15000); // 15 seconds timeout
+        }, 30000); // 30 seconds timeout
+
+        // Clean up timeout when promise resolves/rejects
+        const originalResolve = resolve;
+        const originalReject = reject;
+
+        resolve = (value: string | PromiseLike<string>) => {
+          clearTimeout(timeoutId);
+          originalResolve(value);
+        };
+
+        reject = (error: Error) => {
+          clearTimeout(timeoutId);
+          originalReject(error);
+        };
       });
     }
   );

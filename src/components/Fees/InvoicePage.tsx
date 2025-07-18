@@ -4,6 +4,8 @@ import { FileRecord, FeeRecord } from '../types';
 import FeeInvoicePrint from './FeeInvoicePrint';
 
 const InvoicePage: React.FC = () => {
+  console.log('InvoicePage component mounting...');
+
   const [invoiceData, setInvoiceData] = useState<{
     fileDetails: FileRecord;
     feeDetails: FeeRecord;
@@ -11,14 +13,30 @@ const InvoicePage: React.FC = () => {
 
   useEffect(() => {
     console.log('Setting up Invoice Data Listener');
+
+    // Add PDF rendering class to isolate from responsive design
+    document.documentElement.classList.add('pdf-rendering');
+    document.body.classList.add('pdf-rendering');
+
+    let hasReceivedData = false;
+
     // Register the Invoice Data Listener
-    window.electronAPI.onInvoiceData((data) => {
-      console.log('Received invoice data:', data); // Debugging
-      setInvoiceData(data);
-    });
+    const handleInvoiceData = (data: { fileDetails: FileRecord; feeDetails: FeeRecord }) => {
+      if (!hasReceivedData) {
+        console.log('Received invoice data:', data); // Debugging
+        setInvoiceData(data);
+        hasReceivedData = true;
+      }
+    };
+
+    window.electronAPI.onInvoiceData(handleInvoiceData);
 
     // Cleanup the listener on unmount
     return () => {
+      // Remove PDF rendering classes
+      document.documentElement.classList.remove('pdf-rendering');
+      document.body.classList.remove('pdf-rendering');
+
       // If you have an off method, use it. Otherwise, implement it accordingly.
       // Example:
       // window.electronAPI.offInvoiceData();
@@ -27,7 +45,10 @@ const InvoicePage: React.FC = () => {
 
   const handleRenderComplete = () => {
     console.log('All content loaded. Sending invoice-rendered event.');
-    window.electronAPI.sendInvoiceRendered();
+    // Add a small delay to ensure DOM is fully rendered
+    setTimeout(() => {
+      window.electronAPI.sendInvoiceRendered();
+    }, 100);
   };
 
   // Handle the case where invoice data is not yet received
@@ -41,15 +62,58 @@ const InvoicePage: React.FC = () => {
 
   const { fileDetails, feeDetails } = invoiceData;
 
+  console.log('InvoicePage rendering with data:', {
+    fileDetails: !!fileDetails,
+    feeDetails: !!feeDetails,
+  });
+
   return (
     <div className="invoice-page">
-      <FeeInvoicePrint
-        fileDetails={fileDetails}
-        feeDetails={feeDetails}
-        onRenderComplete={handleRenderComplete}
-      />
+      <ErrorBoundary>
+        <FeeInvoicePrint
+          fileDetails={fileDetails}
+          feeDetails={feeDetails}
+          onRenderComplete={handleRenderComplete}
+        />
+      </ErrorBoundary>
     </div>
   );
 };
+
+// Simple error boundary component
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    console.error('ErrorBoundary caught error:', error);
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
+    console.error('ErrorBoundary caught error:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      console.log('ErrorBoundary rendering fallback');
+      // Call onRenderComplete even if there's an error to prevent timeout
+      setTimeout(() => {
+        window.electronAPI?.sendInvoiceRendered();
+      }, 1000);
+
+      return (
+        <div style={{ padding: '20px' }}>
+          <h1>Error loading invoice</h1>
+          <p>There was an error rendering the invoice component.</p>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 export default InvoicePage;

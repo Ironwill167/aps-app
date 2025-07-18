@@ -16407,30 +16407,53 @@ function createWindow() {
       console.log(`${event} Received generate-invoice-pdf request:`, invoiceData);
       return new Promise((resolve, reject) => {
         const printWindow = new BrowserWindow({
-          width: 1200,
-          height: 1080,
+          width: 794,
+          // A4 width in pixels at 96 DPI (210mm)
+          height: 1123,
+          // A4 height in pixels at 96 DPI (297mm)
           show: false,
+          // Hide window during PDF generation
           webPreferences: {
             preload: path$m.join(__dirname$1, "preload.mjs"),
             nodeIntegration: false,
-            contextIsolation: true
+            contextIsolation: true,
+            zoomFactor: 1,
+            // Ensure no zoom scaling
+            webSecurity: false
+            // Disable web security for development
           }
         });
         const invoiceUrl = VITE_DEV_SERVER_URL ? `${VITE_DEV_SERVER_URL}#/invoice` : `file://${path$m.join(RENDERER_DIST, "index.html")}#/invoice`;
+        console.log("Loading invoice URL:", invoiceUrl);
         printWindow.loadURL(invoiceUrl);
+        printWindow.webContents.on("console-message", (_event, _level, message) => {
+          console.log(`PDF Window Console: ${message}`);
+        });
+        printWindow.webContents.on(
+          "did-fail-load",
+          (_event, _errorCode, errorDescription, validatedURL) => {
+            console.error("PDF Window failed to load:", errorDescription, "URL:", validatedURL);
+          }
+        );
+        let dataSent = false;
         printWindow.webContents.on("did-finish-load", () => {
-          console.log("Sending invoice data to InvoicePage");
-          printWindow.webContents.send("invoice-data", invoiceData);
+          if (!dataSent) {
+            console.log("Sending invoice data to InvoicePage");
+            printWindow.webContents.send("invoice-data", invoiceData);
+            dataSent = true;
+          }
         });
         ipcMain.once("invoice-rendered", async () => {
-          console.log("Received invoice-rendered event");
+          console.log("Received invoice-rendered event - starting PDF generation");
           try {
             const pdf = await printWindow.webContents.printToPDF({
               margins: { top: 0, right: 0, bottom: 0, left: 0 },
               scale: 1,
               preferCSSPageSize: true,
               pageSize: "A4",
-              printBackground: true
+              printBackground: true,
+              landscape: false,
+              displayHeaderFooter: false
             });
             const { canceled, filePath } = await dialog.showSaveDialog({
               title: "Save Fee Invoice PDF",
@@ -16463,12 +16486,23 @@ function createWindow() {
           console.error(`${event2}Failed to load InvoicePage: ${errorDescription} (${errorCode})`);
           reject(new Error(`Failed to load InvoicePage: ${errorDescription} (${errorCode})`));
         });
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+          console.log("PDF generation timed out after 30 seconds");
           reject(new Error("PDF generation timed out."));
           if (!printWindow.isDestroyed()) {
             printWindow.close();
           }
-        }, 15e3);
+        }, 3e4);
+        const originalResolve = resolve;
+        const originalReject = reject;
+        resolve = (value) => {
+          clearTimeout(timeoutId);
+          originalResolve(value);
+        };
+        reject = (error2) => {
+          clearTimeout(timeoutId);
+          originalReject(error2);
+        };
       });
     }
   );

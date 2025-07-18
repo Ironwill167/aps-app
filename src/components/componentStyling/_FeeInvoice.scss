@@ -11,6 +11,14 @@
   height: 297mm;
   //margin-top: 100px;
   background-color: white;
+  // Prevent responsive scaling from affecting the invoice
+  min-width: 210mm !important;
+  max-width: 210mm !important;
+  min-height: 297mm !important;
+  max-height: 297mm !important;
+  // Ensure it's not affected by viewport units
+  position: relative;
+  box-sizing: border-box;
 
   .invoice-inner-container {
     @include display-flex($direction: column, $align: center, $justify: flex-start);
@@ -18,6 +26,13 @@
     height: 287mm;
     font-family: 'Times New Roman', Times, serif;
     border: 1px solid $border-color;
+    // Prevent responsive scaling from affecting the inner container
+    min-width: 200mm !important;
+    max-width: 200mm !important;
+    min-height: 287mm !important;
+    max-height: 287mm !important;
+    position: relative;
+    box-sizing: border-box;
 
     p {
       font-size: $small;
@@ -484,30 +499,323 @@
   }
 }
 
+/* Complete isolation for PDF rendering - override ALL responsive design */
+html.pdf-rendering {
+  font-size: 16px !important; // Override clamp(14px, 1vw, 18px)
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  min-width: unset !important; // Remove the 1024px minimum
+  overflow: hidden !important;
+}
+
+body.pdf-rendering {
+  font-size: 16px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  min-width: unset !important; // Remove the 1024px minimum
+  overflow: hidden !important;
+}
+
+// Override any clamp functions that might be inherited
+html.pdf-rendering *,
+body.pdf-rendering * {
+  // Remove all clamp functions and viewport units
+  // But preserve original font sizes and spacing
+
+  // Specifically target elements that might have clamp
+  &[style*='clamp'],
+  &[class*='clamp'] {
+    font-size: inherit !important;
+  }
+}
+
+// Override responsive media queries for PDF rendering
+@media screen {
+  html.pdf-rendering {
+    font-size: 16px !important;
+  }
+}
+
+/* Override responsive design for invoice rendering */
+.invoice-page {
+  // Base styling for invoice page
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  overflow: hidden !important;
+  background-color: white !important;
+
+  // Ensure the invoice page is not affected by responsive CSS
+  .invoice-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    min-width: 210mm !important;
+    max-width: 210mm !important;
+    min-height: 297mm !important;
+    max-height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: relative !important;
+
+    .invoice-inner-container {
+      width: 200mm !important;
+      height: 287mm !important;
+      min-width: 200mm !important;
+      max-width: 200mm !important;
+      min-height: 287mm !important;
+      max-height: 287mm !important;
+      // Preserve the border from the original design
+      border: 1px solid $border-color !important;
+      // Ensure proper box-sizing
+      box-sizing: border-box !important;
+
+      // Ensure all child elements use absolute measurements
+      .invoice-header,
+      .invoiceFileDetailsContainer,
+      .invoiceFeeChargesDetailsContainer,
+      .invoiceFooter {
+        width: 200mm !important;
+        box-sizing: border-box !important;
+      }
+
+      // Use fixed font sizes for PDF (mid-range of the clamp values)
+      p {
+        font-size: 14px !important; // Instead of clamp(12px, 1vw, 16px)
+        margin: 0 !important;
+        padding: 0.2rem !important;
+      }
+
+      h2 {
+        font-size: 24px !important; // Instead of clamp(18px, 1.8vw, 28px)
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+
+      // Preserve the original spacing and layout exactly
+      .invoiceHeading {
+        margin-top: 20px !important;
+        height: 70px !important;
+        width: 100% !important;
+      }
+
+      .invoice-header {
+        height: 200px !important;
+        width: 200mm !important;
+        // Ensure no margin collapse
+        margin: 0 !important;
+      }
+
+      .invoiceFileDetailsContainer {
+        height: 200px !important;
+        width: 100% !important;
+        // Ensure proper spacing after header - no overlap
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+      }
+
+      .invoiceToDetailsContianer {
+        margin-top: 50px !important;
+        height: 200px !important;
+        width: 100mm !important;
+      }
+
+      .invoiceDateDetailsContianer {
+        margin-top: 50px !important;
+        height: 200px !important;
+        width: 100mm !important;
+      }
+
+      .invoiceFeeChargesDetailsContainer {
+        width: 100% !important;
+        border-top: 1px solid $border-color !important;
+        border-bottom: 1px solid $border-color !important;
+      }
+
+      .invoiceFeeChargesDetailsRow {
+        width: 200mm !important;
+        height: 50px !important;
+      }
+
+      .invoiceFeeChargesDetailsDiscCell {
+        width: 100mm !important;
+        height: 50px !important;
+      }
+
+      .invoiceFeeChargesDetailsCell {
+        width: 30mm !important;
+        height: 50px !important;
+      }
+
+      .invoiceFeeChargesDetailsAmountCell {
+        width: 40mm !important;
+        height: 50px !important;
+      }
+
+      .invoiceFooter {
+        width: 200mm !important;
+        height: 241px !important;
+        margin-top: 50px !important;
+      }
+
+      .invoiceAPSDetailsContianer p {
+        margin-left: 30px !important;
+      }
+
+      .invoiceToDetailsContianer p {
+        margin-left: 30px !important;
+      }
+
+      .invoiceFeeChargesDetailsDiscCell p {
+        margin-left: 10px !important;
+        padding: 0 !important;
+      }
+
+      .invoiceFeeChargesDetailsAmountCell p {
+        margin-right: 10px !important;
+        padding: 0 !important;
+      }
+
+      .invoiceLogoContainer img {
+        width: auto !important;
+        height: 200px !important;
+        margin-right: 40px !important;
+      }
+
+      .invoiceFooterLeft {
+        margin-left: 15px !important;
+        margin-top: 30px !important;
+      }
+
+      .invoiceFooterRight p {
+        margin-right: 30px !important;
+        padding: 0 !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
+      }
+    }
+  }
+}
 @media print {
+  // Reset any responsive scaling that might interfere with print
+  html {
+    font-size: 16px !important; // Fixed font size for print
+  }
+
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-width: unset !important;
+  }
+
+  // Hide the editing interface
+  .invoice-actions {
+    display: none !important;
+  }
+
+  // Ensure the invoice container takes full page
+  .invoiceDisplayContainer {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .invoice-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background-color: white !important;
+    page-break-inside: avoid !important;
+    position: relative !important;
+    top: 0 !important;
+    left: 0 !important;
+  }
+
+  .invoice-inner-container {
+    width: 210mm !important;
+    height: 297mm !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid $border-color !important; // Keep border for PDF
+    font-family: 'Times New Roman', Times, serif !important;
+    position: relative !important;
+  }
+
   // Override Font Sizes for Print
-  p {
+  .invoice-inner-container p {
     font-size: 12pt !important;
+    margin: 0 !important;
+    padding: 0.2rem !important;
   }
 
   .invoiceHeading h2 {
     font-size: 24pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  // Adjust Logo Size
+  // Adjust Logo Size for print
   .invoiceLogoContainer img {
-    height: 100px;
-    width: auto;
+    height: 120px !important;
+    width: auto !important;
+    margin-right: 20px !important;
   }
 
-  // Ensure Containers Fit Properly
-  .invoice-inner-container {
-    width: 210mm;
-    height: 297mm;
+  // Ensure all sections maintain their proportions
+  .invoice-header {
+    width: 210mm !important;
+    height: 120px !important;
   }
 
-  // Optional: Remove Unnecessary Elements
+  .invoiceFileDetailsContainer {
+    width: 210mm !important;
+    height: 120px !important;
+  }
+
+  .invoiceFeeChargesDetailsContainer {
+    width: 210mm !important;
+  }
+
+  .invoiceFooter {
+    width: 210mm !important;
+    margin-top: 30px !important;
+  }
+
+  // Remove any viewport-based units that might cause scaling issues
+  .invoiceAPSDetailsContianer p {
+    margin-left: 20px !important;
+  }
+
+  .invoiceToDetailsContianer p {
+    margin-left: 20px !important;
+  }
+
+  .invoiceDateDetailsRow {
+    margin-right: 15px !important;
+    width: 90mm !important;
+  }
+
+  .invoiceFeeChargesDetailsRow {
+    width: 200mm !important;
+    height: 35px !important;
+  }
+
+  .invoiceFooterLeft {
+    margin-left: 10px !important;
+  }
+
+  .invoiceFooterRight p {
+    margin-right: 30px !important;
+    margin-left: 15px !important;
+  }
+
+  // Hide elements that shouldn't be printed
   .no-print {
-    display: none;
+    display: none !important;
   }
 }

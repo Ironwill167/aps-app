@@ -15,33 +15,49 @@ import InvoicePage from './components/Fees/InvoicePage';
 
 const queryClient = new QueryClient();
 
+console.log('Main.tsx loading, current path:', window.location.hash);
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <Provider store={store}>
-        <AuthProvider>
-          <SocketProvider>
-            <HashRouter>
-              <Routes>
-                <Route path="/" element={<App />} />
-                <Route path="/invoice" element={<InvoicePage />} />
-              </Routes>
-            </HashRouter>
-          </SocketProvider>
-        </AuthProvider>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
+    <HashRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <QueryClientProvider client={queryClient}>
+              <Provider store={store}>
+                <AuthProvider>
+                  <SocketProvider>
+                    <App />
+                    <ToastContainer
+                      position="top-right"
+                      autoClose={5000}
+                      hideProgressBar={false}
+                      newestOnTop={false}
+                      closeOnClick
+                      pauseOnFocusLoss
+                      draggable
+                      pauseOnHover
+                    />
+                  </SocketProvider>
+                </AuthProvider>
+              </Provider>
+              <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
+          }
         />
-      </Provider>
-      <ReactQueryDevtools initialIsOpen={false} />
-    </QueryClientProvider>
+        <Route
+          path="/invoice"
+          element={
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <InvoicePage />
+              </AuthProvider>
+            </QueryClientProvider>
+          }
+        />
+      </Routes>
+    </HashRouter>
   </React.StrictMode>
 );
 
