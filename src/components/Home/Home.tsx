@@ -145,6 +145,18 @@ const Home: React.FC = () => {
     [latestNotes]
   );
 
+  // Get all notes for a file for search purposes
+  const getAllNotesForFile = useCallback(
+    (fileId: number): string => {
+      const fileNotesForSearch = fileNotes
+        .filter((note: FileNote) => note.file_id === fileId)
+        .map((note: FileNote) => note.note_text)
+        .join(' ');
+      return fileNotesForSearch;
+    },
+    [fileNotes]
+  );
+
   // Handle File Updated
   const handleFileUpdated = useCallback(async () => {
     // Refetch the files to get the latest data
@@ -215,14 +227,14 @@ const Home: React.FC = () => {
         file.principal_ref,
         file.date_of_loss ? file.date_of_loss.split('T')[0] : '',
         file.subject_matter,
-        file.file_note || '',
+        getAllNotesForFile(file.id), // Use new notes system instead of file.file_note
       ];
 
       return searchableFields.some((field) =>
         field ? field.toLowerCase().includes(lowercasedTerm) : false
       );
     });
-  }, [files, debouncedSearchTerm, getCompanyName, getContactName]);
+  }, [files, debouncedSearchTerm, getCompanyName, getContactName, getAllNotesForFile]);
 
   const groupOrder = useMemo(
     () => ['New Files', 'Doc Requests', 'Report Writing', 'Fees', 'OpenFiles'],
@@ -460,9 +472,9 @@ const Home: React.FC = () => {
           }
 
           case 'editNote': {
-            const fileNote = files.find((f) => f.id === contextId)?.file_note;
-            setNoteText(fileNote || '');
-            setShowAddNote(contextId);
+            // Open the FileNotesModal for the new multiple notes system
+            setSelectedFile(targetFile);
+            setShowFileNotesModal(true);
             break;
           }
 
