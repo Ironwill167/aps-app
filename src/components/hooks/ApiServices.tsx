@@ -22,6 +22,7 @@ interface APIResponse<T> {
 }
 
 // Error handling for API calls
+// Error handling for API calls
 const handleError = (error: unknown): never => {
   let errorMessage = 'An unknown error occurred';
   if (axios.isAxiosError(error)) {
@@ -458,20 +459,12 @@ export const deleteRate = async (id: number): Promise<APIResponse<string>> => {
 
 // -------------------- Email API --------------------
 
-// Create email API instance using AppConfig for email endpoints
-const emailApi = axios.create({
-  baseURL: AppConfig.emailApiUrl,
-  headers: {
-    'Content-Type': 'application/json',
-    'x-electron-app-secret': import.meta.env.VITE_REACT_APP_API_SECRET || 'development-key',
-  },
-});
-
 // Fetch available email accounts
 export const fetchEmailAccounts = async (): Promise<EmailAccountsResponse> => {
   try {
-    console.log('Fetching email accounts from:', `${AppConfig.emailApiUrl}/email/accounts`);
-    const response: AxiosResponse<EmailAccountsResponse> = await emailApi.get('/email/accounts');
+    console.log('Fetching email accounts from:', `${AppConfig.apiBaseUrl}/api/email/accounts`);
+    const response: AxiosResponse<EmailAccountsResponse> =
+      await apiClient.get('/api/email/accounts');
     console.log('Email accounts response:', response.data);
     return response.data;
   } catch (error) {
@@ -511,8 +504,8 @@ export const fetchEmailAccounts = async (): Promise<EmailAccountsResponse> => {
 export const sendEmail = async (emailData: EmailSendRequest): Promise<EmailSendResponse> => {
   try {
     console.log('Sending email with data:', emailData);
-    const response: AxiosResponse<EmailSendResponse> = await emailApi.post(
-      '/email/send',
+    const response: AxiosResponse<EmailSendResponse> = await apiClient.post(
+      '/api/email/send',
       emailData
     );
     console.log('Email send response:', response.data);
@@ -537,8 +530,8 @@ export const sendEmail = async (emailData: EmailSendRequest): Promise<EmailSendR
 // Test email connection
 export const testEmailConnection = async (from?: string): Promise<EmailSendResponse> => {
   try {
-    const url = from ? `/email/test?from=${encodeURIComponent(from)}` : '/email/test';
-    const response: AxiosResponse<EmailSendResponse> = await emailApi.get(url);
+    const url = from ? `/api/email/test?from=${encodeURIComponent(from)}` : '/api/email/test';
+    const response: AxiosResponse<EmailSendResponse> = await apiClient.get(url);
     return response.data;
   } catch (error) {
     console.error('Error testing email connection:', error);
