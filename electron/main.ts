@@ -2,7 +2,7 @@ import { app, BrowserWindow, Menu, ipcMain, MenuItemConstructorOptions, dialog }
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import fs from 'node:fs';
-import { FileRecord, FeeRecord } from '../src/components/types';
+import { FileRecord, FeeRecord, Company, InvoiceRates } from '../src/components/types';
 import { AppUpdater } from './updater';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -58,7 +58,15 @@ function createWindow() {
   //invoice code from here
   ipcMain.handle(
     'generate-invoice-pdf',
-    async (event, invoiceData: { fileDetails: FileRecord; feeDetails: FeeRecord }) => {
+    async (
+      event,
+      invoiceData: {
+        fileDetails: FileRecord;
+        feeDetails: FeeRecord;
+        companies?: Company[];
+        invoiceRates?: InvoiceRates[];
+      }
+    ) => {
       console.log(`${event} Received generate-invoice-pdf request:`, invoiceData);
       return new Promise<string>((resolve, reject) => {
         // Create a hidden BrowserWindow to load the InvoicePage for PDF generation

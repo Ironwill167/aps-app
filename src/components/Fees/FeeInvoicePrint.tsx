@@ -45,6 +45,23 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
     [invoice_rates, feeDetails.invoice_rate_preset]
   );
 
+  // Add debugging for rate resolution
+  console.log('FeeInvoicePrint - Rate Resolution:', {
+    selectedPresetId: feeDetails.invoice_rate_preset,
+    availableRates: invoice_rates?.length,
+    foundPreset: !!currentRatePreset,
+    currentPresetRates: currentRatePreset
+      ? {
+          survey: currentRatePreset.survey_hourly_rate,
+          report: currentRatePreset.report_hourly_rate,
+          admin: currentRatePreset.admin_hourly_rate,
+          travel: currentRatePreset.travel_hourly_rate,
+          travelKm: currentRatePreset.travel_km_rate,
+        }
+      : null,
+    usingOverrides: !!(companiesOverride || invoiceRatesOverride),
+  });
+
   // Fallback rates when API data is not available
   const getFallbackRates = () => ({
     survey_hourly_rate: 650,

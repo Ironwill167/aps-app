@@ -1,6 +1,6 @@
 // Filepath: /c:/Users/ewill/Documents/APS App v0.4.2/aps-app/src/components/Fees/InvoicePage.tsx
 import React, { useEffect, useState } from 'react';
-import { FileRecord, FeeRecord } from '../types';
+import { FileRecord, FeeRecord, Company, InvoiceRates } from '../types';
 import FeeInvoicePrint from './FeeInvoicePrint';
 
 const InvoicePage: React.FC = () => {
@@ -9,6 +9,8 @@ const InvoicePage: React.FC = () => {
   const [invoiceData, setInvoiceData] = useState<{
     fileDetails: FileRecord;
     feeDetails: FeeRecord;
+    companies?: Company[];
+    invoiceRates?: InvoiceRates[];
   } | null>(null);
 
   useEffect(() => {
@@ -21,7 +23,12 @@ const InvoicePage: React.FC = () => {
     let hasReceivedData = false;
 
     // Register the Invoice Data Listener
-    const handleInvoiceData = (data: { fileDetails: FileRecord; feeDetails: FeeRecord }) => {
+    const handleInvoiceData = (data: {
+      fileDetails: FileRecord;
+      feeDetails: FeeRecord;
+      companies?: Company[];
+      invoiceRates?: InvoiceRates[];
+    }) => {
       if (!hasReceivedData) {
         console.log('Received invoice data:', data); // Debugging
         setInvoiceData(data);
@@ -60,11 +67,13 @@ const InvoicePage: React.FC = () => {
     );
   }
 
-  const { fileDetails, feeDetails } = invoiceData;
+  const { fileDetails, feeDetails, companies, invoiceRates } = invoiceData;
 
   console.log('InvoicePage rendering with data:', {
     fileDetails: !!fileDetails,
     feeDetails: !!feeDetails,
+    companies: !!companies,
+    invoiceRates: !!invoiceRates,
   });
 
   return (
@@ -74,6 +83,8 @@ const InvoicePage: React.FC = () => {
           fileDetails={fileDetails}
           feeDetails={feeDetails}
           onRenderComplete={handleRenderComplete}
+          companiesOverride={companies}
+          invoiceRatesOverride={invoiceRates}
         />
       </ErrorBoundary>
     </div>

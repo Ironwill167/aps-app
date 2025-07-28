@@ -1,3 +1,5 @@
+import { FileRecord, FeeRecord, Company, InvoiceRates } from './components/types';
+
 export {};
 
 declare global {
@@ -19,9 +21,16 @@ declare global {
       generateInvoicePdf: (invoiceData: {
         fileDetails: FileRecord;
         feeDetails: FeeRecord;
+        companies?: Company[];
+        invoiceRates?: InvoiceRates[];
       }) => Promise<string>;
       onInvoiceData: (
-        callback: (data: { fileDetails: FileRecord; feeDetails: FeeRecord }) => void
+        callback: (data: {
+          fileDetails: FileRecord;
+          feeDetails: FeeRecord;
+          companies?: Company[];
+          invoiceRates?: InvoiceRates[];
+        }) => void
       ) => void;
       sendInvoiceRendered: () => void;
 

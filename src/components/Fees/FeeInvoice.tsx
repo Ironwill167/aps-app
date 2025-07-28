@@ -21,8 +21,9 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
   feeDetails: initialFeeDetails,
   onClose,
   onFileUpdated,
+  companies,
 }) => {
-  const { invoice_rates } = useData();
+  const { invoice_rates, companies: dataCompanies } = useData();
   const [feeDetails, setFeeDetails] = useState<FeeRecord>(initialFeeDetails);
 
   const [currentRatePreset, setCurrentRatePreset] = useState<InvoiceRates>();
@@ -241,8 +242,24 @@ const FeeInvoice: React.FC<FeeInvoiceProps> = ({
 
   const handleExport = () => {
     feeDetails.inv_date = getTodayDate();
+
+    // Use prop companies if available, otherwise fall back to dataCompanies
+    const exportCompanies = companies || dataCompanies;
+
+    console.log('Exporting PDF with rates:', {
+      currentRatePreset,
+      invoice_rates: invoice_rates?.length,
+      companies: exportCompanies?.length,
+      selectedPresetId: feeDetails.invoice_rate_preset,
+    });
+
     window.electronAPI
-      .generateInvoicePdf({ fileDetails, feeDetails })
+      .generateInvoicePdf({
+        fileDetails,
+        feeDetails,
+        companies: exportCompanies,
+        invoiceRates: invoice_rates,
+      })
       .then((pdfPath: string) => {
         showSuccessToast('Invoice exported successfully');
         console.log('PDF generated at:', pdfPath);

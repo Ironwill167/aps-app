@@ -1,5 +1,5 @@
 import { ipcRenderer, contextBridge } from 'electron';
-import { FileRecord, FeeRecord } from '../src/components/types';
+import { FileRecord, FeeRecord, Company, InvoiceRates } from '../src/components/types';
 
 // Exposing ipcRenderer
 contextBridge.exposeInMainWorld('ipcRenderer', {
@@ -36,10 +36,22 @@ contextBridge.exposeInMainWorld('electronAPI', {
     });
   },
 
-  generateInvoicePdf: (invoiceData: { fileDetails: FileRecord; feeDetails: FeeRecord }) => {
+  generateInvoicePdf: (invoiceData: {
+    fileDetails: FileRecord;
+    feeDetails: FeeRecord;
+    companies?: Company[];
+    invoiceRates?: InvoiceRates[];
+  }) => {
     return ipcRenderer.invoke('generate-invoice-pdf', invoiceData);
   },
-  onInvoiceData: (callback: (data: { fileDetails: FileRecord; feeDetails: FeeRecord }) => void) => {
+  onInvoiceData: (
+    callback: (data: {
+      fileDetails: FileRecord;
+      feeDetails: FeeRecord;
+      companies?: Company[];
+      invoiceRates?: InvoiceRates[];
+    }) => void
+  ) => {
     ipcRenderer.on('invoice-data', (_event, data) => callback(data));
   },
   sendInvoiceRendered: () => {
