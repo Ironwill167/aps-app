@@ -27,7 +27,21 @@ const handleError = (error: unknown): never => {
   let errorMessage = 'An unknown error occurred';
   if (axios.isAxiosError(error)) {
     if (error.response) {
-      errorMessage = error.response.data?.message || `Error: ${error.response.status}`;
+      console.error('Server response error:', error.response);
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      console.error('Response headers:', error.response.headers);
+
+      // Try to extract more detailed error information
+      if (typeof error.response.data === 'string') {
+        errorMessage = error.response.data || `Error: ${error.response.status}`;
+      } else if (error.response.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response.data?.error) {
+        errorMessage = error.response.data.error;
+      } else {
+        errorMessage = `Error: ${error.response.status}`;
+      }
     } else if (error.request) {
       errorMessage = 'No response received from server';
     } else {
@@ -587,7 +601,7 @@ export const addFileNote = async (fileNote: Partial<FileNote>): Promise<APIRespo
 // Update an existing file note
 export const updateFileNote = async (
   id: number,
-  fileNote: Partial<FileNote>
+  fileNote: { note_text?: string; file_id?: number; note_date?: string }
 ): Promise<APIResponse<FileNote>> => {
   try {
     const response: AxiosResponse<FileNote> = await apiClient.put(

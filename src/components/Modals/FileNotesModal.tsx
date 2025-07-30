@@ -11,11 +11,13 @@ interface FileNotesModalProps {
 }
 
 const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesUpdated }) => {
-  const { addFileNote, deleteFileNote } = useData();
+  const { addFileNote, deleteFileNote, updateFileNote } = useData();
   const [notes, setNotes] = useState<FileNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [newNoteText, setNewNoteText] = useState('');
   const [adding, setAdding] = useState(false);
+  const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
+  const [editNoteText, setEditNoteText] = useState('');
 
   // Fetch notes for this file
   const fetchNotes = useCallback(async () => {
@@ -102,6 +104,69 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
     }
   };
 
+  // Start editing a note
+  const startEditing = (note: FileNote) => {
+    setEditingNoteId(note.id);
+    setEditNoteText(note.note_text);
+  };
+
+  // Cancel editing
+  const cancelEditing = () => {
+    setEditingNoteId(null);
+    setEditNoteText('');
+  };
+
+  // Update a note
+  const updateNote = async (noteId: number) => {
+    if (!editNoteText.trim()) {
+      showErrorToast('Please enter a note');
+      return;
+    }
+
+    try {
+      console.log('Updating note with ID:', noteId);
+
+      // Only send the note_text for updates - don't include any other fields
+      // This ensures the backend won't try to update note_date or any other fields
+      const updateData = {
+        note_text: editNoteText.trim(),
+      };
+
+      console.log('Update data:', updateData);
+
+      const result = await updateFileNote({
+        id: noteId,
+        updatedFileNote: updateData,
+      });
+
+      if (result) {
+        // Update the note in the local state and re-sort
+        const updatedNotes = notes
+          .map((note) => (note.id === noteId ? { ...note, note_text: editNoteText.trim() } : note))
+          .sort((a, b) => {
+            const dateA = new Date(a.note_date);
+            const dateB = new Date(b.note_date);
+
+            // Handle invalid dates
+            if (isNaN(dateA.getTime()) && isNaN(dateB.getTime())) return 0;
+            if (isNaN(dateA.getTime())) return 1;
+            if (isNaN(dateB.getTime())) return -1;
+
+            return dateB.getTime() - dateA.getTime();
+          });
+
+        setNotes(updatedNotes);
+        setEditingNoteId(null);
+        setEditNoteText('');
+        showSuccessToast('Note updated successfully');
+        onNotesUpdated();
+      }
+    } catch (error) {
+      console.error('Error updating note:', error);
+      showErrorToast('Failed to update note');
+    }
+  };
+
   // Format date for display
   const formatDate = (dateString: string) => {
     if (!dateString) return '';
@@ -133,10 +198,18 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
   // Handle keyboard shortcuts
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Escape') {
-      onClose();
+      if (editingNoteId !== null) {
+        cancelEditing();
+      } else {
+        onClose();
+      }
     }
     if (e.key === 'Enter' && e.ctrlKey) {
-      addNote();
+      if (editingNoteId !== null) {
+        updateNote(editingNoteId);
+      } else {
+        addNote();
+      }
     }
   };
 
@@ -192,7 +265,6 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
         <div className="modal-body">
           {/* Notes history section */}
           <div className="notes-history-section">
-            <h4>Notes History ({notes.length})</h4>
             {notes.length === 0 ? (
               <div className="no-notes">No notes found for this file</div>
             ) : (
@@ -202,15 +274,66 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
                     <div className="note-item">
                       <div className="note-header">
                         <span className="note-date">{formatDate(note.note_date)}</span>
-                        <button
-                          onClick={() => deleteNote(note.id)}
-                          className="delete-note-btn"
-                          title="Delete note"
-                        >
-                          🗑️
-                        </button>
+                        <div className="note-actions">
+                          {editingNoteId === note.id ? (
+                            <>
+                              <button
+                                onClick={() => updateNote(note.id)}
+                                className="save-note-btn"
+                                title="Save changes"
+                              >
+                                💾
+                              </button>
+                              <button
+                                onClick={cancelEditing}
+                                className="cancel-edit-btn"
+                                title="Cancel edit"
+                              >
+                                ❌
+                              </button>
+                            </>
+                          ) : (
+                            <>
+                              <button
+                                onClick={() => startEditing(note)}
+                                className="edit-note-btn"
+                                title="Edit note"
+                              >
+                                ✏️
+                              </button>
+                              <button
+                                onClick={() => deleteNote(note.id)}
+                                className="delete-note-btn"
+                                title="Delete note"
+                              >
+                                🗑️
+                              </button>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <div className="note-text">{note.note_text}</div>
+                      <div className="note-text">
+                        {editingNoteId === note.id ? (
+                          <textarea
+                            value={editNoteText}
+                            onChange={(e) => setEditNoteText(e.target.value)}
+                            className="edit-note-textarea"
+                            autoFocus
+                            rows={3}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && e.ctrlKey) {
+                                e.preventDefault();
+                                updateNote(note.id);
+                              } else if (e.key === 'Escape') {
+                                e.preventDefault();
+                                cancelEditing();
+                              }
+                            }}
+                          />
+                        ) : (
+                          <span onDoubleClick={() => startEditing(note)}>{note.note_text}</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 ))}

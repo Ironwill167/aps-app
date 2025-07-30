@@ -159,7 +159,69 @@
           backdrop-filter: blur(10px);
         }
 
-        .delete-note-btn {
+        .note-actions {
+          @include display-flex($direction: row, $align: center, $justify: flex-end);
+          gap: clamp(6px, 0.8vw, 10px);
+
+          .edit-note-btn,
+          .save-note-btn,
+          .cancel-edit-btn,
+          .delete-note-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: clamp(14px, 1.2vw, 16px);
+            padding: clamp(3px, 0.4vw, 5px);
+            border-radius: 6px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            min-width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            &:hover {
+              transform: scale(1.1);
+              background: rgba(255, 255, 255, 0.8);
+            }
+          }
+
+          .edit-note-btn {
+            color: #4caf50;
+
+            &:hover {
+              background: rgba(76, 175, 80, 0.1);
+            }
+          }
+
+          .save-note-btn {
+            color: #2196f3;
+
+            &:hover {
+              background: rgba(33, 150, 243, 0.1);
+            }
+          }
+
+          .cancel-edit-btn {
+            color: #ff9800;
+
+            &:hover {
+              background: rgba(255, 152, 0, 0.1);
+            }
+          }
+
+          .delete-note-btn {
+            color: #f44336;
+
+            &:hover {
+              background: rgba(244, 67, 54, 0.1);
+            }
+          }
+        }
+
+        // Legacy delete button style for backward compatibility
+        .delete-note-btn:not(.note-actions .delete-note-btn) {
           background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
           color: white;
           border: none;
@@ -192,6 +254,42 @@
         backdrop-filter: blur(10px);
         box-sizing: border-box;
         min-height: 60px;
+
+        span {
+          cursor: pointer;
+          display: block;
+          min-height: 40px;
+          padding: 8px;
+          border-radius: 4px;
+          transition: background-color 0.2s ease;
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.5);
+          }
+        }
+
+        .edit-note-textarea {
+          width: 100%;
+          min-height: 80px;
+          resize: vertical;
+          font-family: inherit;
+          font-size: inherit;
+          line-height: inherit;
+          color: inherit;
+          background: rgba(255, 255, 255, 0.95);
+          border: 2px solid rgba($border-color, 0.6);
+          border-radius: 6px;
+          padding: clamp(8px, 1vw, 12px);
+          box-sizing: border-box;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+          &:focus {
+            outline: none;
+            border-color: $main-color-hover;
+            box-shadow: 0 0 0 3px rgba(122, 173, 13, 0.2);
+            background: rgba(255, 255, 255, 1);
+          }
+        }
       }
     }
   }
