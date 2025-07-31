@@ -22,7 +22,8 @@ interface StoredAuth {
 class AuthService {
   private readonly STORAGE_KEY = 'aps-auth';
   private readonly SESSION_KEY = 'aps-session';
-  private readonly ELECTRON_SECRET = 'apskeytoconnectelectron';
+  private readonly ELECTRON_SECRET =
+    import.meta.env.VITE_REACT_APP_API_SECRET || 'apskeytoconnectelectron';
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {

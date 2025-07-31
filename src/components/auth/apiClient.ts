@@ -6,7 +6,7 @@ const apiClient = axios.create({
   baseURL: AppConfig.apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
-    'x-electron-app-secret': 'apskeytoconnectelectron',
+    'x-electron-app-secret': import.meta.env.VITE_REACT_APP_API_SECRET || 'apskeytoconnectelectron',
   },
 });
 

@@ -7,13 +7,24 @@ interface Config {
 
 // Get the current environment
 const getEnvironment = (): 'development' | 'production' => {
-  // Check if we're in development mode
-  if (import.meta.env.MODE === 'development') {
+  // Check for custom environment variable first (highest priority)
+  if (import.meta.env.VITE_REACT_APP_ENVIRONMENT === 'production') {
+    return 'production';
+  }
+
+  if (import.meta.env.VITE_REACT_APP_ENVIRONMENT === 'development') {
     return 'development';
   }
 
-  // Check for custom environment variable
-  if (import.meta.env.VITE_REACT_APP_ENVIRONMENT === 'development') {
+  // Check if we're in Vite development mode (this should catch npm run dev)
+  if (import.meta.env.MODE === 'development') {
+    console.log('🔍 Detected Vite development mode');
+    return 'development';
+  }
+
+  // Check if we're running on Vite dev server port
+  if (window.location.port === '5173') {
+    console.log('🔍 Detected Vite dev server port (5173)');
     return 'development';
   }
 
@@ -80,11 +91,19 @@ export const setEnvironmentOverride = (env: 'development' | 'production' | null)
   }
 };
 
-// Debug logging (only in development)
+// Debug logging (always show environment detection)
+console.log('🔧 Environment Detection:');
+console.log('  - import.meta.env.MODE:', import.meta.env.MODE);
+console.log('  - window.location.hostname:', window.location.hostname);
+console.log('  - window.location.port:', window.location.port);
+console.log('  - VITE_REACT_APP_ENVIRONMENT:', import.meta.env.VITE_REACT_APP_ENVIRONMENT);
+console.log('  - VITE_REACT_APP_API_SECRET:', import.meta.env.VITE_REACT_APP_API_SECRET);
+
 if (config.environment === 'development') {
   console.log('🔧 Development Mode Active');
   console.log('📡 API Base URL:', config.apiBaseUrl);
   console.log('📧 Email API URL:', config.emailApiUrl);
 } else {
   console.log('🚀 Production Mode Active');
+  console.log('📡 API Base URL:', config.apiBaseUrl);
 }
