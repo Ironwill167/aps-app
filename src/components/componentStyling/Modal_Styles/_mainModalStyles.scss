@@ -713,7 +713,7 @@
   border: 1px solid rgba($border-color, 0.6) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
   overflow: hidden !important;
-  z-index: 1001 !important;
+  z-index: 9999 !important;
 }
 
 .react-select__menu-list {

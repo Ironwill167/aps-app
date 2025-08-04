@@ -328,6 +328,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="insured_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={companyOptions}
                         onChange={(option) => handleSelectChange('insured_id', option)}
                         placeholder="Select a company..."
@@ -341,7 +342,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
                       <button
                         type="button"
@@ -362,6 +368,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="company_contact_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={contactOptionsForCompany(formData.insured_id)}
                         onChange={(option) => handleSelectChange('insured_contact_id', option)}
                         placeholder="Select a contact..."
@@ -377,7 +384,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
                       <button
                         type="button"
@@ -399,6 +411,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="principal_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={companyOptions}
                         onChange={(option) => handleSelectChange('principal_id', option)}
                         placeholder="Select a principal..."
@@ -411,7 +424,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
                       <button
                         type="button"
@@ -432,6 +450,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="principal_contact_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={contactOptionsForCompany(formData.principal_id)}
                         onChange={(option) => handleSelectChange('principal_contact_id', option)}
                         placeholder="Select a contact..."
@@ -447,7 +466,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
                       <button
                         type="button"
@@ -469,6 +493,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="broker_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={companyOptions}
                         onChange={(option) => handleSelectChange('broker_id', option)}
                         placeholder="Select a broker..."
@@ -481,7 +506,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
                       <button
                         type="button"
@@ -502,6 +532,7 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                       <Select
                         id="broker_contact_id"
                         className="reactSelectWide"
+                        classNamePrefix="react-select"
                         options={contactOptionsForCompany(formData.broker_id)}
                         onChange={(option) => handleSelectChange('broker_contact_id', option)}
                         placeholder="Select a contact..."
@@ -517,7 +548,12 @@ const ViewFileModal: React.FC<ViewFileModalProps> = ({
                           option.label.toLowerCase().includes(input.toLowerCase())
                         }
                         menuPlacement="auto"
+                        menuPortalTarget={document.body}
                         maxMenuHeight={200}
+                        styles={{
+                          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                          menu: (base) => ({ ...base, zIndex: 99999 }),
+                        }}
                       />
 
                       <button
