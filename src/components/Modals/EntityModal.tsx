@@ -234,6 +234,7 @@ const EntityModal: React.FC<EntityModalProps> = ({
                         <Select
                           id="company_id"
                           className="reactSelectWide"
+                          classNamePrefix="react-select"
                           options={companies.map((company) => ({
                             value: company.id,
                             label: company.name,
@@ -254,6 +255,11 @@ const EntityModal: React.FC<EntityModalProps> = ({
                                 }
                               : null
                           }
+                          menuPortalTarget={document.body}
+                          styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                            menu: (base) => ({ ...base, zIndex: 99999 }),
+                          }}
                         />
                         <button
                           type="button"
