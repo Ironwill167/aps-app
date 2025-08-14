@@ -3,6 +3,7 @@ import { FileNote, FileRecord } from '../types';
 import { fetchFileNotesByFileId } from '../hooks/ApiServices';
 import { useData } from '../hooks/UseData';
 import { showErrorToast, showSuccessToast } from '../utils/toast';
+import CustomDialog from '../utils/CustomDialog';
 
 interface FileNotesModalProps {
   file: FileRecord;
@@ -18,6 +19,8 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
   const [adding, setAdding] = useState(false);
   const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
   const [editNoteText, setEditNoteText] = useState('');
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [noteIdPendingDelete, setNoteIdPendingDelete] = useState<number | null>(null);
 
   // Fetch notes for this file
   const fetchNotes = useCallback(async () => {
@@ -87,21 +90,32 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
     }
   };
 
-  // Delete a note
-  const deleteNote = async (noteId: number) => {
-    if (!confirm('Are you sure you want to delete this note?')) {
-      return;
-    }
+  // Open confirm dialog for delete
+  const requestDeleteNote = (noteId: number) => {
+    setNoteIdPendingDelete(noteId);
+    setConfirmDeleteOpen(true);
+  };
 
+  // Confirm deletion handler
+  const confirmDeleteNote = async () => {
+    if (noteIdPendingDelete == null) return;
     try {
-      await deleteFileNote(noteId);
-      setNotes(notes.filter((note) => note.id !== noteId));
+      await deleteFileNote(noteIdPendingDelete);
+      setNotes((prev) => prev.filter((note) => note.id !== noteIdPendingDelete));
       showSuccessToast('Note deleted successfully');
       onNotesUpdated();
     } catch (error) {
       console.error('Error deleting note:', error);
       showErrorToast('Failed to delete note');
+    } finally {
+      setConfirmDeleteOpen(false);
+      setNoteIdPendingDelete(null);
     }
+  };
+
+  const cancelDeleteNote = () => {
+    setConfirmDeleteOpen(false);
+    setNoteIdPendingDelete(null);
   };
 
   // Start editing a note
@@ -244,129 +258,144 @@ const FileNotesModal: React.FC<FileNotesModalProps> = ({ file, onClose, onNotesU
   }
 
   return (
-    <div className="modal" onClick={onClose}>
-      <div
-        className="modal-content file-notes-modal-content"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={handleKeyDown}
-      >
-        <div className="modal-header">
-          <p>File Notes - File #{file.id}</p>
-          <span
-            className="close-modal-button"
-            onClick={onClose}
-            role="button"
-            aria-label="Close Modal"
-          >
-            &times;
-          </span>
-        </div>
+    <>
+      <div className="modal" onClick={onClose}>
+        <div
+          className="modal-content file-notes-modal-content"
+          onClick={(e) => e.stopPropagation()}
+          onKeyDown={handleKeyDown}
+        >
+          <div className="modal-header">
+            <p>File Notes - File #{file.id}</p>
+            <span
+              className="close-modal-button"
+              onClick={onClose}
+              role="button"
+              aria-label="Close Modal"
+            >
+              &times;
+            </span>
+          </div>
 
-        <div className="modal-body">
-          {/* Notes history section */}
-          <div className="notes-history-section">
-            {notes.length === 0 ? (
-              <div className="no-notes">No notes found for this file</div>
-            ) : (
-              <div className="notes-list">
-                {notes.map((note) => (
-                  <div key={note.id} className="modal-row">
-                    <div className="note-item">
-                      <div className="note-header">
-                        <span className="note-date">{formatDate(note.note_date)}</span>
-                        <div className="note-actions">
+          <div className="modal-body">
+            {/* Notes history section */}
+            <div className="notes-history-section">
+              {notes.length === 0 ? (
+                <div className="no-notes">No notes found for this file</div>
+              ) : (
+                <div className="notes-list">
+                  {notes.map((note) => (
+                    <div key={note.id} className="modal-row">
+                      <div className="note-item">
+                        <div className="note-header">
+                          <span className="note-date">{formatDate(note.note_date)}</span>
+                          <div className="note-actions">
+                            {editingNoteId === note.id ? (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => updateNote(note.id)}
+                                  className="save-note-btn"
+                                  title="Save changes"
+                                >
+                                  💾
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={cancelEditing}
+                                  className="cancel-edit-btn"
+                                  title="Cancel edit"
+                                >
+                                  ❌
+                                </button>
+                              </>
+                            ) : (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => startEditing(note)}
+                                  className="edit-note-btn"
+                                  title="Edit note"
+                                >
+                                  ✏️
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => requestDeleteNote(note.id)}
+                                  className="delete-note-btn"
+                                  title="Delete note"
+                                >
+                                  🗑️
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="note-text">
                           {editingNoteId === note.id ? (
-                            <>
-                              <button
-                                onClick={() => updateNote(note.id)}
-                                className="save-note-btn"
-                                title="Save changes"
-                              >
-                                💾
-                              </button>
-                              <button
-                                onClick={cancelEditing}
-                                className="cancel-edit-btn"
-                                title="Cancel edit"
-                              >
-                                ❌
-                              </button>
-                            </>
+                            <textarea
+                              value={editNoteText}
+                              onChange={(e) => setEditNoteText(e.target.value)}
+                              className="edit-note-textarea"
+                              autoFocus
+                              rows={3}
+                              onKeyDown={(e) => {
+                                if (e.key === 'Enter' && e.ctrlKey) {
+                                  e.preventDefault();
+                                  updateNote(note.id);
+                                } else if (e.key === 'Escape') {
+                                  e.preventDefault();
+                                  cancelEditing();
+                                }
+                              }}
+                            />
                           ) : (
-                            <>
-                              <button
-                                onClick={() => startEditing(note)}
-                                className="edit-note-btn"
-                                title="Edit note"
-                              >
-                                ✏️
-                              </button>
-                              <button
-                                onClick={() => deleteNote(note.id)}
-                                className="delete-note-btn"
-                                title="Delete note"
-                              >
-                                🗑️
-                              </button>
-                            </>
+                            <span onDoubleClick={() => startEditing(note)}>{note.note_text}</span>
                           )}
                         </div>
                       </div>
-                      <div className="note-text">
-                        {editingNoteId === note.id ? (
-                          <textarea
-                            value={editNoteText}
-                            onChange={(e) => setEditNoteText(e.target.value)}
-                            className="edit-note-textarea"
-                            autoFocus
-                            rows={3}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter' && e.ctrlKey) {
-                                e.preventDefault();
-                                updateNote(note.id);
-                              } else if (e.key === 'Escape') {
-                                e.preventDefault();
-                                cancelEditing();
-                              }
-                            }}
-                          />
-                        ) : (
-                          <span onDoubleClick={() => startEditing(note)}>{note.note_text}</span>
-                        )}
-                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        </div>
 
-        <div className="modal-footer">
-          <div className="modal-form-group">
-            <label htmlFor="newNote">New Note Text:</label>
-            <textarea
-              id="newNote"
-              value={newNoteText}
-              onChange={(e) => setNewNoteText(e.target.value)}
-              placeholder="Enter your note here..."
-              rows={3}
-              className="inputMedium"
-            />
+          <div className="modal-footer">
+            <div className="modal-form-group">
+              <label htmlFor="newNote">New Note Text:</label>
+              <textarea
+                id="newNote"
+                value={newNoteText}
+                onChange={(e) => setNewNoteText(e.target.value)}
+                placeholder="Enter your note here..."
+                rows={3}
+                className="inputMedium"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={addNote}
+              disabled={adding || !newNoteText.trim()}
+              className="modal-submit"
+            >
+              {adding ? 'Adding Note...' : 'Add Note'}
+            </button>
+            <button type="button" onClick={onClose} className="modal-cancel">
+              Close
+            </button>
           </div>
-          <button
-            onClick={addNote}
-            disabled={adding || !newNoteText.trim()}
-            className="modal-submit"
-          >
-            {adding ? 'Adding Note...' : 'Add Note'}
-          </button>
-          <button onClick={onClose} className="modal-cancel">
-            Close
-          </button>
         </div>
       </div>
-    </div>
+      {/* Confirm Delete Dialog */}
+      <CustomDialog
+        open={confirmDeleteOpen}
+        title="Delete Note"
+        message="Are you sure you want to delete this note?"
+        onConfirm={confirmDeleteNote}
+        onCancel={cancelDeleteNote}
+      />
+    </>
   );
 };
 
