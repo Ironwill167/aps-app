@@ -60,7 +60,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
 
   // Get signature
   const getSignature = useCallback(() => {
-    return `<p style="font-family: 'Times New Roman', serif;">Look forward to hearing from you.<br>
+    return `<p style="font-family: 'Times New Roman', serif;">
 Thank you and kind regards.<br>
 <strong>Mannie Botha</strong><br>
 Senior Assessor<br>
@@ -80,7 +80,14 @@ Reg No: 2022/548907/07</p>
     const signature = getSignature();
 
     if (emailType === 'acknowledgment') {
-      const subject = `APS Ref: ${file.id} - ${file.subject_matter || 'Insurance Claim'} - Acknowledgment`;
+      const subjectMatter = file.subject_matter || 'Insurance Claim';
+      const dolPart = (() => {
+        if (!file.date_of_loss) return '';
+        const d = file.date_of_loss;
+        if (typeof d === 'string') return ` - D.O.L. ${d.split('T')[0]}`;
+        return ` - D.O.L. ${String(d).split('T')[0]}`;
+      })();
+      const subject = `APS Ref: ${file.id} - Claim No: ${file.principal_ref}- Acknowledgement - ${getInsuredName()} - ${subjectMatter}${dolPart}`;
 
       const body = `<p style="font-family: 'Times New Roman', serif;">Hi ${principalContactName},</p>
 
