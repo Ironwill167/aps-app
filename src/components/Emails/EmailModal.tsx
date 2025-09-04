@@ -129,6 +129,7 @@ ${signature}`;
     file.id,
     file.subject_matter,
     file.principal_ref,
+    file.date_of_loss,
     getPrincipalContactName,
     getPrincipalContactEmail,
     getInsuredName,

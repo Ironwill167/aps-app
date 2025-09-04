@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { authService } from './authService';
 import { AppConfig } from '../config';
 
 // Create an axios instance
@@ -40,17 +41,23 @@ apiClient.interceptors.request.use(
 
 // Response interceptor to handle token expiration
 apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    if (error.response?.status === 401) {
-      // Token might be expired, clear all stored auth
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const newToken = await authService.refreshAccessToken();
+      if (newToken) {
+        // Set header and retry
+        originalRequest.headers = originalRequest.headers || {};
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(originalRequest);
+      }
+
+      // If refresh failed, clear storages and reload to show login
       sessionStorage.removeItem('aps-session');
       localStorage.removeItem('aps-auth');
       localStorage.removeItem('aps-remembered-credentials');
-
-      // Redirect to login by reloading the app
       window.location.reload();
     }
     return Promise.reject(error);

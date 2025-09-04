@@ -17,16 +17,25 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (storedAuth) {
           const { token, user, rememberMe } = storedAuth;
 
-          // Verify token is still valid
-          const isValid = await authService.verifyToken(token);
+          // Verify token; if invalid but we have refresh token, try to refresh
+          let validToken = token;
+          let isValid = await authService.verifyToken(validToken);
+          if (!isValid) {
+            const refreshed = await authService.refreshAccessToken();
+            if (refreshed) {
+              validToken = refreshed;
+              isValid = true;
+            }
+          }
+
           if (isValid) {
             dispatch({
               type: 'RESTORE_SESSION',
-              payload: { user, token, rememberMe },
+              payload: { user, token: validToken, rememberMe },
             });
             return;
           } else {
-            // Token is invalid, clear storage
+            // Token is invalid and refresh failed, clear storage
             authService.clearStoredAuth();
           }
         }
@@ -51,6 +60,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (result.success && result.user && result.token) {
         // Always store auth data (for session and optionally for persistence)
         authService.storeAuth(result.token, result.user, rememberMe);
+        // Persist refresh token if provided
+        authService.persistRefreshToken(result.refreshToken, rememberMe);
 
         dispatch({
           type: 'LOGIN_SUCCESS',

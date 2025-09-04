@@ -10,11 +10,13 @@ interface LoginResponse {
   success: boolean;
   message: string;
   token?: string;
+  refreshToken?: string;
   user?: User;
 }
 
 interface StoredAuth {
   token: string;
+  refreshToken?: string;
   user: User;
   rememberMe: boolean;
 }
@@ -22,8 +24,7 @@ interface StoredAuth {
 class AuthService {
   private readonly STORAGE_KEY = 'aps-auth';
   private readonly SESSION_KEY = 'aps-session';
-  private readonly ELECTRON_SECRET =
-    import.meta.env.VITE_REACT_APP_API_SECRET || 'apskeytoconnectelectron';
+  private readonly ELECTRON_SECRET = import.meta.env.VITE_REACT_APP_API_SECRET;
 
   async login(email: string, password: string): Promise<LoginResponse> {
     try {
@@ -43,6 +44,7 @@ class AuthService {
           success: true,
           message: 'Login successful',
           token: data.token,
+          refreshToken: data.refreshToken,
           user: data.user,
         };
       } else {
@@ -78,7 +80,16 @@ class AuthService {
   }
 
   storeAuth(token: string, user: User, rememberMe: boolean): void {
-    const authData: StoredAuth = { token, user, rememberMe };
+    // Pull any existing refresh token (set during login)
+    let existing: StoredAuth | null = null;
+    try {
+      const local = localStorage.getItem(this.STORAGE_KEY);
+      if (local) existing = JSON.parse(local);
+    } catch (e) {
+      // ignore JSON parse errors
+    }
+
+    const authData: StoredAuth = { token, user, rememberMe, refreshToken: existing?.refreshToken };
 
     // Always store in session storage for current session
     sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(authData));
@@ -124,6 +135,65 @@ class AuthService {
       'x-electron-app-secret': this.ELECTRON_SECRET,
       'Content-Type': 'application/json',
     };
+  }
+
+  // Persist refresh token when available and rememberMe is true
+  persistRefreshToken(refreshToken?: string, rememberMe?: boolean) {
+    if (!refreshToken) return;
+    try {
+      const stored = localStorage.getItem(this.STORAGE_KEY);
+      if (stored) {
+        const obj = JSON.parse(stored);
+        obj.refreshToken = refreshToken;
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(obj));
+      } else if (rememberMe) {
+        // If not present but remember me intended, create minimal entry
+        const session = sessionStorage.getItem(this.SESSION_KEY);
+        if (session) {
+          const s = JSON.parse(session);
+          s.refreshToken = refreshToken;
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(s));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to persist refresh token', err);
+    }
+  }
+
+  async refreshAccessToken(): Promise<string | null> {
+    try {
+      // Prefer localStorage (remember me) then session
+      const stored =
+        localStorage.getItem(this.STORAGE_KEY) || sessionStorage.getItem(this.SESSION_KEY);
+      if (!stored) return null;
+      const auth: StoredAuth = JSON.parse(stored);
+      if (!auth.refreshToken) return null;
+
+      const response = await fetch(`${AppConfig.apiBaseUrl}/api/auth/refresh`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-electron-app-secret': this.ELECTRON_SECRET,
+        },
+        body: JSON.stringify({ refreshToken: auth.refreshToken }),
+      });
+
+      if (!response.ok) return null;
+      const data = await response.json();
+      if (!data?.token) return null;
+
+      // Update token in storages
+      const updated: StoredAuth = { ...auth, token: data.token };
+      sessionStorage.setItem(this.SESSION_KEY, JSON.stringify(updated));
+      if (auth.rememberMe) {
+        localStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
+      }
+
+      return data.token as string;
+    } catch (err) {
+      console.error('Error refreshing access token:', err);
+      return null;
+    }
   }
 }
 

@@ -196,6 +196,17 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
     return (time * rate).toFixed(2);
   };
 
+  // Format numbers with thousand separators and two decimals, without a currency symbol
+  const formatCurrency = useCallback((value: number | string | null | undefined) => {
+    const num =
+      typeof value === 'string' ? parseFloat(value) : typeof value === 'number' ? value : 0;
+    if (!isFinite(num)) return '0.00';
+    return new Intl.NumberFormat(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(num);
+  }, []);
+
   return (
     <div className="invoice-container" onClick={(e) => e.stopPropagation()}>
       <div className="invoice-inner-container">
@@ -402,7 +413,7 @@ const FeeInvoicePrint: React.FC<FeeInvoicePrintProps> = ({
                 <h5>{feeDetails.total_description}</h5>
               </div>
             )}
-            <p>Total Fee: {feeDetails.total_fee}</p>
+            <p>Total Fee: {formatCurrency(feeDetails.total_fee)}</p>
           </div>
         </div>
       </div>
