@@ -38,6 +38,40 @@ body {
   min-width: 1024px; /* Minimum supported desktop width */
 }
 
+/* Global react-select menu fixes to ensure dropdowns appear above all UI */
+.react-select__menu {
+  z-index: 99999 !important;
+  background-color: #ffffff !important; /* Ensure solid background */
+}
+
+.react-select__menu-list {
+  max-height: 200px !important;
+}
+
+/* Ensure portal container stays above app layers */
+.react-select__menu-portal {
+  z-index: 99999 !important;
+}
+
+/* React Data Table Component overflow fixes for inline editing dropdowns */
+.rdt_Table,
+.rdt_TableBody,
+.rdt_TableRow,
+.rdt_TableCell {
+  overflow: visible !important; /* Allow dropdowns to render outside row bounds */
+}
+
+/* Fallback for react-select instances without classNamePrefix: target the listbox by id */
+[id^='react-select-'][id$='-listbox'] {
+  z-index: 99999 !important;
+  background-color: #ffffff !important; /* Ensure listbox has solid background */
+}
+
+/* Default option background to avoid transparency when not selected/focused */
+.react-select__option {
+  background-color: #ffffff !important;
+}
+
 /* Desktop-focused adjustments for 1366x768 resolution (common laptop screens) */
 @media (max-width: 1366px) and (max-height: 768px) {
   /* Reduce base font size for better content density on smaller desktop screens */

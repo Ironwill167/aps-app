@@ -87,10 +87,22 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
             <Select
               id="adp_company_id"
               className="reactSelectWide"
+              classNamePrefix="react-select"
               options={companyOptions}
               onChange={(option) => handleSelectChange('adp_company_id', option as OptionType)}
               placeholder="Select a company..."
               isSearchable
+              filterOption={(option, input) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              menuPlacement="auto"
+              menuPosition="fixed"
+              menuPortalTarget={document.body}
+              maxMenuHeight={200}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                menu: (base) => ({ ...base, zIndex: 99999 }),
+              }}
               value={
                 companyOptions.find((option) => option.value === additionalParty.adp_company_id) ||
                 null
@@ -113,10 +125,22 @@ const AdditionalPartyDisplay: React.FC<AdditionalPartyDisplayProps> = ({
             <Select
               id="adp_contact_id"
               className="reactSelectWide"
+              classNamePrefix="react-select"
               options={contactOptionsForCompany(additionalParty.adp_company_id)}
               onChange={(option) => handleSelectChange('adp_contact_id', option as OptionType)}
               placeholder="Select a contact..."
               isSearchable
+              filterOption={(option, input) =>
+                option.label.toLowerCase().includes(input.toLowerCase())
+              }
+              menuPlacement="auto"
+              menuPosition="fixed"
+              menuPortalTarget={document.body}
+              maxMenuHeight={200}
+              styles={{
+                menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                menu: (base) => ({ ...base, zIndex: 99999 }),
+              }}
               value={
                 additionalParty.adp_contact_id
                   ? contactOptionsForCompany(additionalParty.adp_company_id).find(

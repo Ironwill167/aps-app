@@ -300,10 +300,22 @@ const Contacts: React.FC = () => {
             <>
               <Select
                 className="reactSelect"
+                classNamePrefix="react-select"
                 options={companyOptions}
                 value={companyOptions.find((option) => option.value === editCompanyId) || null}
                 onChange={(option) => setEditCompanyId(option?.value || null)}
                 isSearchable
+                filterOption={(option, input) =>
+                  option.label.toLowerCase().includes(input.toLowerCase())
+                }
+                menuPlacement="auto"
+                menuPosition="fixed"
+                menuPortalTarget={document.body}
+                maxMenuHeight={200}
+                styles={{
+                  menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+                  menu: (base) => ({ ...base, zIndex: 99999 }),
+                }}
               />
               <button
                 type="button"

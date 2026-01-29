@@ -245,6 +245,10 @@ const EntityModal: React.FC<EntityModalProps> = ({
                           placeholder="Select Company"
                           isClearable
                           isSearchable
+                          filterOption={(option, input) =>
+                            option.label.toLowerCase().includes(input.toLowerCase())
+                          }
+                          menuPlacement="auto"
                           value={
                             companies.find((c) => c.id === (formData as Contact).company_id)
                               ? {
@@ -256,6 +260,8 @@ const EntityModal: React.FC<EntityModalProps> = ({
                               : null
                           }
                           menuPortalTarget={document.body}
+                          menuPosition="fixed"
+                          maxMenuHeight={200}
                           styles={{
                             menuPortal: (base) => ({ ...base, zIndex: 99999 }),
                             menu: (base) => ({ ...base, zIndex: 99999 }),
