@@ -5,6 +5,7 @@ import { showErrorToast, showSuccessToast } from './utils/toast';
 import { useData } from './hooks/UseData';
 import { FileRecord, FeeRecord, Company, Contact } from './types';
 import { createFile } from './hooks/ApiServices';
+import './Register.scss';
 
 // Lazy load modals
 const ViewFileModal = lazy(() => import('./Modals/ViewFileModal'));
@@ -121,6 +122,35 @@ const Register: React.FC = () => {
       );
     });
   }, [files, debouncedSearchTerm, getCompanyName, getContactFullName]);
+
+  const handleViewFile = useCallback((file: FileRecord) => {
+    setSelectedFile(file);
+    setShowViewFileModal(true);
+  }, []);
+
+  const handleViewCompany = useCallback(
+    (companyId: number | null) => {
+      if (companyId === null) return;
+      const companyData = companies.find((c) => c.id === companyId) || null;
+      if (companyData) {
+        setSelectedCompany(companyData);
+        setShowViewCompanyModal(true);
+      }
+    },
+    [companies]
+  );
+
+  const handleViewContact = useCallback(
+    (contactId: number | null) => {
+      if (contactId === null) return;
+      const contactData = contacts.find((ct) => ct.id === contactId) || null;
+      if (contactData) {
+        setSelectedContact(contactData);
+        setShowViewContactModal(true);
+      }
+    },
+    [contacts]
+  );
 
   // Define Columns for DataTable
   const columns: TableColumn<FileRecord>[] = useMemo(
@@ -265,7 +295,14 @@ const Register: React.FC = () => {
         width: '14vi',
       },
     ],
-    [getCompanyName, getContactFullName]
+    [
+      getCompanyName,
+      getContactFullName,
+      handleRightClick,
+      handleViewCompany,
+      handleViewContact,
+      handleViewFile,
+    ]
   );
 
   // Handle Add File
@@ -280,31 +317,8 @@ const Register: React.FC = () => {
     }
   };
 
-  const handleViewFile = (file: FileRecord) => {
-    setSelectedFile(file);
-    setShowViewFileModal(true);
-  };
-
   // Handle File Updated
   const handleFileUpdated = () => {};
-
-  const handleViewCompany = (companyId: number | null) => {
-    if (companyId === null) return;
-    const companyData = companies.find((c) => c.id === companyId) || null;
-    if (companyData) {
-      setSelectedCompany(companyData);
-      setShowViewCompanyModal(true);
-    }
-  };
-
-  const handleViewContact = (contactId: number | null) => {
-    if (contactId === null) return;
-    const contactData = contacts.find((ct) => ct.id === contactId) || null;
-    if (contactData) {
-      setSelectedContact(contactData);
-      setShowViewContactModal(true);
-    }
-  };
 
   const handleRowDoubleClicked = (row: FileRecord) => {
     setSelectedFile(row);
@@ -318,10 +332,12 @@ const Register: React.FC = () => {
 
       switch (action) {
         case 'viewFile':
-          const file = files.find((f) => f.id === contextId);
-          if (file) {
-            setSelectedFile(file);
-            setShowViewFileModal(true);
+          {
+            const file = files.find((f) => f.id === contextId);
+            if (file) {
+              setSelectedFile(file);
+              setShowViewFileModal(true);
+            }
           }
           break;
 
@@ -334,10 +350,12 @@ const Register: React.FC = () => {
           break;
 
         case 'editFee':
-          const fee = fees.find((f) => f.file_id === contextId);
-          if (fee) {
-            setSelectedFee(fee);
-            setShowEditFeeModal(true);
+          {
+            const fee = fees.find((f) => f.file_id === contextId);
+            if (fee) {
+              setSelectedFee(fee);
+              setShowEditFeeModal(true);
+            }
           }
           break;
 
@@ -411,6 +429,10 @@ const Register: React.FC = () => {
                 backgroundColor: '#84D11F',
                 fontWeight: 'bold',
                 fontSize: '1vi',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                minWidth: 0,
               },
             },
             cells: {
@@ -419,6 +441,10 @@ const Register: React.FC = () => {
                 paddingRight: '0',
                 paddingTop: '0.2vh',
                 paddingBottom: '0.2vh',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                minWidth: 0,
               },
             },
           }}

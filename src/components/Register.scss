@@ -1,0 +1,25 @@
+.register-data-table {
+  /* Prevent any cell content from painting into adjacent columns */
+  .rdt_TableCell,
+  .rdt_TableCol {
+    overflow: hidden;
+  }
+
+  /* react-data-table-component wraps cell content in an inner div */
+  .rdt_TableCell > div,
+  .rdt_TableCol > div {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Some of our cells render spans; make sure they can ellipsize */
+  .rdt_TableCell span {
+    display: block;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
